@@ -115,9 +115,9 @@
 @section('scripts')
 
 <!-- Chart library -->
-<script src="./plugins/chart.min.js"></script>
+<script src="./js/plugins/chart.min.js"></script>
 <!-- Icons library -->
-<script src="plugins/feather.min.js"></script>
+<script src="js/plugins/feather.min.js"></script>
 <!-- Custom scripts -->
 <script src="js/script.js"></script>
 
