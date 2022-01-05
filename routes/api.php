@@ -13,6 +13,28 @@ use Illuminate\Http\Request;
 |
 */
 
+Route::post('login', [
+         'uses' => 'api/AuthController@login'
+     ]);
+
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
+});
+
+Route::post('requestdocument', [
+         'uses' => 'api\\DocumentController@storeInput'
+     ]);
+
+Route::group(['middleware' => 'auth:api'], function() {
+
+    /**
+     * API Routes
+    */
+
+    /*
+    * get employees
+    **/
+    // Route::get('employees', [
+    //     'uses' => 'AccessControlController@getEmployees'
+    // ]);
 });
