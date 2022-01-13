@@ -20,6 +20,7 @@
     <script src="{{ asset('js/jquery-3.6.0.min.js') }}"></script>
     <script src="{{ asset('js/jquery.dataTables.min.js') }}"></script>
     <script src="{{ asset('js/Bootstrap/bootstrap.js') }}"></script>
+    <script src="{{ asset('js/sweetalert2/dist/sweetalert2.all.min.js') }}"></script>
     @yield('headJs')
 </head>
 
@@ -41,6 +42,14 @@
             @yield('footer')
         </div>
     </div>
+
+    <!-- Chart library -->
+    <script src="{{ asset('js/plugins/chart.min.js') }}"></script>
+    <!-- Icons library -->
+    <script src="{{ asset('js/plugins/feather.min.js') }}"></script>
+    <!-- Custom scripts -->
+    <script src="{{ asset('js/script.js') }}"></script>
+
     @yield('scripts')
 </body>
 

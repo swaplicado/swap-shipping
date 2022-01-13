@@ -68,7 +68,7 @@
           </div>
 
           <div class="col-12 col-md-auto text-end">
-            <a type="button" class="btn btn-outline-light me-2" href="/home">Login</a>
+            <a type="button" class="btn btn-outline-light me-2" href="/login">Login</a>
           </div>
        </nav>
       </header>

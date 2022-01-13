@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateFCarriersTable extends Migration
+class CreateSatItemsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,11 +13,12 @@ class CreateFCarriersTable extends Migration
      */
     public function up()
     {
-        Schema::create('f_carriers', function (Blueprint $table) {
-            $table->bigIncrements('id_carrier');
-            $table->string('fullname');
-            $table->string('fiscal_id');
-            $table->timestamps();
+        Schema::create('sat_items', function (Blueprint $table) {
+            $table->bigIncrements('id');
+            $table->string('key_code');
+            $table->string('description');
+            $table->text('similar_words');
+            $table->date('since_date');
         });
     }
 
@@ -28,6 +29,6 @@ class CreateFCarriersTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('f_carriers');
+        Schema::dropIfExists('sat_items');
     }
 }

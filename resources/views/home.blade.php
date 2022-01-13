@@ -122,13 +122,6 @@
 
 @section('scripts')
 
-<!-- Chart library -->
-<script src="{{ asset('js/plugins/chart.min.js') }}"></script>
-<!-- Icons library -->
-<script src="{{ asset('js/plugins/feather.min.js') }}"></script>
-<!-- Custom scripts -->
-<script src="{{ asset('js/script.js') }}"></script>
-
 <script>
     $(document).ready(function() {
     var table = $('#example').DataTable();
