@@ -14,7 +14,7 @@ use Illuminate\Http\Request;
 */
 
 Route::post('login', [
-         'uses' => 'api/AuthController@login'
+         'uses' => 'api\\AuthController@login'
      ]);
 
 Route::middleware('auth:api')->get('/user', function (Request $request) {
@@ -22,7 +22,7 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 });
 
 Route::post('requestdocument', [
-         'uses' => 'api\\DocumentController@storeInput'
+         'uses' => 'api\\DocumentRequestController@store'
      ]);
 
 Route::group(['middleware' => 'auth:api'], function() {

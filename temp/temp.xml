@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<cfdi:Comprobante xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:cfdi="http://www.sat.gob.mx/cfd/4" xmlns:cartaporte20="http://www.sat.gob.mx/CartaPorte20" xsi:schemaLocation="http://www.sat.gob.mx/cfd/4 http://www.sat.gob.mx/sitio_internet/cfd/4/cfdv40.xsd http://www.sat.gob.mx/CartaPorte20 http://www.sat.gob.mx/sitio_internet/cfd/CartaPorte/CartaPorte20.xsd" Version="4.0" Serie="A" Folio="3" Fecha="2021-11-24T00:00:00" FormaPago="03" SubTotal="200.00" Moneda="MXN" TipoCambio="1" Total="212.00" TipoDeComprobante="I" MetodoPago="PUE" LugarExpedicion="60135" Exportacion="01">
+  <cfdi:Emisor Rfc="AAA010101AAA" Nombre="Nombre Emisor" RegimenFiscal="601"/>
+  <cfdi:Receptor Rfc="AAA010101AAA" Nombre="Nombre Receptor" DomicilioFiscalReceptor="60135" RegimenFiscalReceptor="616" UsoCFDI="S01"/>
+  <cfdi:Conceptos>
+    <cfdi:Concepto ClaveProdServ="60121001" NoIdentificacion="1" Cantidad="1" ClaveUnidad="ACT" Unidad="No aplica" Descripcion="Descripcion" ValorUnitario="0.01" Importe="0.01" ObjetoImp="02">
+      <cfdi:Impuestos>
+        <cfdi:Traslados>
+          <cfdi:Traslado Base="0.01" Impuesto="002" TipoFactor="Tasa" TasaOCuota="0.160000" Importe="0.00"/>
+        </cfdi:Traslados>
+        <cfdi:Retenciones>
+          <cfdi:Retencion Base="0.01" Impuesto="002" TipoFactor="Tasa" TasaOCuota="0.040000" Importe="0.00"/>
+        </cfdi:Retenciones>
+      </cfdi:Impuestos>
+    </cfdi:Concepto>
+  </cfdi:Conceptos>
+  <cfdi:Impuestos TotalImpuestosRetenidos="0" TotalImpuestosTrasladados="0">
+    <cfdi:Retenciones>
+      <cfdi:Retencion Impuesto="002" Importe="0.00"/>
+    </cfdi:Retenciones>
+    <cfdi:Traslados>
+      <cfdi:Traslado Base="0.01" Impuesto="002" TipoFactor="Tasa" TasaOCuota="0.160000" Importe="0.00"/>
+    </cfdi:Traslados>
+  </cfdi:Impuestos>
+  <cfdi:Complemento>
+    <cartaporte20:CartaPorte Version="2.0" TranspInternac="No" TotalDistRec="70.000">
+      <cartaporte20:Ubicaciones>
+        <cartaporte20:Ubicacion TipoUbicacion="Origen" IDUbicacion="OR022191" RFCRemitenteDestinatario="EKU9003173C9" FechaHoraSalidaLlegada="2021-11-16T00:00:00">
+          <cartaporte20:Domicilio Localidad="09" Municipio="102" Estado="MIC" Pais="MEX" CodigoPostal="60135"/>
+        </cartaporte20:Ubicacion>
+        <cartaporte20:Ubicacion TipoUbicacion="Destino" IDUbicacion="DE000131" RFCRemitenteDestinatario="ADU800131T10" FechaHoraSalidaLlegada="2021-11-17T00:00:00" DistanciaRecorrida="70.000">
+          <cartaporte20:Domicilio Localidad="11" Municipio="108" Estado="MIC" Pais="MEX" CodigoPostal="59690"/>
+        </cartaporte20:Ubicacion>
+      </cartaporte20:Ubicaciones>
+      <cartaporte20:Mercancias PesoBrutoTotal="35.000" UnidadPeso="KGM" NumTotalMercancias="2">
+        <cartaporte20:Mercancia BienesTransp="50151500" Descripcion="ACEITE CRUDO CANOLA ORGANICO ALTO OLEICO PRENSA A GRANEL" Cantidad="20.000000" ClaveUnidad="KGM" PesoEnKg="20.000">
+          <cartaporte20:CantidadTransporta Cantidad="10.000000" IDOrigen="OR022191" IDDestino="DE000131"/>
+          <cartaporte20:CantidadTransporta Cantidad="10.000000" IDOrigen="OR029621" IDDestino="DE000131"/>
+        </cartaporte20:Mercancia>
+        <cartaporte20:Mercancia BienesTransp="50401736" Descripcion="AGUACATE MADURO" Cantidad="15.000000" ClaveUnidad="KGM" PesoEnKg="15.000">
+          <cartaporte20:CantidadTransporta Cantidad="15.000000" IDOrigen="OR000131" IDDestino="DE028591"/>
+        </cartaporte20:Mercancia>
+        <cartaporte20:Autotransporte PermSCT="TPAF01" NumPermisoSCT="666">
+          <cartaporte20:IdentificacionVehicular ConfigVehicular="C2" PlacaVM="55XSD" AnioModeloVM="2021"/>
+          <cartaporte20:Seguros AseguraRespCivil="SEGUROS PRUEBA" PolizaRespCivil="444"/>
+        </cartaporte20:Autotransporte>
+      </cartaporte20:Mercancias>
+      <cartaporte20:FiguraTransporte>
+        <cartaporte20:TiposFigura TipoFigura="01" RFCFigura="AVI980824Q32" NumLicencia="B33555"/>
+        <cartaporte20:TiposFigura TipoFigura="02" RFCFigura="ALI030821T86">
+          <cartaporte20:PartesTransporte ParteTransporte="PT04"/>
+        </cartaporte20:TiposFigura>
+      </cartaporte20:FiguraTransporte>
+    </cartaporte20:CartaPorte>
+  </cfdi:Complemento>
+</cfdi:Comprobante>
