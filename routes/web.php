@@ -54,3 +54,12 @@ Route::get('/vehicles/{id}/edit', 'VehicleController@edit')->name('editar_vehicl
 Route::put('/vehicles/{id}', 'VehicleController@update')->name('actualizar_vehicle');
 Route::delete('/vehicles/{id}', 'VehicleController@destroy')->name('eliminar_vehicle');
 Route::put('/vehicles/recover/{id}', 'VehicleController@recover')->name('recuperar_vehicle');
+
+//Rutas Trailers
+Route::get('/trailers', 'TrailerController@index')->name('trailers');
+Route::get('/trailers/create', 'TrailerController@create')->name('crear_trailer');
+Route::post('/trailers', 'TrailerController@store')->name('guardar_trailer');
+Route::get('/trailers/{id}/edit', 'TrailerController@edit')->name('editar_trailer');
+Route::put('/trailers/{id}', 'TrailerController@update')->name('actualizar_trailer');
+Route::delete('/trailers/{id}', 'TrailerController@destroy')->name('eliminar_trailer');
+Route::put('/trailers/recover/{id}', 'TrailerController@recover')->name('recuperar_trailer');

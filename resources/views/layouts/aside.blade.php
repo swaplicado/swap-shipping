@@ -32,10 +32,13 @@
                     </a>
                     <ul class="cat-sub-menu">
                         <li>
-                            <a href="{{ route('carriers') }}">Transportistas</a>
+                            <a href="{{ route('carriers') }}"><span class="icon bx bxs-group bx-sm" aria-hidden="true"></span>Transportistas</a>
                         </li>
                         <li>
-                            <a href="{{ route('vehicles') }}">Vehiculos</a>
+                            <a href="{{ route('vehicles') }}"><span class="icon bx bxs-key bx-sm" aria-hidden="true"></span>Vehiculos</a>
+                        </li>
+                        <li>
+                            <a href="{{ route('trailers') }}"><span class="icon bx bxs-package bx-sm" aria-hidden="true"></span>Trailers</a>
                         </li>
                     </ul>
                 </li>
