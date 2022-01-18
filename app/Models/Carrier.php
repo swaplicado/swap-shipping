@@ -13,7 +13,12 @@ class Carrier extends Model
         'fullname',
         'fiscal_id',
         'is_deleted',
+        'usr_id',
         'usr_new_id',
         'usr_upd_id'
     ];
+
+    public function User(){
+        return $this->hasOne('App\User', 'id', 'usr_id');
+    }
 }

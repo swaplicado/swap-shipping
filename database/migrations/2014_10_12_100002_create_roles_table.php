@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateSatVehCfgsTable extends Migration
+class CreateRolesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,12 +13,11 @@ class CreateSatVehCfgsTable extends Migration
      */
     public function up()
     {
-        Schema::create('sat_veh_cfgs', function (Blueprint $table) {
+        Schema::create('roles', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->string('key_code');
+            $table->string('name');
             $table->string('description');
-            $table->string('axles');
-            $table->string('tires');
+            $table->timestamps();
         });
     }
 
@@ -29,6 +28,6 @@ class CreateSatVehCfgsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('sat_veh_cfgs');
+        Schema::dropIfExists('roles');
     }
 }

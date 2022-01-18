@@ -68,8 +68,9 @@
                             <div class="col-md-6">
                                 <select class="form-control" id="user_type_id" name="user_type_id" type="integer">
                                     <option value="0">Select</option>
-                                    <option value="2">Transportista</option>
-                                    <option value="3">Chofer</option>
+                                    <option value="2">Usuario</option>
+                                    <option value="3">Transportista</option>
+                                    <option value="4">Chofer</option>
                                 </select>
                                 @error('user_type_id')
                                 <span class="invalid-feedback" role="alert">

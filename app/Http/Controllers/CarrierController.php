@@ -8,6 +8,9 @@ use Illuminate\Http\Request;
 use Illuminate\Database\QueryException;
 use Validator;
 use Auth;
+use App\User;
+use App\Role;
+use Illuminate\Support\Facades\Hash;
 
 class CarrierController extends Controller
 {
@@ -18,8 +21,8 @@ class CarrierController extends Controller
      */
     public function index()
     {
+        auth()->user()->authorizeRoles(['user', 'admin']);
         $data = Carrier::get();
-
         return view('ship/carriers/index', ['data' => $data]);
     }
 
@@ -30,7 +33,9 @@ class CarrierController extends Controller
      */
     public function create()
     {
-        return view('ship/carriers/create');
+        auth()->user()->authorizeRoles(['user', 'admin']);
+        $data = new Carrier;
+        return view('ship/carriers/create', ['data' => $data]);
     }
 
     /**
@@ -41,13 +46,16 @@ class CarrierController extends Controller
      */
     public function store(Request $request)
     {
-
+        auth()->user()->authorizeRoles(['user', 'admin']);
         $success = true;
         $error = "0";
 
         $validator = Validator::make($request->all(), [
+            'username' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
+            'password' => ['required', 'string', 'min:8', 'confirmed'],
             'fullname' => 'required',
-            'RFC' => 'required',
+            'RFC' => 'required'
         ]);
 
         $validator->validate();
@@ -56,9 +64,20 @@ class CarrierController extends Controller
         
         try {
             DB::transaction(function () use ($request, $user_id) {
+                $user = User::create([
+                    'username' => $request->username,
+                    'email' => $request->email,
+                    'password' => Hash::make($request->password),
+                    'full_name' => $request->fullname,
+                    'user_type_id' => 3
+                ]);
+        
+                $user->roles()->attach(Role::where('id', 3)->first());
+
                 $carrier = Carrier::create([
                     'fullname' => $request->fullname,
                     'fiscal_id' => $request->RFC,
+                    'usr_id' => $user->id,
                     'usr_new_id' => $user_id,
                     'usr_upd_id' => $user_id
                 ]);
@@ -98,8 +117,11 @@ class CarrierController extends Controller
      */
     public function edit($id)
     {
+        auth()->user()->authorizeRoles(['user', 'admin']);
         $data = Carrier::where('id_carrier', $id)->get();
-
+        $data->each(function ($data) {
+            $data->User;
+        });
         return view('ship/carriers/edit', ['data' => $data]);
     }
 
@@ -112,12 +134,15 @@ class CarrierController extends Controller
      */
     public function update(Request $request, $id)
     {
+        auth()->user()->authorizeRoles(['user', 'admin']);
         $success = true;
         $error = "0";
 
         $validator = Validator::make($request->all(), [
+            'username' => 'required',
             'fullname' => 'required',
-            'RFC' => 'required',
+            'email' => 'required',
+            'RFC' => 'required'
         ]);
 
         $validator->validate();
@@ -127,12 +152,18 @@ class CarrierController extends Controller
         try {
             DB::transaction(function () use ($request, $user_id, $id) {
                 $carrier = Carrier::findOrFail($id);
+                $user = User::findOrFail($carrier->usr_id);
 
                 $carrier->fullname = $request->fullname;
                 $carrier->fiscal_id = $request->RFC;
                 $carrier->usr_upd_id = $user_id;
 
+                $user->username = $request->username;
+                $user->full_name = $request->fullname;
+                $user->email = $request->email;
+
                 $carrier->update();
+                $user->update();
             });
         } catch (QueryException $e) {
             $success = false;
@@ -159,16 +190,21 @@ class CarrierController extends Controller
      */
     public function destroy($id)
     {
+        auth()->user()->authorizeRoles(['user', 'admin']);
         $success = true;
         $user_id = (auth()->check()) ? auth()->user()->id : null;
         try {
             DB::transaction(function () use ($id, $user_id) {
                 $carrier = Carrier::findOrFail($id);
+                $user = User::findOrFail($carrier->usr_id);
 
                 $carrier->is_deleted = 1;
                 $carrier->usr_upd_id = $user_id;
 
+                $user->is_deleted = 1;
+
                 $carrier->update();
+                $user->update();
             });
         } catch (QueryException $e) {
             $success = false;
@@ -186,17 +222,23 @@ class CarrierController extends Controller
         return redirect('carriers')->with(['mesage' => $msg, 'icon' => $icon]);
     }
 
-    public function recover($id){
+    public function recover($id) 
+    {
+        auth()->user()->authorizeRoles(['user', 'admin']);
         $success = true;
         $user_id = (auth()->check()) ? auth()->user()->id : null;
         try {
             DB::transaction(function () use ($id, $user_id) {
                 $carrier = Carrier::findOrFail($id);
+                $user = User::findOrFail($carrier->usr_id);
 
                 $carrier->is_deleted = 0;
                 $carrier->usr_upd_id = $user_id;
 
+                $user->is_deleted = 0;
+
                 $carrier->update();
+                $user->update();
             });
         } catch (QueryException $e) {
             $success = false;

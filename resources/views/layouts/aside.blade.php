@@ -57,10 +57,10 @@
                     </a>
                     <ul class="cat-sub-menu">
                         <li>
-                            <a href="{{ route('register') }}">Nuevo usuario</a>
+                            <a href="{{ route('register') }}"><span class="icon bx bxs-user-plus bx-sm" aria-hidden="true"></span>Nuevo usuario</a>
                         </li>
                         <li>
-                            <a href="new-page.html">Ver usuarios</a>
+                            <a href="{{ route('users') }}"><span class="icon bx bxs-user-detail bx-sm" aria-hidden="true"></span>Ver usuarios</a>
                         </li>
                     </ul>
                 </li>

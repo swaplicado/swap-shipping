@@ -15,7 +15,6 @@
     <link rel="apple-touch-icon" href="/docs/5.1/assets/img/favicons/apple-touch-icon.png" sizes="180x180">
     <link rel="icon" href="/docs/5.1/assets/img/favicons/favicon-32x32.png" sizes="32x32" type="image/png">
     <link rel="icon" href="/docs/5.1/assets/img/favicons/favicon-16x16.png" sizes="16x16" type="image/png">
-    <link rel="manifest" href="/docs/5.1/assets/img/favicons/manifest.json">
     <link rel="mask-icon" href="/docs/5.1/assets/img/favicons/safari-pinned-tab.svg" color="#7952b3">
     <link rel="icon" href="/docs/5.1/assets/img/favicons/favicon.ico">
     <meta name="theme-color" content="#7952b3">
@@ -54,7 +53,7 @@
     <header>
        <nav class="navbar navbar-expand-md fixed-top bg_orange d-flex flex-wrap align-items-center justify-content-center justify-content-md-between mb-4">
         <ul class="nav col-12 col-md-auto mb-2 justify-content-center mb-md-0">
-            <li><a href="#" class="nav-link px-2 link-light">Home</a></li>
+            <li><a href="{{route('home')}}" class="nav-link px-2 link-light">Home</a></li>
             <li><a href="#" class="nav-link px-2 link-light">FAQs</a></li>
             <li><a href="#" class="nav-link px-2 link-light">About</a></li>
           </ul>
@@ -82,11 +81,7 @@
             </div>
             <div class="carousel-inner">
                 <div class="carousel-item active">
-                    <svg class="bd-placeholder-img" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"
-                        aria-hidden="true" preserveAspectRatio="xMidYMid slice" focusable="false">
-                        <rect width="100%" height="100%" fill="#777" />
-                    </svg>
-
+                    <img src="{{ asset('img/slider/01.jpg') }}">
                     <div class="container">
                         <div class="carousel-caption text-start">
                             <h1>Example headline.</h1>
@@ -96,10 +91,7 @@
                     </div>
                 </div>
                 <div class="carousel-item">
-                    <svg class="bd-placeholder-img" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"
-                        aria-hidden="true" preserveAspectRatio="xMidYMid slice" focusable="false">
-                        <rect width="100%" height="100%" fill="#777" />
-                    </svg>
+                    <img src="{{ asset('img/slider/02.jpg') }}">
 
                     <div class="container">
                         <div class="carousel-caption">
@@ -110,10 +102,7 @@
                     </div>
                 </div>
                 <div class="carousel-item">
-                    <svg class="bd-placeholder-img" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"
-                        aria-hidden="true" preserveAspectRatio="xMidYMid slice" focusable="false">
-                        <rect width="100%" height="100%" fill="#777" />
-                    </svg>
+                    <img src="{{ asset('img/slider/04.jpg') }}">
 
                     <div class="container">
                         <div class="carousel-caption text-end">

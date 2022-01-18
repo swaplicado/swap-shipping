@@ -19,6 +19,7 @@ class TrailerController extends Controller
      */
     public function index()
     {
+        auth()->user()->authorizeRoles(['user', 'admin', 'carrier']);
         $data = Trailer::get();
         $data->each( function ($data) {
             $data->TrailerSubtype;
@@ -35,11 +36,12 @@ class TrailerController extends Controller
      */
     public function create()
     {
+        auth()->user()->authorizeRoles(['user', 'admin', 'carrier']);
         $data = new Trailer;
         $data->TrailerSubtype = new TrailerSubtype;
         $data->Carrier = new Carrier;
 
-        $TrailerSubtype = TrailerSubtype::pluck('id', 'key_code');
+        $TrailerSubtype = TrailerSubtype::pluck('id', 'description');
         $Carrier = Carrier::pluck('id_carrier', 'fullname');
 
         return view('ship/trailers/create', ['data' => $data, 'TrailerSubtype' => $TrailerSubtype,
@@ -54,6 +56,7 @@ class TrailerController extends Controller
      */
     public function store(Request $request)
     {
+        auth()->user()->authorizeRoles(['user', 'admin', 'carrier']);
         $success = true;
         $error = "0";
 
@@ -112,12 +115,13 @@ class TrailerController extends Controller
      */
     public function edit($id)
     {
+        auth()->user()->authorizeRoles(['user', 'admin', 'carrier']);
         $data = Trailer::where('id_trailer', $id)->get();
         $data->each(function ($data) {
             $data->TrailerSubtype;
             $data->Carrier;
         });
-        $TrailerSubtype = TrailerSubtype::pluck('id', 'key_code');
+        $TrailerSubtype = TrailerSubtype::pluck('id', 'description');
         $Carrier = Carrier::pluck('id_carrier', 'fullname');
 
         return view('ship/trailers/edit', ['data' => $data, 'TrailerSubtype' => $TrailerSubtype, 
@@ -133,6 +137,7 @@ class TrailerController extends Controller
      */
     public function update(Request $request, $id)
     {
+        auth()->user()->authorizeRoles(['user', 'admin', 'carrier']);
         $success = true;
         $error = "0";
 
@@ -181,6 +186,7 @@ class TrailerController extends Controller
      */
     public function destroy($id)
     {
+        auth()->user()->authorizeRoles(['user', 'admin', 'carrier']);
         $success = true;
         $user_id = (auth()->check()) ? auth()->user()->id : null;
         try {
@@ -208,7 +214,9 @@ class TrailerController extends Controller
         return redirect('trailers')->with(['mesage' => $msg, 'icon' => $icon]);
     }
 
-    public function recover($id){
+    public function recover($id)
+    {
+        auth()->user()->authorizeRoles(['user', 'admin', 'carrier']);
         $success = true;
         $user_id = (auth()->check()) ? auth()->user()->id : null;
         try {

@@ -17,9 +17,14 @@ class TransFigure extends Model
         'tp_figure_id', 
         'fis_address_id', 
         'carrier_id',
+        'usr_id',
         'usr_new_id',
         'usr_upd_id'
     ];
+
+    public function User(){
+        return $this->hasOne('App\User', 'id', 'usr_id');
+    }
 
     public function FAddress(){
         return $this->hasOne('App\Models\FAddress', 'trans_figure_id');

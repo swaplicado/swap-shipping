@@ -21,6 +21,7 @@ class VehicleController extends Controller
      */
     public function index()
     {
+        auth()->user()->authorizeRoles(['user', 'admin', 'carrier']);
         $data = Vehicle::get();
         $data->each(function ($data) {
             $data->LicenceSct;
@@ -38,12 +39,13 @@ class VehicleController extends Controller
      */
     public function create()
     {
+        auth()->user()->authorizeRoles(['user', 'admin', 'carrier']);
         $data = new Vehicle;
         $data->LicenceSct = new LicenceSct;
         $data->VehicleConfig = new VehicleConfig;
         $data->Carrier = new Carrier;
-        $LicenceSct = LicenceSct::pluck('id', 'key_code');
-        $VehicleConfig = VehicleConfig::pluck('id', 'key_code');
+        $LicenceSct = LicenceSct::pluck('id', 'description');
+        $VehicleConfig = VehicleConfig::pluck('id', 'description');
         $Carrier = Carrier::pluck('id_carrier', 'fullname');
 
         return view('ship/vehicles/create', ['data' => $data, 'LicenceSct' => $LicenceSct, 
@@ -58,7 +60,7 @@ class VehicleController extends Controller
      */
     public function store(Request $request)
     {
-
+        auth()->user()->authorizeRoles(['user', 'admin', 'carrier']);
         $success = true;
         $error = "0";
 
@@ -124,14 +126,15 @@ class VehicleController extends Controller
      */
     public function edit($id)
     {
+        auth()->user()->authorizeRoles(['user', 'admin', 'carrier']);
         $data = Vehicle::where('id_vehicle', $id)->get();
         $data->each(function ($data) {
             $data->LicenceSct;
             $data->VehicleConfig;
             $data->Carrier;
         });
-        $LicenceSct = LicenceSct::pluck('id', 'key_code');
-        $VehicleConfig = VehicleConfig::pluck('id', 'key_code');
+        $LicenceSct = LicenceSct::pluck('id', 'description');
+        $VehicleConfig = VehicleConfig::pluck('id', 'description');
         $Carrier = Carrier::pluck('id_carrier', 'fullname');
 
         return view('ship/vehicles/edit', ['data' => $data, 'LicenceSct' => $LicenceSct, 
@@ -147,6 +150,7 @@ class VehicleController extends Controller
      */
     public function update(Request $request, $id)
     {
+        auth()->user()->authorizeRoles(['user', 'admin', 'carrier']);
         $success = true;
         $error = "0";
 
@@ -203,6 +207,7 @@ class VehicleController extends Controller
      */
     public function destroy($id)
     {
+        auth()->user()->authorizeRoles(['user', 'admin', 'carrier']);
         $success = true;
         $user_id = (auth()->check()) ? auth()->user()->id : null;
         try {
@@ -230,7 +235,9 @@ class VehicleController extends Controller
         return redirect('vehicles')->with(['mesage' => $msg, 'icon' => $icon]);
     }
 
-    public function recover($id){
+    public function recover($id)
+    {
+        auth()->user()->authorizeRoles(['user', 'admin', 'carrier']);
         $success = true;
         $user_id = (auth()->check()) ? auth()->user()->id : null;
         try {

@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateUsersTable extends Migration
+class CreateRoleUserTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,27 +13,31 @@ class CreateUsersTable extends Migration
      */
     public function up()
     {
-        Schema::create('users', function (Blueprint $table) {
+        Schema::create('role_user', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->string('username');
-            $table->string('email')->unique();
-            $table->timestamp('email_verified_at')->nullable();
-            $table->string('password');
-            $table->string('full_name');
-            $table->bigInteger('user_type_id')->unsigned();
-            $table->rememberToken();
+            $table->unsignedInteger('role_id');
+            $table->bigInteger('user_id')->unsigned();
             $table->timestamps();
-
-            $table->foreign('user_type_id')->references('id_user_type')->on('user_types');
+            
+            $table->foreign('user_id')->references('id')->on('users');
         });
 
-        DB::table('users')->insert(
+        $id = DB::table('users')->insertGetId(
             array(
                 'username' => 'admin',
                 'email' => 'edwin.carmona@swaplicado.com.mx',
                 'password' => bcrypt('123456'),
                 'full_name' => 'Edwin Carmona',
                 'user_type_id' => 1,
+                'created_at' => date('Y-m-d H:i:s'),
+                'updated_at' => date('Y-m-d H:i:s')
+            )
+        );
+
+        DB::table('role_user')->insert(
+            array(
+                'role_id' => 1,
+                'user_id' => $id,
                 'created_at' => date('Y-m-d H:i:s'),
                 'updated_at' => date('Y-m-d H:i:s')
             )
@@ -47,6 +51,6 @@ class CreateUsersTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('users');
+        Schema::dropIfExists('role_user');
     }
 }

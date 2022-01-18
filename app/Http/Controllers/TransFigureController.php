@@ -12,6 +12,9 @@ use App\Models\FAddress;
 use Illuminate\Http\Request;
 use Illuminate\Database\QueryException;
 use Validator;
+use App\User;
+use App\Role;
+use Illuminate\Support\Facades\Hash;
 
 class TransFigureController extends Controller
 {
@@ -22,10 +25,12 @@ class TransFigureController extends Controller
      */
     public function index()
     {
+        auth()->user()->authorizeRoles(['user', 'admin', 'carrier']);
         $data = TransFigure::get();
         $data->each(function ($data) {
             $data->FAddress;
             $data->sat_FAddress;
+            $data->User;
         });
 
         return view('ship/drivers/index', ['data' => $data]);
@@ -38,6 +43,7 @@ class TransFigureController extends Controller
      */
     public function create()
     {
+        auth()->user()->authorizeRoles(['user', 'admin', 'carrier']);
         $data = new TransFigure;
         $data->FAddress = new FAddress;
         $tp_figures = TpFigure::pluck('id', 'description');
@@ -59,18 +65,22 @@ class TransFigureController extends Controller
      */
     public function store(Request $request)
     {
+        auth()->user()->authorizeRoles(['user', 'admin', 'carrier']);
         $success = true;
         $error = "0";
 
         $validator = Validator::make($request->all(), [
+            'username' => ['required', 'string', 'max:255'],
             'fullname' => 'required',
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'RFC' => 'required',
             'licence' => 'required',
             'tp_figure' => 'required|not_in:0',
             'carrier' => 'required|not_in:0',
             'country' => 'required|not_in:0',
             'zip_code' => 'required',
-            'state' => 'required|not_in:0'
+            'state' => 'required|not_in:0',
+            'password' => ['required', 'string', 'min:8', 'confirmed']
         ]);
 
         $validator->validate();
@@ -82,6 +92,16 @@ class TransFigureController extends Controller
 
         try {
             DB::transaction(function () use ($sta_id, $sta_name, $user_id, $request) {
+                $user = User::create([
+                    'username' => $request->username,
+                    'email' => $request->email,
+                    'password' => Hash::make($request->password),
+                    'full_name' => $request->fullname,
+                    'user_type_id' => 4
+                ]);
+        
+                $user->roles()->attach(Role::where('id', 4)->first());
+
                 $tf = TransFigure::create([
                     'fullname' => $request->fullname,
                     'fiscal_id' => $request->RFC,
@@ -90,6 +110,7 @@ class TransFigureController extends Controller
                     'tp_figure_id' => $request->tp_figure,
                     'fis_address_id' => $request->country,
                     'carrier_id' => $request->carrier,
+                    'usr_id' => $user->id,
                     'usr_new_id' => $user_id,
                     'usr_upd_id' => $user_id
                 ]);
@@ -114,6 +135,7 @@ class TransFigureController extends Controller
         } catch (QueryException $e) {
             $success = false;
             $error = $e->errorInfo[0];
+            dd($e);
         }
 
         if ($success) {
@@ -146,9 +168,11 @@ class TransFigureController extends Controller
      */
     public function edit($id)
     {
+        auth()->user()->authorizeRoles(['user', 'admin', 'carrier']);
         $data = TransFigure::where('id_trans_figure', $id)->get();
         $data->each(function ($data) {
             $data->FAddress;
+            $data->User;
         });
         $tp_figures = TpFigure::pluck('id', 'description');
         $carriers = Carrier::where('is_deleted', 0)->orderBy('fullname', 'ASC')->pluck('id_carrier', 'fullname');
@@ -170,8 +194,11 @@ class TransFigureController extends Controller
      */
     public function update(Request $request, $id)
     {
+        auth()->user()->authorizeRoles(['user', 'admin', 'carrier']);
         $validator = Validator::make($request->all(), [
+            'username' => ['required', 'string', 'max:255'],
             'fullname' => 'required',
+            'email' => ['required', 'string', 'email', 'max:255'],
             'RFC' => 'required',
             'licence' => 'required',
             'tp_figure' => 'required|not_in:0',
@@ -216,8 +243,15 @@ class TransFigureController extends Controller
                 $address->state_id = $sta_id;
                 $address->usr_upd_id = $user_id;
 
+                $user = User::findOrFail($tf->usr_id);
+
+                $user->username = $request->username;
+                $user->full_name = $request->fullname;
+                $user->email = $request->email;
+
                 $tf->update();
                 $address->update();
+                $user->update();
             });
         } catch (QueryException $e) {
             $success = false;
@@ -242,12 +276,14 @@ class TransFigureController extends Controller
      */
     public function destroy(Request $request, $id)
     {
+        auth()->user()->authorizeRoles(['user', 'admin', 'carrier']);
         $success = true;
         $user_id = (auth()->check()) ? auth()->user()->id : null;
         try {
             DB::transaction(function () use ($id, $user_id) {
                 $tf = TransFigure::findOrFail($id);
                 $address = FAddress::where('trans_figure_id', $id)->firstOrFail();
+                $user = User::findOrFail($tf->usr_id);
 
                 $tf->is_deleted = 1;
                 $tf->usr_upd_id = $user_id;
@@ -255,8 +291,11 @@ class TransFigureController extends Controller
                 $address->is_deleted = 1;
                 $address->usr_upd_id = $user_id;
 
+                $user->is_deleted = 1;
+
                 $tf->update();
                 $address->update();
+                $user->update();
             });
         } catch (QueryException $e) {
             $success = false;
@@ -274,13 +313,16 @@ class TransFigureController extends Controller
         return redirect('drivers')->with(['mesage' => $msg, 'icon' => $icon]);
     }
 
-    public function recover($id){
+    public function recover($id)
+    {
+        auth()->user()->authorizeRoles(['user', 'admin', 'carrier']);
         $success = true;
         $user_id = (auth()->check()) ? auth()->user()->id : null;
         try {
             DB::transaction(function () use ($id, $user_id) {
                 $tf = TransFigure::findOrFail($id);
                 $address = FAddress::where('trans_figure_id', $id)->firstOrFail();
+                $user = User::findOrFail($tf->usr_id);
 
                 $tf->is_deleted = 0;
                 $tf->usr_upd_id = $user_id;
@@ -288,8 +330,11 @@ class TransFigureController extends Controller
                 $address->is_deleted = 0;
                 $address->usr_upd_id = $user_id;
 
+                $user->is_deleted = 0;
+
                 $tf->update();
                 $address->update();
+                $user->update();
             });
         } catch (QueryException $e) {
             $success = false;
