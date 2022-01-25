@@ -72,3 +72,7 @@ Route::middleware('auth')->group( function () {
     Route::delete('/users/{id}', 'UserController@destroy')->name('eliminar_user');
     Route::put('/users/recover/{id}', 'UserController@recover')->name('recuperar_user');
 });
+
+// Rutas Documentos
+Route::resource('documents', 'DocumentController');
+Route::put('documents/restore/{id}', 'DocumentController@restore')->name('documents.restore');

@@ -17,6 +17,8 @@ class CreateSatStatesTable extends Migration
             $table->bigIncrements('id');
             $table->string('key_code');
             $table->string('state_name');
+            $table->decimal('rate', 8, 3)->default(1.000);
+            $table->decimal('distance', 8, 3)->default(1.000);
         });
     }
 

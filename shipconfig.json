@@ -1,0 +1,22 @@
+{
+    "localCurrency": "MXN",
+    "razonSocial": "Cartro",
+    "RFC": "AAA010101AAA",
+    "tarifaBase": "10000",
+    "tarifaBaseEscala": "8000",
+    "distanciaMinima": "35.00",
+    "cfdi4_0": {
+        "claveServicio": "78101802",
+        "prodServDescripcion": "Servicio de transporte de carga",
+        "claveUnidad": "E48",
+        "simboloUnidad": "Servicio",
+        "tipoComprobante": "I",
+        "rfc": "IIA040805DZ4",
+        "nombreReceptor": "EMPRESA DE PRUEBAS, S.A. DE C.V.",
+        "domicilioFiscalReceptor": "60135",
+        "regimenFiscalReceptor": "616",
+        "usoCFDI": "G03",
+        "lugarExpedicion": "58200",
+        "objetoImp": "02"
+    }
+}
