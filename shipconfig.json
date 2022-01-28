@@ -1,7 +1,5 @@
 {
     "localCurrency": "MXN",
-    "razonSocial": "Cartro",
-    "RFC": "AAA010101AAA",
     "tarifaBase": "10000",
     "tarifaBaseEscala": "8000",
     "distanciaMinima": "35.00",
@@ -11,8 +9,8 @@
         "claveUnidad": "E48",
         "simboloUnidad": "Servicio",
         "tipoComprobante": "I",
-        "rfc": "IIA040805DZ4",
-        "nombreReceptor": "EMPRESA DE PRUEBAS, S.A. DE C.V.",
+        "rfc": "CAR120903D34",
+        "nombreReceptor": "CARTRO SAPI DE CV",
         "domicilioFiscalReceptor": "60135",
         "regimenFiscalReceptor": "616",
         "usoCFDI": "G03",

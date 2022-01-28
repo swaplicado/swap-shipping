@@ -15,8 +15,8 @@ class CreateDocumentsTable extends Migration
     {
         Schema::create('f_documents', function (Blueprint $table) {
             $table->bigIncrements('id_document');
-            $table->date('dt_request');
-            $table->date('dt_generated');
+            $table->dateTime('dt_request');
+            $table->dateTime('dt_generated');
             $table->string('comp_version');
             $table->string('xml_version');
             $table->boolean('is_processed')->default(false);

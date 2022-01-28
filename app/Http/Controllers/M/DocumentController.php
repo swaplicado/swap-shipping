@@ -1,14 +1,12 @@
 <?php
 
-namespace App\Http\Controllers\api;
+namespace App\Http\Controllers\M;
 
-use App\Models\DocumentRequest;
-use App\Models\Carrier;
+use App\Models\M\MDocumentRequest;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\SXml\XmlGeneration;
 
-class DocumentRequestController extends Controller
+class DocumentController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -38,36 +36,13 @@ class DocumentRequestController extends Controller
      */
     public function store(Request $request)
     {
-        $oObjData = (object) $request->info;
-
-        $oCarrier = Carrier::where('fiscal_id', $oObjData->rfcTransportista)
-                            ->where('is_deleted', false)
-                            ->first();
-
-        $oRequest = new DocumentRequest();
-
-        $oRequest->dt_request = date('Y-m-d H:i:s');
-        $oRequest->comp_version = $oObjData->versionComplemento;
-        $oRequest->xml_version = $oObjData->versionCfdi;
-        $oRequest->body_request_id = "";
-        $oRequest->is_processed = false;
-        $oRequest->is_deleted = false;
-        $oRequest->carrier_id = $oCarrier->id_carrier;
-        $oRequest->usr_new_id = 1;
-        $oRequest->usr_upd_id = 1;
-
-        $oRequest->save();
-
-        XmlGeneration::generateCarta();
-        $originalString = XmlGeneration::createOriginalString();
-
-        return json_encode($originalString);
+        //
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  \App\DocumentRequest  $documentRequest
+     * @param  \App\Models\M\DocumentRequest  $documentRequest
      * @return \Illuminate\Http\Response
      */
     public function show(DocumentRequest $documentRequest)
@@ -78,7 +53,7 @@ class DocumentRequestController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\DocumentRequest  $documentRequest
+     * @param  \App\Models\M\DocumentRequest  $documentRequest
      * @return \Illuminate\Http\Response
      */
     public function edit(DocumentRequest $documentRequest)
@@ -90,10 +65,10 @@ class DocumentRequestController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\DocumentRequest  $documentRequest
+     * @param  \App\Models\M\DocumentRequest  $documentRequest
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request)
+    public function update(Request $request, DocumentRequest $documentRequest)
     {
         //
     }
@@ -101,7 +76,7 @@ class DocumentRequestController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\DocumentRequest  $documentRequest
+     * @param  \App\Models\M\DocumentRequest  $documentRequest
      * @return \Illuminate\Http\Response
      */
     public function destroy(DocumentRequest $documentRequest)
