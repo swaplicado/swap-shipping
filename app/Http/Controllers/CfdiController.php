@@ -832,9 +832,9 @@ class CfdiController extends Controller
                 <table style="width: 100%;">
                     <tbody>
                         <tr>
-                            <th colspan="4" class="th1" style="border-right: 0.03cm solid">Atotransporte federal:</th>
-                            <th colspan="3" class="th1" style="border-right: 0.03cm solid">Identificación vehicular:</th>
-                            <th colspan="2" class="th1">Remolque</th>
+                            <th colspan="4" class="th1 border" style="border-right: 0.03cm solid">Autotransporte federal:</th>
+                            <th colspan="3" class="th1 border" style="border-right: 0.03cm solid">Identificación vehicular:</th>
+                            <th colspan="2" class="th1 border">Remolque</th>
                         </tr>
                         <tr>
                             <td class="th2">Permiso SCT</td>
