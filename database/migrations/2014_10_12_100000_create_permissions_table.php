@@ -17,6 +17,7 @@ class CreatePermissionsTable extends Migration
             $table->bigIncrements('id');
             $table->string('key_code');
             $table->string('description');
+            $table->boolean('is_deleted')->default(0);
             $table->timestamps();
         });
     }

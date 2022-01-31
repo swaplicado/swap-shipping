@@ -23,7 +23,6 @@ class CreateFTransFiguresTable extends Migration
             $table->bigInteger('tp_figure_id')->unsigned();
             $table->bigInteger('fis_address_id')->unsigned();
             $table->bigInteger('carrier_id')->unsigned();
-            $table->bigInteger('usr_id')->unsigned();
             $table->bigInteger('usr_new_id')->unsigned();
             $table->bigInteger('usr_upd_id')->unsigned();
             $table->timestamps();
@@ -31,7 +30,6 @@ class CreateFTransFiguresTable extends Migration
             $table->foreign('tp_figure_id')->references('id')->on('sat_figure_types');
             $table->foreign('fis_address_id')->references('id')->on('sat_fiscal_addresses');
             $table->foreign('carrier_id')->references('id_carrier')->on('f_carriers');
-            $table->foreign('usr_id')->references('id')->on('users');
             $table->foreign('usr_new_id')->references('id')->on('users');
             $table->foreign('usr_upd_id')->references('id')->on('users');
         });

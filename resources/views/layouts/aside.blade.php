@@ -44,7 +44,7 @@
                 </li>
                 <li>
                     <a href="{{ route('drivers') }}">
-                        <span class="icon bx bxs-id-card bx-sm" aria-hidden="true"></span>Choferes
+                        <span class="icon bx bxs-id-card bx-sm" aria-hidden="true"></span>Figuras de transporte
                     </a>
                 </li>
                 <li>
@@ -61,6 +61,9 @@
                         </li>
                         <li>
                             <a href="{{ route('users') }}"><span class="icon bx bxs-user-detail bx-sm" aria-hidden="true"></span>Ver usuarios</a>
+                        </li>
+                        <li>
+                            <a href="{{ route('role') }}"><span class="icon bx bxs-user-badge bx-sm" aria-hidden="true"></span>Roles de usuarios</a>
                         </li>
                     </ul>
                 </li>

@@ -23,7 +23,8 @@ class HomeController extends Controller
      */
     public function index()
     {   
-        auth()->user()->authorizeRoles(['user', 'admin', 'carrier', 'driver']);
+        // auth()->user()->authorizeRoles(['admin','driver', 'user']);
+        // auth()->user()->authorizePermission(['A2', 'A3']);
         return view('home');
     }
 }

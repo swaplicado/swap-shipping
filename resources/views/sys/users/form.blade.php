@@ -20,20 +20,27 @@
     @enderror
 </div>
 <div class="form-group">
-    <label for="user_type_id" class="form-label">Tipo de usuario</label>
-    <select class="form-select" name="user_type_id">
-        <option value="0" selected>Select subtipo</option>
-        @foreach($userType as $usrt => $index)
-            @if($data->user_type_id == $index)
-                <option selected value='{{$index}}'>{{$usrt}}</option>
-            @else
-                <option value='{{$index}}'>{{$usrt}}</option>
-            @endif
+    <label for="roles" class="form-label">Roles</label>
+    <button id="btn_add_role" type="button" class="btn btn-primary btn-sm">
+        <span class="icon bx bx-plus"></span>
+    </button>
+    <select id="role_select" class="form-select" name="roles" style="display: none" multiple aria-label="multiple select example">
+        @foreach($roles as $r)
+            <option value='{"id":"{{$r->id}}","name":"{{$r->name}}","description":"{{$r->description}}"}'>{{$r->name}}: {{$r->description}}</option>
         @endforeach
     </select>
-    @error('user_type_id')
-        <span class="text-danger">{{$message}}</span>
-    @enderror
+    <table class="table">
+        <tbody id="tabla_roles">
+            @foreach ($data->getRoles as $rol)
+                <tr>
+                    <td><input class = "input_role" type="checkbox" checked="true" value="{{$rol->id}}"></td>
+                    <td>{{$rol->name}}</td>
+                    <td>{{$rol->description}}</td>
+                </tr>
+            @endforeach
+        </tbody>
+    </table>
+    <input id = "checkboxes" name = "checkboxes" type="hidden" >
 </div>
 <br>
-<button type="submit" class="btn btn-primary">Guardar</button>
+<button id="submit" class="btn btn-primary">Guardar</button>

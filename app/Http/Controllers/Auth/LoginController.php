@@ -50,7 +50,7 @@ class LoginController extends Controller
     {
         $request->validate([
             'email' => 'required', 
-            'password' => 'required|min:6|max:18'
+            'password' => 'required'
         ]);
 
         if (method_exists($this, 'hasTooManyLoginAttempts') &&

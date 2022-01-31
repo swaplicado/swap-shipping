@@ -7,6 +7,9 @@ use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use App\User;
 use App\Role;
+use App\RoleUser;
+use App\Models\Carrier;
+use App\Models\TpFigure;
 use Validator;
 
 class UserController extends Controller
@@ -18,8 +21,11 @@ class UserController extends Controller
      */
     public function index()
     {
-        auth()->user()->authorizeRoles(['admin']);
+        // auth()->user()->authorizeRoles(['admin']);
         $data = User::get();
+        $data->each(function ($data) {
+            $data->getRoles;
+        });
         return view('sys/users/index', ['data' => $data]);
     }
 
@@ -63,11 +69,15 @@ class UserController extends Controller
      */
     public function edit($id)
     {
-        auth()->user()->authorizeRoles(['admin']);
+        // auth()->user()->authorizeRoles(['admin']);
         $data = User::where('id', $id)->get();
-        $userType = Role::pluck('id', 'description');
+        $data->each(function ($data) {
+            $data->getRoles;
+        });
 
-        return view('sys/users/edit', ['data' => $data, 'userType' => $userType]);
+        $roles = Role::where('is_deleted', '!=', 1)->get();
+
+        return view('sys/users/edit', ['data' => $data, 'roles' => $roles]);
     }
 
     /**
@@ -79,31 +89,56 @@ class UserController extends Controller
      */
     public function update(Request $request, $id)
     {
-        auth()->user()->authorizeRoles(['admin']);
+        // auth()->user()->authorizeRoles(['admin']);
         $success = true;
         $error = "0";
-
+        
         $validator = Validator::make($request->all(), [
             'username' => 'required',
             'full_name' => 'required',
-            'email' => 'required',
-            'user_type_id' => 'required'
+            'email' => 'required'
         ]);
 
         $validator->validate();
         
         $user_id = (auth()->check()) ? auth()->user()->id : null;
 
+        $jsonObj = json_decode($request->checkboxes);
+
         try {
-            DB::transaction(function () use ($request, $user_id, $id) {
+            DB::transaction(function () use ($request, $user_id, $id, $jsonObj) {
                 $User = User::findOrFail($id);
 
                 $User->username = $request->username;
                 $User->full_name = $request->full_name;
                 $User->email = $request->email;
-                $User->user_type_id = $request->user_type_id;
+                // $User->user_type_id = $request->user_type_id;
+
+                foreach($jsonObj as $json){
+                    foreach($json as $j){
+                        $RoleUser = RoleUser::where([['user_id', '=', $id],
+                            ['role_id', '=', $j->role]])->first();
+                        if($RoleUser != null){
+                            if(!$j->checked){
+                                $RoleUser->is_deleted = 1;
+                                $RoleUser->update();
+                            }else{
+                                $RoleUser->is_deleted = 0;
+                                $RoleUser->update();
+                            }
+                        }else{
+                            if($j->checked){
+                                RoleUser::create([
+                                    'role_id' => $j->role,
+                                    'user_id' => $id
+                                ]);
+                            }
+                        }
+                    }
+                }
 
                 $User->update();
+                
             });
         } catch (QueryException $e) {
             $success = false;
@@ -129,14 +164,19 @@ class UserController extends Controller
      */
     public function destroy($id)
     {
-        auth()->user()->authorizeRoles(['admin']);
+        // auth()->user()->authorizeRoles(['admin']);
         $success = true;
         $user_id = (auth()->check()) ? auth()->user()->id : null;
         try {
             DB::transaction(function () use ($id, $user_id) {
                 $User = User::findOrFail($id);
-
                 $User->is_deleted = 1;
+
+                $RoleUser = RoleUser::where('user_id', $id)->get();
+                foreach($RoleUser as $ru){
+                    $ru->is_deleted = 1;
+                    $ru->update();
+                }
 
                 $User->update();
             });
@@ -158,14 +198,19 @@ class UserController extends Controller
 
     public function recover($id)
     {
-        auth()->user()->authorizeRoles(['admin']);
+        // auth()->user()->authorizeRoles(['admin']);
         $success = true;
         $user_id = (auth()->check()) ? auth()->user()->id : null;
         try {
             DB::transaction(function () use ($id, $user_id) {
                 $User = User::findOrFail($id);
-
                 $User->is_deleted = 0;
+
+                $RoleUser = RoleUser::where('user_id', $id)->get();
+                foreach($RoleUser as $ru){
+                    $ru->is_deleted = 0;
+                    $ru->update();
+                }
 
                 $User->update();
             });

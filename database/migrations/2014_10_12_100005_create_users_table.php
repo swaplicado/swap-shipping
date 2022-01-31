@@ -20,8 +20,8 @@ class CreateUsersTable extends Migration
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->string('full_name');
-            $table->bigInteger('user_type_id')->unsigned();
             $table->boolean('is_deleted')->default(0);
+            $table->bigInteger('user_type_id')->unsigned();
             $table->rememberToken();
             $table->timestamps();
 

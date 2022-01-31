@@ -28,21 +28,20 @@
         })
     </script>
 @endif
-<h2>Usuarios</h2>
+<h2>Roles de usuarios</h2>
 <br>
 
-@include('layouts.table_buttons', ['crear' => 'register'])
+@include('layouts.table_buttons', ['crear' => 'crear_role'])
 
 <div class="container table-responsive">
-    <table id="T_users" class="display" style="width:100%;">
+    <table id="T_role" class="display" style="width:100%;">
         <thead>
             <tr>
                 <th>id</th>
                 <th>is deleted</th>
-                <th>Usuario</th>
-                <th>Nombre completo</th>
-                <th>E-mail</th>
-                <th>Roles</th>
+                <th>Rol</th>
+                <th>Descripción</th>
+                <th>Permisos asociados</th>
             </tr>
         </thead>
         <tbody>
@@ -50,16 +49,18 @@
             <tr>
                 <td>{{$d->id}}</td>
                 <td>{{$d->is_deleted}}</td>
-                <td>{{$d->username}}</td>
-                <td>{{$d->full_name}}</td>
-                <td>{{$d->email}}</td>
+                <td>{{$d->name}}</td>
+                <td>{{$d->description}}</td>
                 <td>
                     <table>
                         <tbody>
-                            @foreach ($d->getRoles as $rol)
-                                <tr>
-                                    <td>{{$rol->name}}</td>
-                                </tr>
+                            @foreach ($d->RolePermissions as $rp)
+                                @foreach ($rp->Permission()->get() as $p)
+                                    <tr>
+                                        <td>{{$p->key_code}}</td>                                         
+                                        <td>{{$p->description}}</td>                                         
+                                    </tr>                                         
+                                @endforeach
                             @endforeach
                         </tbody>
                     </table>
@@ -72,6 +73,6 @@
 @endsection
 
 @section('scripts')
-    @include('layouts.table_Jscontroll', ['table_id' => 'T_users', 'editar' => 'editar_user', 
-        'eliminar' => 'eliminar_user', 'recuperar' => 'recuperar_user'] )
+    @include('layouts.table_Jscontroll', ['table_id' => 'T_role', 'editar' => 'editar_role', 
+        'eliminar' => 'eliminar_role', 'recuperar' => 'recuperar_role'] )
 @endsection
