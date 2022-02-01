@@ -71,8 +71,21 @@ Route::middleware('auth')->group( function () {
     Route::put('/users/{id}', 'UserController@update')->name('actualizar_user');
     Route::delete('/users/{id}', 'UserController@destroy')->name('eliminar_user');
     Route::put('/users/recover/{id}', 'UserController@recover')->name('recuperar_user');
+
+    //Rutas Roles de usuario
+    Route::get('/role', 'RoleUserController@index')->name('role');
+    Route::get('/role/create', 'RoleUserController@create')->name('crear_role');
+    Route::post('/role', 'RoleUserController@store')->name('guardar_role');
+    Route::get('/role/{id}/edit', 'RoleUserController@edit')->name('editar_role');
+    Route::put('/role/{id}', 'RoleUserController@update')->name('actualizar_role');
+    Route::delete('/role/{id}', 'RoleUserController@destroy')->name('eliminar_role');
+    Route::put('/role/recover/{id}', 'RoleUserController@recover')->name('recuperar_role');
+
+    //Rutas cfdi
+    Route::get('/cfdiToPdf', 'CfdiController@index')->name('cfdiToPdf');
 });
 
 // Rutas Documentos
 Route::resource('documents', 'DocumentController');
 Route::put('documents/restore/{id}', 'DocumentController@restore')->name('documents.restore');
+
