@@ -10,6 +10,7 @@ use Validator;
 use Auth;
 use App\User;
 use App\Role;
+use App\UserPivot;
 use Illuminate\Support\Facades\Hash;
 
 class CarrierController extends Controller
@@ -21,7 +22,8 @@ class CarrierController extends Controller
      */
     public function index()
     {
-        auth()->user()->authorizeRoles(['user', 'admin']);
+        // auth()->user()->authorizeRoles(['user', 'admin']);
+        // auth()->user()->authorizePermission(['A1','A2','A3']);
         $data = Carrier::get();
         return view('ship/carriers/index', ['data' => $data]);
     }
@@ -33,7 +35,7 @@ class CarrierController extends Controller
      */
     public function create()
     {
-        auth()->user()->authorizeRoles(['user', 'admin']);
+        // auth()->user()->authorizeRoles(['user', 'admin']);
         $data = new Carrier;
         return view('ship/carriers/create', ['data' => $data]);
     }
@@ -46,7 +48,7 @@ class CarrierController extends Controller
      */
     public function store(Request $request)
     {
-        auth()->user()->authorizeRoles(['user', 'admin']);
+        // auth()->user()->authorizeRoles(['user', 'admin']);
         $success = true;
         $error = "0";
 
@@ -69,7 +71,8 @@ class CarrierController extends Controller
                     'email' => $request->email,
                     'password' => Hash::make($request->password),
                     'full_name' => $request->fullname,
-                    'user_type_id' => 3
+                    'user_type_id' => 3,
+                    'is_carrier' => 1
                 ]);
         
                 $user->roles()->attach(Role::where('id', 3)->first());
@@ -77,10 +80,15 @@ class CarrierController extends Controller
                 $carrier = Carrier::create([
                     'fullname' => $request->fullname,
                     'fiscal_id' => $request->RFC,
-                    'usr_id' => $user->id,
                     'usr_new_id' => $user_id,
                     'usr_upd_id' => $user_id
                 ]);
+                
+                $UserPivot = UserPivot::create([
+                    'carrier_id' => $carrier->id_carrier,
+                    'user_id' => $user->id
+                ]);
+
             });
         } catch (QueryException $e) {
             $success = false;
@@ -117,7 +125,7 @@ class CarrierController extends Controller
      */
     public function edit($id)
     {
-        auth()->user()->authorizeRoles(['user', 'admin']);
+        // auth()->user()->authorizeRoles(['user', 'admin']);
         $data = Carrier::where('id_carrier', $id)->get();
         $data->each(function ($data) {
             $data->User;
@@ -134,7 +142,7 @@ class CarrierController extends Controller
      */
     public function update(Request $request, $id)
     {
-        auth()->user()->authorizeRoles(['user', 'admin']);
+        // auth()->user()->authorizeRoles(['user', 'admin']);
         $success = true;
         $error = "0";
 
@@ -190,7 +198,7 @@ class CarrierController extends Controller
      */
     public function destroy($id)
     {
-        auth()->user()->authorizeRoles(['user', 'admin']);
+        // auth()->user()->authorizeRoles(['user', 'admin']);
         $success = true;
         $user_id = (auth()->check()) ? auth()->user()->id : null;
         try {
@@ -203,8 +211,12 @@ class CarrierController extends Controller
 
                 $user->is_deleted = 1;
 
+                $userPivot = UserPivot::where('carrier_id', $carrier->id_carrier)->firstOrFail();
+                $userPivot->is_deleted = 1;
+
                 $carrier->update();
                 $user->update();
+                $userPivot->update();
             });
         } catch (QueryException $e) {
             $success = false;
@@ -224,7 +236,7 @@ class CarrierController extends Controller
 
     public function recover($id) 
     {
-        auth()->user()->authorizeRoles(['user', 'admin']);
+        // auth()->user()->authorizeRoles(['user', 'admin']);
         $success = true;
         $user_id = (auth()->check()) ? auth()->user()->id : null;
         try {
@@ -237,8 +249,12 @@ class CarrierController extends Controller
 
                 $user->is_deleted = 0;
 
+                $userPivot = UserPivot::where('carrier_id', $carrier->id_carrier)->firstOrFail();
+                $userPivot->is_deleted = 0;
+
                 $carrier->update();
                 $user->update();
+                $userPivot->update();
             });
         } catch (QueryException $e) {
             $success = false;

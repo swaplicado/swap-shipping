@@ -14,6 +14,8 @@ use Illuminate\Database\QueryException;
 use Validator;
 use App\User;
 use App\Role;
+use App\UserPivot;
+use Auth;
 use Illuminate\Support\Facades\Hash;
 
 class TransFigureController extends Controller
@@ -25,7 +27,7 @@ class TransFigureController extends Controller
      */
     public function index()
     {
-        auth()->user()->authorizeRoles(['user', 'admin', 'carrier']);
+        // auth()->user()->authorizeRoles(['admin']);
         $data = TransFigure::get();
         $data->each(function ($data) {
             $data->FAddress;
@@ -43,7 +45,7 @@ class TransFigureController extends Controller
      */
     public function create()
     {
-        auth()->user()->authorizeRoles(['user', 'admin', 'carrier']);
+        // auth()->user()->authorizeRoles(['user', 'admin', 'carrier']);
         $data = new TransFigure;
         $data->FAddress = new FAddress;
         $tp_figures = TpFigure::pluck('id', 'description');
@@ -65,7 +67,7 @@ class TransFigureController extends Controller
      */
     public function store(Request $request)
     {
-        auth()->user()->authorizeRoles(['user', 'admin', 'carrier']);
+        // auth()->user()->authorizeRoles(['user', 'admin', 'carrier']);
         $success = true;
         $error = "0";
 
@@ -97,7 +99,8 @@ class TransFigureController extends Controller
                     'email' => $request->email,
                     'password' => Hash::make($request->password),
                     'full_name' => $request->fullname,
-                    'user_type_id' => 4
+                    'user_type_id' => 4,
+                    'is_driver' => 1
                 ]);
         
                 $user->roles()->attach(Role::where('id', 4)->first());
@@ -110,7 +113,6 @@ class TransFigureController extends Controller
                     'tp_figure_id' => $request->tp_figure,
                     'fis_address_id' => $request->country,
                     'carrier_id' => $request->carrier,
-                    'usr_id' => $user->id,
                     'usr_new_id' => $user_id,
                     'usr_upd_id' => $user_id
                 ]);
@@ -131,11 +133,15 @@ class TransFigureController extends Controller
                     'usr_new_id' => $user_id,
                     'usr_upd_id' => $user_id
                 ]);
+
+                $UserPivot = UserPivot::create([
+                    'trans_figure_id' => $tf->id_trans_figure,
+                    'user_id' => $User->id
+                ]);
             });
         } catch (QueryException $e) {
             $success = false;
             $error = $e->errorInfo[0];
-            dd($e);
         }
 
         if ($success) {
@@ -168,7 +174,7 @@ class TransFigureController extends Controller
      */
     public function edit($id)
     {
-        auth()->user()->authorizeRoles(['user', 'admin', 'carrier']);
+        // auth()->user()->authorizeRoles(['user', 'admin', 'carrier']);
         $data = TransFigure::where('id_trans_figure', $id)->get();
         $data->each(function ($data) {
             $data->FAddress;
@@ -194,7 +200,7 @@ class TransFigureController extends Controller
      */
     public function update(Request $request, $id)
     {
-        auth()->user()->authorizeRoles(['user', 'admin', 'carrier']);
+        // auth()->user()->authorizeRoles(['user', 'admin', 'carrier']);
         $validator = Validator::make($request->all(), [
             'username' => ['required', 'string', 'max:255'],
             'fullname' => 'required',
@@ -276,7 +282,7 @@ class TransFigureController extends Controller
      */
     public function destroy(Request $request, $id)
     {
-        auth()->user()->authorizeRoles(['user', 'admin', 'carrier']);
+        // auth()->user()->authorizeRoles(['user', 'admin', 'carrier']);
         $success = true;
         $user_id = (auth()->check()) ? auth()->user()->id : null;
         try {
@@ -293,9 +299,13 @@ class TransFigureController extends Controller
 
                 $user->is_deleted = 1;
 
+                $userPivot = UserPivot::where('trans_figure_id', $tf->id_trans_figure)->firstOrFail();
+                $userPivot->is_deleted = 1;
+
                 $tf->update();
                 $address->update();
                 $user->update();
+                $userPivot->update();
             });
         } catch (QueryException $e) {
             $success = false;
@@ -315,7 +325,7 @@ class TransFigureController extends Controller
 
     public function recover($id)
     {
-        auth()->user()->authorizeRoles(['user', 'admin', 'carrier']);
+        // auth()->user()->authorizeRoles(['user', 'admin', 'carrier']);
         $success = true;
         $user_id = (auth()->check()) ? auth()->user()->id : null;
         try {
@@ -332,9 +342,13 @@ class TransFigureController extends Controller
 
                 $user->is_deleted = 0;
 
+                $userPivot = UserPivot::where('trans_figure_id', $tf->id_trans_figure)->firstOrFail();
+                $userPivot->is_deleted = 1;
+
                 $tf->update();
                 $address->update();
                 $user->update();
+                $userPivot->update();
             });
         } catch (QueryException $e) {
             $success = false;

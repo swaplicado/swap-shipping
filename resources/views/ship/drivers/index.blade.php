@@ -28,7 +28,7 @@
         })
     </script>
 @endif
-<h2>Choferes</h2>
+<h2>Figuras de transporte</h2>
 <br>
 
 @include('layouts.table_buttons', ['crear' => 'crear_driver'])

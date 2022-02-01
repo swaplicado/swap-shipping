@@ -17,6 +17,7 @@ class CreateUserTypesTable extends Migration
             $table->bigIncrements('id_user_type');
             $table->string('code_user_type');
             $table->string('user_type');
+            $table->boolean('is_deleted')->default(0);
         });
 
         DB::table('user_types')->insert(

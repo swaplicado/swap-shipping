@@ -3,11 +3,13 @@
 namespace App;
 
 use App\Role;
+use App\RoleUser;
 use App\RolePermission;
 use Laravel\Passport\HasApiTokens;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Contracts\Auth\CanResetPassword;
 
 class User extends Authenticatable
 {
@@ -43,11 +45,15 @@ class User extends Authenticatable
     ];
 
     public function roles() {
-        return $this->belongsToMany(Role::class)->withTimestamps();
+        return $this->belongsToMany(Role::class);
     }
 
     public function getRol() {
         return $this->roles()->get();
+    }
+
+    public function getRoles() {
+        return $this->belongsToMany(Role::class)->wherePivot('is_deleted', 0);
     }
 
     public function authorizeRoles($roles) {
@@ -69,9 +75,9 @@ class User extends Authenticatable
         }
         return false;
     }
-
+    
     public function hasRole($role) {
-        if ($this->roles()->where('name', $role)->first()) {
+        if ($this->getRoles()->where('name', $role)->first()) {
             return true;
         }
         return false;
@@ -98,7 +104,7 @@ class User extends Authenticatable
     }
 
     public function hasPermission($permission) {
-        $roles = $this->getRol();
+        $roles = $this->getRoles()->get();
         foreach($roles as $role){
             $rolePermissions = $role->RolePermissions()->get();
             foreach($rolePermissions as $rolePermission){
@@ -108,6 +114,6 @@ class User extends Authenticatable
                 }
             }
         }
-        return false;
     }
+
 }

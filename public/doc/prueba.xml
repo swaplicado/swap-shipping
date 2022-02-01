@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cfdi:Comprobante xmlns:cfdi="http://www.sat.gob.mx/cfd/3" xmlns:cartaporte20="http://www.sat.gob.mx/CartaPorte20" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" Certificado="MIIFuzCCA6OgAwIBAgIUMzAwMDEwMDAwMDA0MDAwMDI0MzQwDQYJKoZIhvcNAQELBQAwggErMQ8wDQYDVQQDDAZBQyBVQVQxLjAsBgNVBAoMJVNFUlZJQ0lPIERFIEFETUlOSVNUUkFDSU9OIFRSSUJVVEFSSUExGjAYBgNVBAsMEVNBVC1JRVMgQXV0aG9yaXR5MSgwJgYJKoZIhvcNAQkBFhlvc2Nhci5tYXJ0aW5lekBzYXQuZ29iLm14MR0wGwYDVQQJDBQzcmEgY2VycmFkYSBkZSBjYWRpejEOMAwGA1UEEQwFMDYzNzAxCzAJBgNVBAYTAk1YMRkwFwYDVQQIDBBDSVVEQUQgREUgTUVYSUNPMREwDwYDVQQHDAhDT1lPQUNBTjERMA8GA1UELRMIMi41LjQuNDUxJTAjBgkqhkiG9w0BCQITFnJlc3BvbnNhYmxlOiBBQ0RNQS1TQVQwHhcNMTkwNjE3MTk0NDE0WhcNMjMwNjE3MTk0NDE0WjCB4jEnMCUGA1UEAxMeRVNDVUVMQSBLRU1QRVIgVVJHQVRFIFNBIERFIENWMScwJQYDVQQpEx5FU0NVRUxBIEtFTVBFUiBVUkdBVEUgU0EgREUgQ1YxJzAlBgNVBAoTHkVTQ1VFTEEgS0VNUEVSIFVSR0FURSBTQSBERSBDVjElMCMGA1UELRMcRUtVOTAwMzE3M0M5IC8gWElRQjg5MTExNlFFNDEeMBwGA1UEBRMVIC8gWElRQjg5MTExNk1HUk1aUjA1MR4wHAYDVQQLExVFc2N1ZWxhIEtlbXBlciBVcmdhdGUwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQCN0peKpgfOL75iYRv1fqq+oVYsLPVUR/GibYmGKc9InHFy5lYF6OTYjnIIvmkOdRobbGlCUxORX/tLsl8Ya9gm6Yo7hHnODRBIDup3GISFzB/96R9K/MzYQOcscMIoBDARaycnLvy7FlMvO7/rlVnsSARxZRO8Kz8Zkksj2zpeYpjZIya/369+oGqQk1cTRkHo59JvJ4Tfbk/3iIyf4H/Ini9nBe9cYWo0MnKob7DDt/vsdi5tA8mMtA953LapNyCZIDCRQQlUGNgDqY9/8F5mUvVgkcczsIgGdvf9vMQPSf3jjCiKj7j6ucxl1+FwJWmbvgNmiaUR/0q4m2rm78lFAgMBAAGjHTAbMAwGA1UdEwEB/wQCMAAwCwYDVR0PBAQDAgbAMA0GCSqGSIb3DQEBCwUAA4ICAQBcpj1TjT4jiinIujIdAlFzE6kRwYJCnDG08zSp4kSnShjxADGEXH2chehKMV0FY7c4njA5eDGdA/G2OCTPvF5rpeCZP5Dw504RZkYDl2suRz+wa1sNBVpbnBJEK0fQcN3IftBwsgNFdFhUtCyw3lus1SSJbPxjLHS6FcZZ51YSeIfcNXOAuTqdimusaXq15GrSrCOkM6n2jfj2sMJYM2HXaXJ6rGTEgYmhYdwxWtil6RfZB+fGQ/H9I9WLnl4KTZUS6C9+NLHh4FPDhSk19fpS2S/56aqgFoGAkXAYt9Fy5ECaPcULIfJ1DEbsXKyRdCv3JY89+0MNkOdaDnsemS2o5Gl08zI4iYtt3L40gAZ60NPh31kVLnYNsmvfNxYyKp+AeJtDHyW9w7ftM0Hoi+BuRmcAQSKFV3pk8j51la+jrRBrAUv8blbRcQ5BiZUwJzHFEKIwTsRGoRyEx96sNnB03n6GTwjIGz92SmLdNl95r9rkvp+2m4S6q1lPuXaFg7DGBrXWC8iyqeWE2iobdwIIuXPTMVqQb12m1dAkJVRO5NdHnP/MpqOvOgLqoZBNHGyBg4Gqm4sCJHCxA1c8Elfa2RQTCk0tAzllL4vOnI1GHkGJn65xokGsaU4B4D36xh7eWrfj4/pgWHmtoDAYa8wzSwo2GVCZOs+mtEgOQB91/g==" Fecha="2021-11-23T15:03:16" Folio="2205" FormaPago="99" LugarExpedicion="45010" MetodoPago="PPD" Moneda="MXN" NoCertificado="30001000000400002434" Sello="RPz4LMlktN78DEnxsdMn5KefUNAPHj3FayX8nPhHWUU92f88n9pmNp+C+0GKFKrQNSAsbAxcQofXFGMYQHloITe9TCwkoyge6CAG8oJVni41mZZpfxluH58a84DrPa8Pa3IfthWJpi/0WSE0HX9uAqthIjoJLgiFGLzOrMF2oybOp4N+d6neWra7h7sNLzbO/fD4IQOaTshyHOqZ/xwo3k4sKaxb1j2VKxHr+bJvxyr+ALh2lim7qEVn/BnbYPMs89a7bfpTdgBcqULBa3djyDn3PMz8726UAmvrj2DpHVbvWGKp4Yk/juadru97LemUeM2yJZqWfIzdkHtbMwA28Q==" Serie="A" SubTotal="15000.00" TipoDeComprobante="I" Total="16800.00" Version="3.3" xsi:schemaLocation="http://www.sat.gob.mx/cfd/3 http://www.sat.gob.mx/sitio_internet/cfd/3/cfdv33.xsd http://www.sat.gob.mx/CartaPorte20 http://www.sat.gob.mx/sitio_internet/cfd/CartaPorte/CartaPorte20.xsd">
+    <cfdi:Emisor Nombre="FORMAS DIGITALES, S.A. DE C.V." RegimenFiscal="601" Rfc="EKU9003173C9"/>
+    <cfdi:Receptor Nombre="EMPRESA DE PRUEBAS, S.A. DE C.V." Rfc="IIA040805DZ4" UsoCFDI="G03"/>
+    <cfdi:Conceptos>
+        <cfdi:Concepto Cantidad="30.00" ClaveProdServ="78101802" ClaveUnidad="E48" Descripcion="Servicios Transporte de Carga por Carretera (en Camión) a Nivel Regional y Nacional" Importe="15000.00" NoIdentificacion="T-01-N" Unidad="Unidad de servicio" ValorUnitario="500.00">
+            <cfdi:Impuestos>
+                <cfdi:Traslados>
+                    <cfdi:Traslado Base="15000.00" Importe="2400.00" Impuesto="002" TasaOCuota="0.160000" TipoFactor="Tasa"/>
+                </cfdi:Traslados>
+                <cfdi:Retenciones>
+                    <cfdi:Retencion Base="15000.00" Importe="600.00" Impuesto="002" TasaOCuota="0.040000" TipoFactor="Tasa"/>
+                </cfdi:Retenciones>
+            </cfdi:Impuestos>
+        </cfdi:Concepto>
+    </cfdi:Conceptos>
+    <cfdi:Impuestos TotalImpuestosRetenidos="600.00" TotalImpuestosTrasladados="2400.00">
+        <cfdi:Retenciones>
+            <cfdi:Retencion Importe="600.00" Impuesto="002"/>
+        </cfdi:Retenciones>
+        <cfdi:Traslados>
+            <cfdi:Traslado Importe="2400.00" Impuesto="002" TasaOCuota="0.160000" TipoFactor="Tasa"/>
+        </cfdi:Traslados>
+    </cfdi:Impuestos>
+    <cfdi:Complemento>
+        <cartaporte20:CartaPorte TotalDistRec="150.00" TranspInternac="No" Version="2.0">
+            <cartaporte20:Ubicaciones>
+                <cartaporte20:Ubicacion FechaHoraSalidaLlegada="2021-11-03T15:03:23" RFCRemitenteDestinatario="XIA190128J61" TipoUbicacion="Origen">
+                    <cartaporte20:Domicilio Calle="Hortencia" CodigoPostal="45067" Colonia="0640" Estado="JAL" Localidad="10" Municipio="120" NumeroExterior="420" Pais="MEX"/>
+                </cartaporte20:Ubicacion>
+                <cartaporte20:Ubicacion DistanciaRecorrida="150.00" FechaHoraSalidaLlegada="2021-11-03T15:03:23" RFCRemitenteDestinatario="KIJ0906199R1" TipoUbicacion="Destino">
+                    <cartaporte20:Domicilio Calle="AV JOSE DE GALVEZ" CodigoPostal="46760" Colonia="1666" Estado="SLP" Localidad="01" Municipio="001" NumeroExterior="645" Pais="MEX"/>
+                </cartaporte20:Ubicacion>
+            </cartaporte20:Ubicaciones>
+            <cartaporte20:Mercancias NumTotalMercancias="1" PesoBrutoTotal="12.000000" UnidadPeso="KGM">
+                <cartaporte20:Mercancia BienesTransp="14111513" Cantidad="1" ClaveUnidad="H87" Descripcion="Papel de libro" Moneda="MXN" PesoEnKg="12.000000" ValorMercancia="100000.000000"/>
+                <cartaporte20:Autotransporte NumPermisoSCT="00Z00X00Z00Z00ZX1" PermSCT="TPAF01">
+                    <cartaporte20:IdentificacionVehicular AnioModeloVM="2020" ConfigVehicular="T3S1R3" PlacaVM="JW82461"/>
+                    <cartaporte20:Seguros AseguraRespCivil="Aseguradora S.A." PolizaMedAmbiente="Poliza123" PolizaRespCivil="12323222122"/>
+                    <cartaporte20:Remolques>
+                        <cartaporte20:Remolque Placa="acb1233" SubTipoRem="CTR001"/>
+                    </cartaporte20:Remolques>
+                </cartaporte20:Autotransporte>
+            </cartaporte20:Mercancias>
+            <cartaporte20:FiguraTransporte>
+                <cartaporte20:TiposFigura NumLicencia="12345678" RFCFigura="WERX631016S30" TipoFigura="01"/>
+            </cartaporte20:FiguraTransporte>
+        </cartaporte20:CartaPorte>
+        <tfd:TimbreFiscalDigital xmlns:tfd="http://www.sat.gob.mx/TimbreFiscalDigital" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" FechaTimbrado="2021-11-23T15:03:17" NoCertificadoSAT="30001000000400002495" RfcProvCertif="FCG840618N51" SelloCFD="RPz4LMlktN78DEnxsdMn5KefUNAPHj3FayX8nPhHWUU92f88n9pmNp+C+0GKFKrQNSAsbAxcQofXFGMYQHloITe9TCwkoyge6CAG8oJVni41mZZpfxluH58a84DrPa8Pa3IfthWJpi/0WSE0HX9uAqthIjoJLgiFGLzOrMF2oybOp4N+d6neWra7h7sNLzbO/fD4IQOaTshyHOqZ/xwo3k4sKaxb1j2VKxHr+bJvxyr+ALh2lim7qEVn/BnbYPMs89a7bfpTdgBcqULBa3djyDn3PMz8726UAmvrj2DpHVbvWGKp4Yk/juadru97LemUeM2yJZqWfIzdkHtbMwA28Q==" SelloSAT="F5DMdn1lExBJUcK3zrTfnemjJmEXlA2zhjLVCMVpTsz+5XZ2eDMF9jQ5giCnpl/ZfU2bpVoXin2Ok9xTiN3nFzzPkP92AP1cdfl20zK46o0u6JM8NCs7APpbuF/R0O9VOfBoHI9w2JNALzWrF4JFoqeH4MDed+G+J/0qSRitdNBLF7V0e5BTsgznYPE4iQYQSacvwN1vu+5/7eRE0lvDhmAwqMOP+qWU3bic5GUU1QDXNNdwRym4G5a9gOA3h//OMatPpDzND6tpTqFy+JPkLILjW1/qV47S4HM8fNP4vqWdy9DuV8SiSlNQi1nSaqggBmbmYG2z1XUSZnBd2+8ePA==" UUID="481411DE-7160-4B22-B279-AC48A80E5494" Version="1.1" xsi:schemaLocation="http://www.sat.gob.mx/TimbreFiscalDigital http://www.sat.gob.mx/sitio_internet/cfd/TimbreFiscalDigital/TimbreFiscalDigitalv11.xsd"/>
+    </cfdi:Complemento>
+</cfdi:Comprobante>

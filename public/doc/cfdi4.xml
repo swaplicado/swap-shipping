@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<cfdi:Comprobante Fecha="2021-12-14T07:41:44" Folio="679" FormaPago="01" LugarExpedicion="22214" MetodoPago="PUE" Moneda="MXN" Sello="e" Serie="F" SubTotal="100.00" Exportacion="01" TipoDeComprobante="I" Total="100.00" Version="4.0" xmlns:cfdi="http://www.sat.gob.mx/cfd/4" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sat.gob.mx/cfd/4 http://www.sat.gob.mx/sitio_internet/cfd/4/cfdv40.xsd">
+  <cfdi:InformacionGlobal Periodicidad="01" Meses="01" Año="2021"/>
+  <cfdi:Emisor Rfc="EKU9003173C9" Nombre="ESCUELA KEMPER URGATE SA DE CV" RegimenFiscal="601" />
+  <cfdi:Receptor Rfc="URE180429TM6" Nombre="UNIVERSIDAD ROBOTICA ESPAÑOLA SA DE CV" DomicilioFiscalReceptor="45601" RegimenFiscalReceptor="601" UsoCFDI="G01" />
+  <cfdi:Conceptos>
+    <cfdi:Concepto Cantidad="1" ClaveProdServ="10201801" ClaveUnidad="E48" Descripcion="PRUEBA " Importe="100.000000" NoIdentificacion="02" Unidad="SERVICIO" ValorUnitario="100.000000" ObjetoImp="02">
+      <cfdi:Impuestos>
+        <cfdi:Traslados>
+          <cfdi:Traslado Base="1" Importe="1" Impuesto="002" TasaOCuota="0.160000" TipoFactor="Tasa"/>
+        </cfdi:Traslados>
+        <cfdi:Retenciones>
+          <cfdi:Retencion Base="1" Importe="1" Impuesto="002" TasaOCuota="0.040000" TipoFactor="Tasa"/>
+        </cfdi:Retenciones>
+      </cfdi:Impuestos>
+      <cfdi:InformacionAduanera NumeroPedimento="21  47  3807  8003832" />
+      <cfdi:Parte ClaveProdServ="50211503" ValorUnitario="200.00" Importe="200.00" Cantidad="1" Unidad="Pieza" NoIdentificacion="123" Descripcion="cosas" />
+    </cfdi:Concepto>
+  </cfdi:Conceptos>
+  <cfdi:Impuestos TotalImpuestosRetenidos="1" TotalImpuestosTrasladados="1">
+    <cfdi:Retenciones>
+      <cfdi:Retencion Importe="1" Impuesto="002"/>
+    </cfdi:Retenciones>
+    <cfdi:Traslados>
+      <cfdi:Traslado Base="1" Importe="1" Impuesto="002" TasaOCuota="0.160000" TipoFactor="Tasa"/>
+    </cfdi:Traslados>
+  </cfdi:Impuestos>
+</cfdi:Comprobante>
