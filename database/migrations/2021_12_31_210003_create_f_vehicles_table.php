@@ -15,6 +15,7 @@ class CreateFVehiclesTable extends Migration
     {
         Schema::create('f_vehicles', function (Blueprint $table) {
             $table->bigIncrements('id_vehicle');
+            $table->string('alias', 150)->nullable();
             $table->string('plates');
             $table->Integer('year_model');
             $table->string('license_sct_num');
@@ -22,6 +23,7 @@ class CreateFVehiclesTable extends Migration
             $table->string('policy');
             $table->boolean('is_deleted')->default(0);
             $table->bigInteger('license_sct_id')->unsigned();
+            $table->bigInteger('insurance_id')->unsigned();
             $table->bigInteger('veh_cfg_id')->unsigned();
             $table->bigInteger('carrier_id')->unsigned();
             $table->bigInteger('usr_new_id')->unsigned();
@@ -29,6 +31,7 @@ class CreateFVehiclesTable extends Migration
             $table->timestamps();
 
             $table->foreign('license_sct_id')->references('id')->on('sat_sct_licenses');
+            $table->foreign('insurance_id')->references('id_insurance')->on('f_insurances');
             $table->foreign('veh_cfg_id')->references('id')->on('sat_veh_cfgs');
             $table->foreign('carrier_id')->references('id_carrier')->on('f_carriers');
             $table->foreign('usr_new_id')->references('id')->on('users');

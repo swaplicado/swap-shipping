@@ -1,0 +1,20 @@
+{
+    "localCurrency": "MXN",
+    "tarifaBase": "10000",
+    "tarifaBaseEscala": "8000",
+    "distanciaMinima": "35.00",
+    "cfdi4_0": {
+        "claveServicio": "78101802",
+        "prodServDescripcion": "Servicio de transporte de carga",
+        "claveUnidad": "E48",
+        "simboloUnidad": "Servicio",
+        "tipoComprobante": "I",
+        "rfc": "CAR120903D34",
+        "nombreReceptor": "CARTRO SAPI DE CV",
+        "domicilioFiscalReceptor": "60135",
+        "regimenFiscalReceptor": "616",
+        "usoCFDI": "G03",
+        "lugarExpedicion": "58200",
+        "objetoImp": "02"
+    }
+}

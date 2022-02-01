@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateSatStatesTable extends Migration
+class CreateSatCurrenciesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,12 +13,11 @@ class CreateSatStatesTable extends Migration
      */
     public function up()
     {
-        Schema::create('sat_states', function (Blueprint $table) {
+        Schema::create('sat_currencies', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->string('key_code');
-            $table->string('state_name');
-            $table->decimal('rate', 8, 3)->default(1.000);
-            $table->decimal('distance', 8, 3)->default(1.000);
+            $table->string('key_code', 3)->unique();
+            $table->string('description', 200);
+            $table->boolean('is_active')->default(false);
         });
     }
 
@@ -29,6 +28,6 @@ class CreateSatStatesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('sat_states');
+        Schema::dropIfExists('sat_currencies');
     }
 }

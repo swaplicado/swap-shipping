@@ -21,6 +21,7 @@ class CreateSatUnitsTable extends Migration
             $table->date('since_date');
             $table->string('symbol');
             $table->string('flag');
+            $table->boolean('is_deleted')->default(false);
         });
     }
 

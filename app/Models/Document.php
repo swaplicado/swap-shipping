@@ -4,21 +4,21 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class DocumentRequest extends Model
+class Document extends Model
 {
     /**
      * The table associated with the model.
      *
      * @var string
      */
-    protected $table = 'f_document_requests';
+    protected $table = 'f_documents';
 
     /**
      * The primary key associated with the table.
      *
      * @var string
      */
-    protected $primaryKey = 'id_request';
+    protected $primaryKey = 'id_document';
 
     /**
      * The attributes that are mass assignable.
@@ -27,12 +27,16 @@ class DocumentRequest extends Model
      */
     protected $fillable = [
         'dt_request',
+        'dt_generated',
         'comp_version',
         'xml_version',
-        'body_request_id',
         'is_processed',
         'is_deleted',
+        'mongo_document_id',
         'carrier_id',
+        'usr_gen_id',
+        'usr_sign_id',
+        'usr_can_id',
         'usr_new_id',
         'usr_upd_id'
     ];

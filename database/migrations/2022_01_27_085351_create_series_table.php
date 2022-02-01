@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateRequestsTable extends Migration
+class CreateSeriesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,14 +13,12 @@ class CreateRequestsTable extends Migration
      */
     public function up()
     {
-        Schema::create('f_document_requests', function (Blueprint $table) {
-            $table->bigIncrements('id_request');
-            $table->date('dt_request');
-            $table->string('comp_version');
-            $table->string('xml_version');
-            $table->boolean('is_processed');
-            $table->boolean('is_deleted');
-            $table->string('body_request_id');
+        Schema::create('f_document_series', function (Blueprint $table) {
+            $table->bigIncrements('id_serie');
+            $table->string('serie_name', 50);
+            $table->string('prefix', 10);
+            $table->string('description');
+            $table->boolean('is_deleted')->default(false);
             $table->bigInteger('carrier_id')->unsigned();
             $table->bigInteger('usr_new_id')->unsigned();
             $table->bigInteger('usr_upd_id')->unsigned();
@@ -39,6 +37,6 @@ class CreateRequestsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('f_document_requests');
+        Schema::dropIfExists('f_document_series');
     }
 }
