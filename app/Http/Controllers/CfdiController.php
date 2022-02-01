@@ -5,9 +5,19 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 use Illuminate\Support\Facades\DB;
+use App\Pdf;
 
 class CfdiController extends Controller
 {
+
+    public function index(){
+        $mpdf = $this->generatePDF();
+        // $str = mb_convert_encoding($mpdf, "UTF-8", "ISO-8859-1");
+        $base64 = base64_encode($mpdf);
+        $bson = \MongoDB\BSON\fromPHP(['data' => $base64]);
+        // $value = \MongoDB\BSON\toPHP($bson);
+        return view('pdf', ['base64' => $base64]);
+    }
 
     function claveDescription($clave, $catalogo){
         $value = null;
@@ -899,6 +909,7 @@ class CfdiController extends Controller
         $mpdf->SetHTMLfooter($footer);
         $mpdf->WriteHTML($stylesheet, 1);
         $mpdf->WriteHTML($html,2);
-        $mpdf->Output();
+        // $mpdf->Output('filename.pdf', \Mpdf\Output\Destination::FILE);
+        return $mpdf->Output('', 'S');
     }
 }

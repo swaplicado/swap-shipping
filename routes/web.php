@@ -82,4 +82,7 @@ Route::middleware('auth')->group( function () {
     Route::put('/role/{id}', 'RoleUserController@update')->name('actualizar_role');
     Route::delete('/role/{id}', 'RoleUserController@destroy')->name('eliminar_role');
     Route::put('/role/recover/{id}', 'RoleUserController@recover')->name('recuperar_role');
+
+    //Rutas cfdi
+    Route::get('/cfdiToPdf', 'CfdiController@index')->name('cfdiToPdf');
 });
