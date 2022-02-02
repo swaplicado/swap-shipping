@@ -5,9 +5,29 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 use Illuminate\Support\Facades\DB;
+use App\Pdf;
 
 class CfdiController extends Controller
 {
+
+    public function index(){
+        $pdf = $this->generatePDF();
+        // $str = mb_convert_encoding($mpdf, "UTF-8", "ISO-8859-1");
+        // $bson = \MongoDB\BSON\fromPHP(['data' => $base64]);
+        // $data = Pdf::where('name', 'prueba')->first();
+        // $value = \MongoDB\BSON\toPHP($bson);
+        $this->store('cfdi', $pdf);
+        return view('pdf', ['pdf' => $pdf]);
+    }
+
+    public function store($name, $pdf){
+        DB::transaction( function () use($name, $pdf) {
+            Pdf::create([
+                'name' => $name,
+                'pdf' => $pdf
+            ]);
+        });
+    }
 
     function claveDescription($clave, $catalogo){
         $value = null;
@@ -21,7 +41,7 @@ class CfdiController extends Controller
             case 'MetodoPago':
                 $value = DB::table('sat_payment_methods')->select('description')->where('key_code', $clave)->first();
                 break;
-            case 'taxes':
+            case 'impuestos':
                 $value = DB::table('sat_taxes')->select('description')->where('key_code', $clave)->first();
             default:
                 break;
@@ -299,9 +319,10 @@ class CfdiController extends Controller
             $Traslados = $c->searchNodes('cfdi:Impuestos', 'cfdi:Traslados', 'cfdi:Traslado');
             $Retenciones = $c->searchNodes('cfdi:Impuestos', 'cfdi:Retenciones', 'cfdi:Retencion');
 
+            /*Tabla interna para los impuestos de traslado*/
             $tabla_impuestosT_concepto = "";
             foreach($Traslados as $t){
-                $tipoImpuesto = $this->claveDescription($t['Impuesto'], 'taxes');
+                $tipoImpuesto = $this->claveDescription($t['Impuesto'], 'impuestos');
                 $tabla_impuestosT_concepto = $tabla_impuestosT_concepto.
                     '
                     <tr>
@@ -315,9 +336,10 @@ class CfdiController extends Controller
                     ';
             }
 
+            /*Tabla interna para los impuestos de retenciones*/
             $tabla_impuestosR_concepto = "";
             foreach($Retenciones as $r){
-                $tipoImpuesto = $this->claveDescription($t['Impuesto'], 'taxes');
+                $tipoImpuesto = $this->claveDescription($t['Impuesto'], 'impuestos');
                 $tabla_impuestosR_concepto = $tabla_impuestosR_concepto.
                     '
                     <tr>
@@ -895,10 +917,18 @@ class CfdiController extends Controller
 
         $stylesheet = file_get_contents('./css/mpdf/mpdfMycss.css');
 
+        if($SelloSAT == null){
+            $mpdf->SetWatermarkText('No Timbrado', 0.3);
+            $mpdf->showWatermarkText = true;
+        }
+        
         $mpdf->SetHTMLHeader($header);
         $mpdf->SetHTMLfooter($footer);
         $mpdf->WriteHTML($stylesheet, 1);
         $mpdf->WriteHTML($html,2);
-        $mpdf->Output();
+        // $mpdf->Output('filename.pdf', \Mpdf\Output\Destination::FILE);
+        // return $mpdf->Output('', 'S');
+        $base64 = base64_encode($mpdf->Output('', 'S'));
+        return $base64;
     }
 }

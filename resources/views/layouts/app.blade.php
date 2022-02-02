@@ -24,7 +24,7 @@
         <nav class="navbar navbar-dark" style="background-color: #0061f7;">
             <div class="container-fluid">
                 <a class="navbar-brand" href="/">
-                    <img src="{{ asset('img/svg/logo-sombra.png') }}" alt="" width="200" height="40" class="d-inline-block align-text-top">
+                    <img src="{{ asset('img/svg/orange.svg') }}" alt="" width="200" height="40" class="d-inline-block align-text-top">
                 </a>
             </div>
         </nav>
