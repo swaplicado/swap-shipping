@@ -29,13 +29,13 @@ Route::middleware('auth')->group( function () {
     Route::get('/logout', 'Auth\LoginController@logout');
 
     // Rutas Choferes
-    Route::get('/drivers', 'TransFigureController@index')->name('drivers');
-    Route::get('/drivers/create', 'TransFigureController@create')->name('crear_driver');
-    Route::post('/drivers', 'TransFigureController@store')->name('guardar_driver');
-    Route::get('/drivers/{id}/edit', 'TransFigureController@edit')->name('editar_driver');
-    Route::put('/drivers/{id}', 'TransFigureController@update')->name('actualizar_driver');
-    Route::delete('/drivers/{id}', 'TransFigureController@destroy')->name('eliminar_driver');
-    Route::put('/drivers/recover/{id}', 'TransFigureController@recover')->name('recuperar_driver');
+    Route::get('/drivers', 'DriverController@index')->name('drivers');
+    Route::get('/drivers/create', 'DriverController@create')->name('crear_driver');
+    Route::post('/drivers', 'DriverController@store')->name('guardar_driver');
+    Route::get('/drivers/{id}/edit', 'DriverController@edit')->name('editar_driver');
+    Route::put('/drivers/{id}', 'DriverController@update')->name('actualizar_driver');
+    Route::delete('/drivers/{id}', 'DriverController@destroy')->name('eliminar_driver');
+    Route::put('/drivers/recover/{id}', 'DriverController@recover')->name('recuperar_driver');
 
     // Rutas Transportistas
     Route::get('/carriers', 'CarrierController@index')->name('carriers');
@@ -92,6 +92,7 @@ Route::middleware('auth')->group( function () {
 });
 
 // Rutas Documentos
+Route::get('documents/{id?}', 'DocumentController@index')->name('documents');
 Route::resource('documents', 'DocumentController');
 Route::put('documents/restore/{id}', 'DocumentController@restore')->name('documents.restore');
 

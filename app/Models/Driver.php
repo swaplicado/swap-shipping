@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class TransFigure extends Model
+class Driver extends Model
 {
     protected $table = 'f_trans_figures';
     protected $primaryKey = 'id_trans_figure';

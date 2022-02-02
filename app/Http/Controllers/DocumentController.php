@@ -16,8 +16,41 @@ class DocumentController extends Controller
     {
         $lDocuments = \DB::table('f_documents')
                         ->join('f_carriers', 'f_carriers.id_carrier', '=', 'f_documents.carrier_id')
-                        ->join('users', 'users.id', '=', 'f_documents.usr_gen_id')
-                        ->get();
+                        ->join('users', 'users.id', '=', 'f_documents.usr_gen_id');
+
+        $title = "";
+
+        switch ($viewType) {
+            case "0":
+                $lDocuments = $lDocuments->get();
+                $title = "todas";
+                break;
+
+            // Pendientes
+            case "1":
+                $lDocuments = $lDocuments->where('is_processed', false)
+                                            ->get();
+                $title = "pendientes";
+                break;
+
+            // Por timbrar
+            case "2":
+                $lDocuments = $lDocuments->where('is_processed', true)
+                                            ->get();
+                $title = "por timbrar";
+                break;
+
+            // Timbrados
+            case "3":
+                $lDocuments = $lDocuments->where('is_signed', true)
+                                            ->get();
+                $title = "timbradas";
+                break;
+            
+            default:
+                # code...
+                break;
+        }
 
         return view('ship.documents.index', [
             'lDocuments' => $lDocuments

@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Support\Facades\DB;
-use App\Models\TransFigure;
+use App\Models\Driver;
 use App\Models\Carrier;
 use App\Models\TpFigure;
 use App\Models\Sat\FiscalAddress;
@@ -18,8 +18,9 @@ use App\UserPivot;
 use Auth;
 use Illuminate\Support\Facades\Hash;
 
-class TransFigureController extends Controller
+class DriverController extends Controller
 {
+
     /**
      * Display a listing of the resource.
      *
@@ -28,7 +29,7 @@ class TransFigureController extends Controller
     public function index()
     {
         // auth()->user()->authorizeRoles(['admin']);
-        $data = TransFigure::get();
+        $data = Driver::get();
         $data->each(function ($data) {
             $data->FAddress;
             $data->sat_FAddress;
@@ -46,7 +47,7 @@ class TransFigureController extends Controller
     public function create()
     {
         // auth()->user()->authorizeRoles(['user', 'admin', 'carrier']);
-        $data = new TransFigure;
+        $data = new Driver;
         $data->FAddress = new FAddress;
         $tp_figures = TpFigure::pluck('id', 'description');
         $carriers = Carrier::where('is_deleted', 0)->orderBy('fullname', 'ASC')->pluck('id_carrier', 'fullname');
@@ -105,7 +106,7 @@ class TransFigureController extends Controller
         
                 $user->roles()->attach(Role::where('id', 4)->first());
 
-                $tf = TransFigure::create([
+                $tf = Driver::create([
                     'fullname' => $request->fullname,
                     'fiscal_id' => $request->RFC,
                     'fiscal_fgr_id' => $request->RFC_ex,
@@ -136,7 +137,7 @@ class TransFigureController extends Controller
 
                 $UserPivot = UserPivot::create([
                     'trans_figure_id' => $tf->id_trans_figure,
-                    'user_id' => $User->id
+                    'user_id' => $user->id
                 ]);
             });
         } catch (QueryException $e) {
@@ -158,7 +159,7 @@ class TransFigureController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\TransFigure  $transFigure
+     * @param  \App\Driver  $Driver
      * @return \Illuminate\Http\Response
      */
     public function show()
@@ -169,13 +170,13 @@ class TransFigureController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\TransFigure  $transFigure
+     * @param  \App\Driver  $Driver
      * @return \Illuminate\Http\Response
      */
     public function edit($id)
     {
         // auth()->user()->authorizeRoles(['user', 'admin', 'carrier']);
-        $data = TransFigure::where('id_trans_figure', $id)->get();
+        $data = Driver::where('id_trans_figure', $id)->get();
         $data->each(function ($data) {
             $data->FAddress;
             $data->User;
@@ -195,7 +196,7 @@ class TransFigureController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\TransFigure  $transFigure
+     * @param  \App\Driver  $Driver
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, $id)
@@ -224,7 +225,7 @@ class TransFigureController extends Controller
         $user_id = (auth()->check()) ? auth()->user()->id : null;
         try {
             DB::transaction(function () use ($sta_id, $sta_name, $request, $id, $user_id) {
-                $tf = TransFigure::findOrFail($id);
+                $tf = Driver::findOrFail($id);
                 $address = FAddress::where('trans_figure_id', $id)->firstOrFail();
 
                 $tf->fullname = $request->fullname;
@@ -277,7 +278,7 @@ class TransFigureController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\TransFigure  $transFigure
+     * @param  \App\Driver  $Driver
      * @return \Illuminate\Http\Response
      */
     public function destroy(Request $request, $id)
@@ -287,7 +288,7 @@ class TransFigureController extends Controller
         $user_id = (auth()->check()) ? auth()->user()->id : null;
         try {
             DB::transaction(function () use ($id, $user_id) {
-                $tf = TransFigure::findOrFail($id);
+                $tf = Driver::findOrFail($id);
                 $address = FAddress::where('trans_figure_id', $id)->firstOrFail();
                 $user = User::findOrFail($tf->usr_id);
 
@@ -330,7 +331,7 @@ class TransFigureController extends Controller
         $user_id = (auth()->check()) ? auth()->user()->id : null;
         try {
             DB::transaction(function () use ($id, $user_id) {
-                $tf = TransFigure::findOrFail($id);
+                $tf = Driver::findOrFail($id);
                 $address = FAddress::where('trans_figure_id', $id)->firstOrFail();
                 $user = User::findOrFail($tf->usr_id);
 

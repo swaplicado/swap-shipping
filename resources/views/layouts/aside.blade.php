@@ -18,9 +18,32 @@
                     </a>
                 </li>
                 <li>
-                    <a href="##">
-                        <span class="icon bx bxs-file bx-sm" aria-hidden="true"></span>Cartas Porte
+                    <a href="{{ route('home') }}">
+                        <span class="icon bx bxs-book-reader bx-sm" aria-hidden="true"></span>Manual de usuario
                     </a>
+                </li>
+                <li>
+                    <a class="show-cat-btn" href="##">
+                        <span class="icon bx bx-file bx-sm" aria-hidden="true"></span>Cartas Porte
+                        <span class="category__btn transparent-btn" title="Open list">
+                            <span class="sr-only">Open list</span>
+                            <span class="icon arrow-down" aria-hidden="true"></span>
+                        </span>
+                    </a>
+                    <ul class="cat-sub-menu">
+                        <li>
+                            <a href="{{ route('documents', 1) }}"><span class="icon bx bx-file-blank bx-sm" aria-hidden="true"></span>Pendientes</a>
+                        </li>
+                        <li>
+                            <a href="{{ route('documents', 2) }}"><span class="icon bx bxs-file-blank bx-sm" aria-hidden="true"></span>Por timbrar</a>
+                        </li>
+                        <li>
+                            <a href="{{ route('documents', 3) }}"><span class="icon bx bxs-file-plus bx-sm" aria-hidden="true"></span>Timbradas</a>
+                        </li>
+                        <li>
+                            <a href="{{ route('trailers') }}"><span class="icon bx bx-archive bx-sm" aria-hidden="true"></span>Todas</a>
+                        </li>
+                    </ul>
                 </li>
                 <li>
                     <a class="show-cat-btn" href="##">
