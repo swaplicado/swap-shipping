@@ -92,6 +92,7 @@ Route::middleware('auth')->group( function () {
 });
 
 // Rutas Documentos
+Route::get('documents/{id?}', 'DocumentController@index')->name('documents.index');
 Route::resource('documents', 'DocumentController');
 Route::put('documents/restore/{id}', 'DocumentController@restore')->name('documents.restore');
 

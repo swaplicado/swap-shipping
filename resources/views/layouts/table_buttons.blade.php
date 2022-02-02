@@ -18,6 +18,15 @@
     </button>
 </form>
 
+@yield('add_buttons')
+
+{{-- <a style="border-radius: 50%; padding: 5px 10px;" class="btn btn-primary" href="#" title="Descagar XML">
+    <span class="icon bx bx-download"></span>
+</a>
+<a style="border-radius: 50%; padding: 5px 10px;" class="btn btn-secondary" href="#" title="Descagar PDF">
+    <span class="icon bx bxs-file-pdf"></span>
+</a> --}}
+
 <br>
 <br>
 <div class="row">

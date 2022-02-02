@@ -4,17 +4,19 @@
     "tarifaBaseEscala": "8000",
     "distanciaMinima": "35.00",
     "cfdi4_0": {
+        "cfdiVersion": "4.0",
+        "cartaPorteVersion": "2.0",
         "claveServicio": "78101802",
         "prodServDescripcion": "Servicio de transporte de carga",
         "claveUnidad": "E48",
         "simboloUnidad": "Servicio",
         "tipoComprobante": "I",
-        "rfc": "CAR120903D34",
-        "nombreReceptor": "CARTRO SAPI DE CV",
-        "domicilioFiscalReceptor": "60135",
-        "regimenFiscalReceptor": "616",
+        "rfc": "ICV060329BY0",
+        "nombreReceptor": "INMOBILIARIA CVA SA DE CV",
+        "domicilioFiscalReceptor": "33826",
+        "regimenFiscalReceptor": "601",
         "usoCFDI": "G03",
-        "lugarExpedicion": "58200",
+        "lugarExpedicion": "33826",
         "objetoImp": "02"
     }
 }

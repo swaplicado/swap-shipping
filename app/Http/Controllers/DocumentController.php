@@ -12,15 +12,43 @@ use App\Core\RequestCore;
 
 class DocumentController extends Controller
 {
-    public function index(Request $request)
+    public function index(Request $request, $viewType = 0)
     {
         $lDocuments = \DB::table('f_documents')
                         ->join('f_carriers', 'f_carriers.id_carrier', '=', 'f_documents.carrier_id')
-                        ->join('users', 'users.id', '=', 'f_documents.usr_gen_id')
-                        ->get();
+                        ->join('users', 'users.id', '=', 'f_documents.usr_gen_id');
+
+        $title = "";
+
+        switch ($viewType) {
+            case "0":
+                $lDocuments = $lDocuments->get();
+                $title = "todas";
+                break;
+
+            // Pendientes
+            case "1":
+                $lDocuments = $lDocuments->where('is_processed', true)
+                                            ->get();
+                $title = "por timbrar";
+                break;
+
+            // Timbrados
+            case "2":
+                $lDocuments = $lDocuments->where('is_signed', true)
+                                            ->get();
+                $title = "timbradas";
+                break;
+            
+            default:
+                # code...
+                break;
+        }
 
         return view('ship.documents.index', [
-            'lDocuments' => $lDocuments
+            'lDocuments' => $lDocuments,
+            'viewType' => $viewType,
+            'title' => $title
         ]);
     }
 
@@ -32,8 +60,11 @@ class DocumentController extends Controller
         $lCurrenciesQuery = \DB::table('sat_currencies AS cur')
                             ->where('cur.is_active', true);
 
-        if ($oMongoDocument->body_json != null) {
-            $oObjData = json_decode($oMongoDocument->body_json);
+        if ($oDocument->is_processed) {
+            $oObjData = clone $oMongoDocument;
+            $oObjData->id = 0;
+            $oVehicle = $oObjData->oVehicle;
+            $oFigure = $oObjData->oFigure;
         }
         else {
             $oJson = json_decode($oMongoDocument->body_request);
@@ -43,7 +74,14 @@ class DocumentController extends Controller
                             ->pluck('_description', 'key_code');
 
             $oObjData = RequestCore::requestToJson($oDocument, $oJson, $lCurs);
-            $oMongoDocument->body_json = json_encode($oObjData);
+            $array = json_decode(json_encode(clone $oObjData), true);
+            foreach ($array as $key => $value) {
+                $oMongoDocument->$key = $value;
+            }
+    
+            $oMongoDocument->save();
+            $oVehicle = new \stdClass();
+            $oFigure = new \stdClass();
         }
 
         $oCarrier = Carrier::find($oDocument->carrier_id);
@@ -106,28 +144,14 @@ class DocumentController extends Controller
                             ->where('carrier_id', $oCarrier->id_carrier)
                             ->get();
 
-        $array = json_decode(json_encode($oObjData), true);
-        // MDocument::create($array);
-
-        foreach ($array as $key => $value) {
-            $oMongoDocument->$key = $value;
-        }
-
-        $oMongoDocument->save();
-
         foreach ($lCarrierSeries as $serie) {
-            // $folio = MDocument::max('body_json.folio')->where('carrier_id', $oCarrier->id_carrier)->where('body_json.serie', $serie->prefix);
-            // $folio = MDocument::where('carrier_id', $oCarrier->id_carrier)->where('body_json->serie', $serie->prefix)->get()->max('body_json->folio');
-            $folio = MDocument::where('carrier_id', $oCarrier->id_carrier)->where('body_json.serie', '=', $serie->prefix)->get();
-            // $folio = MDocument::max('carrier_id');
+            $folio = MDocument::where('carrier_id', $oCarrier->id_carrier)->where('serie', $serie->prefix)->max('folio');
             $serie->folio = $folio + 1;
         }
 
         $lCurrencies = clone $lCurrenciesQuery;
         $lCurrencies = $lCurrencies->selectRaw('cur.*, CONCAT(cur.key_code, " - ", cur.description) AS _description')
                                     ->get();
-
-        // $oMongoDocument->save();
 
         $oConfigurations = \App\Utils\Configuration::getConfigurations();
         
@@ -138,6 +162,8 @@ class DocumentController extends Controller
                     'lVehicles' => $lVehicles,
                     'lTrailers' => $lTrailers,
                     'lFigures' => $lFigures,
+                    'oVehicle' => $oVehicle,
+                    'oFigure' => $oFigure,
                     'lPayMethods' => $lPayMethods,
                     'lPayForms' => $lPayForms,
                     'lCarrierSeries' => $lCarrierSeries,
@@ -158,14 +184,116 @@ class DocumentController extends Controller
         $oDocument = Document::find($idDocument);
         $oMongoDocument = MDocument::find($oDocument->mongo_document_id);
         $oCarrier = Carrier::find($oDocument->carrier_id);
+
+        /**
+         * Procesamiento de modificaciones en el documento
+         */
+
+        // Encabezado
+        if ($oDocument->is_processed) {
+
+        }
+        else {
+            $oMongoDocument->serie = $oCfdiData->oData->serie;
+            $oMongoDocument->folio = $oCfdiData->oData->folio;
+
+            $oDocument->serie = $oCfdiData->oData->serie;
+            $oDocument->folio = $oCfdiData->oData->folio;
+        }
+
+        $oMongoDocument->formaPago = $oCfdiData->oData->formaPago;
+        $oMongoDocument->metodoPago = $oCfdiData->oData->metodoPago;
+        $oMongoDocument->currency = $oCfdiData->oData->currency;
+        $oMongoDocument->tipoCambio = $oCfdiData->oData->tipoCambio;
         
-        $sXml = XmlGeneration::generateCartaPorte($oCfdiData, $oDocument, $oCarrier);
+        // Conceptos
+        $dSubTotal = 0;
+        $dDiscount = 0;
+        $dTraslados = 0;
+        $aTraslados = [];
+        $dRetention = 0;
+        $indexConcept = 0;
+        foreach ($oMongoDocument->conceptos as $aConcept) {
+            $oClientConcept = $oCfdiData->oData->conceptos[$indexConcept];
+            $aConcept["valorUnitario"] = $oClientConcept->valorUnitario;
+            $aConcept["importe"] = $aConcept["valorUnitario"] * $aConcept["quantity"];
+            $aConcept["discount"] = $oClientConcept->discount;
+            $aConcept["description"] = $oClientConcept->description;
+            $aConcept["unidad"] = $oClientConcept->unidad;
+            $aConcept["numIdentificacion"] = $oClientConcept->numIndentificacion;
+            
+            foreach ($aConcept["oImpuestos"]["lTraslados"] as $aTraslado) {
+                $aTraslado["tasa"] = round($aTraslado["tasa"], 4);
+                $aTraslado["base"] = $aConcept["importe"];
+                $aTraslado["importe"] = $aTraslado["base"] * $aTraslado["tasa"];
+
+                if (array_key_exists(($aTraslado["tasa"].""), $aTraslados)) {
+                    $aTraslados[($aTraslado["tasa"]."")] = $aTraslados[($aTraslado["tasa"]."")] + $aTraslado["importe"];
+                }
+                else {
+                    $aTraslados[($aTraslado["tasa"]."")] = $aTraslado["importe"];
+                }
+                $dTraslados += $aTraslado["importe"];
+            }
+
+            foreach ($aConcept["oImpuestos"]["lRetenciones"] as $aRetecion) {
+                $aRetecion["tasa"] = round($aRetecion["tasa"], 4);
+                $aRetecion["base"] = $aConcept["importe"];
+                $aRetecion["importe"] = $aRetecion["base"] * $aRetecion["tasa"];
+
+                $dRetention += $aRetecion["importe"];
+            }
+
+            $dSubTotal += $aConcept["importe"];
+            $dDiscount += $aConcept["discount"];
+        }
+
+        // Impuestos
+        $oImpuestos = new \stdClass();
+        $oImpuestos->totalImpuestosTrasladados = $dTraslados;
+        $oImpuestos->totalImpuestosRetenidos = $dRetention;
+
+        $oImpuestos->lTraslados = [];
+        foreach ($aTraslados as $key => $value) {
+            $oTraslado = new \stdClass();
+            $oTraslado->tasa = $key;
+            $oTraslado->importe = $value;
+            $oImpuestos->lTraslados[] = $oTraslado;
+        }
+        
+        $oImpuestos->lRetenciones = [];
+        $oRetencion = new \stdClass();
+        $oRetencion->importe = $dRetention;
+        $oRetencion->impuesto = "002";
+        $oImpuestos->lRetenciones[] = $oRetencion;
+
+        $oMongoDocument->oImpuestos = json_decode(json_encode($oImpuestos), true);
+
+        // Carta Porte
+        $oMongoDocument->oVehicle = json_decode(json_encode($oCfdiData->oVehicle), true);
+        $oMongoDocument->oFigure = json_decode(json_encode($oCfdiData->oFigure), true);
+        $oMongoDocument->lTrailers = isset($oCfdiData->lTrailers) && count($oCfdiData->lTrailers) > 0 ? json_decode(json_encode($oCfdiData->lTrailers), true) : [];
+        
+        $sXml = XmlGeneration::generateCartaPorte($oDocument, $oMongoDocument, $oCarrier);
         $oDocument->generated_at = date('Y-m-d H:i:s');
         $oDocument->is_processed = true;
 
-        $oMongoDocument->body_request = $sXml;
+        $oDocument->save();
+
+        $oMongoDocument->xml_cfdi = $sXml;
         $oMongoDocument->save();
 
-        return redirect()->route('ship.documents.index');
+        //Generamos el pdf
+
+        return redirect("documents");
+    }
+
+    public function sign(Type $var = null)
+    {
+        // timbrar
+
+        // generar pdf
+
+        // enviar correo
     }
 }

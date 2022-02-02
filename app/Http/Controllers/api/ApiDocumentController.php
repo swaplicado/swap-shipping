@@ -13,6 +13,7 @@ class ApiDocumentController extends Controller
 {
     public function store(Request $request)
     {
+        $oConfigurations = \App\Utils\Configuration::getConfigurations();
         $oObjData = (object) $request->info;
 
         $oCarrier = Carrier::where('fiscal_id', $oObjData->rfcTransportista)
@@ -21,18 +22,19 @@ class ApiDocumentController extends Controller
 
         $oMongoDocument = new MDocument();
         $oMongoDocument->body_request = json_encode($oObjData);
-        $oMongoDocument->body_json = null;
-        $oMongoDocument->body_xml = null;
-        $oMongoDocument->cfdi_xml = null;
+        $oMongoDocument->xml_cfdi = null;
         $oMongoDocument->carrier_id = $oCarrier->id_carrier;
         $oMongoDocument->save();
 
         $oDoc = new Document();
-        $oDoc->dt_request = date('Y-m-d H:i:s');
-        $oDoc->dt_generated = date('Y-m-d H:i:s');
-        $oDoc->comp_version = $oObjData->versionComplemento;
-        $oDoc->xml_version = $oObjData->versionCfdi;
+        $oDoc->serie = "";
+        $oDoc->folio = "";
+        $oDoc->requested_at = date('Y-m-d H:i:s');
+        $oDoc->generated_at = date('Y-m-d H:i:s');
+        $oDoc->comp_version = $oConfigurations->cfdi4_0->cartaPorteVersion;
+        $oDoc->xml_version = $oConfigurations->cfdi4_0->cfdiVersion;
         $oDoc->is_processed = false;
+        $oDoc->is_signed = false;
         $oDoc->is_deleted = false;
         $oDoc->mongo_document_id = $oMongoDocument->id;
         $oDoc->carrier_id = $oCarrier->id_carrier;

@@ -9,13 +9,13 @@
     </div>
     <div class="col-md-3">
         <label for="serie" class="form-label">Serie</label>
-        <select id="serie" class="form-select" v-model="oData.serie" required>
+        <select id="serie" class="form-select" v-model="oData.serie" v-on:change="changeSerie(oData.serie)" required>
             <option v-for="serie in lCarrierSeries" :value="serie.prefix">@{{ serie.prefix }}</option>
         </select>
     </div>
     <div class="col-md-3">
         <label for="folio" class="form-label">Folio</label>
-        <input type="text" class="form-control" id="folio" :value="oData.folio" readonly>
+        <input type="text" class="form-control" id="folio" v-model="oData.folio">
     </div>
 </div>
 <div class="row">

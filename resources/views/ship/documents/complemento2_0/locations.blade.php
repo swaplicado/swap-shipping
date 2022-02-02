@@ -7,11 +7,15 @@
 <div class="row" v-for="oLocation in oData.oCartaPorte.ubicaciones">
     <label>@{{ oLocation.tipoUbicacion }}</label>
     <div class="row">
+        <div class="col-md-2">
+            <label>Identificador</label>
+            <input type="text" class="form-control" :value="oLocation.IDUbicacion" readonly>
+        </div>
         <div class="col-md-3">
             <label>Distancia recorrida (KM)</label>
             <input style="text-align: right" type="text" class="form-control" :value="oLocation.distanciaRecorrida" readonly>
         </div>
-        <div class="col-md-5">
+        <div class="col-md-3">
             <label>Fecha-Hora</label>
             <input style="text-align: right" type="text" class="form-control" :value="oLocation.fechaHoraSalidaLlegada" readonly>
         </div>

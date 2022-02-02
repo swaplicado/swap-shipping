@@ -15,11 +15,14 @@ class CreateDocumentsTable extends Migration
     {
         Schema::create('f_documents', function (Blueprint $table) {
             $table->bigIncrements('id_document');
-            $table->dateTime('dt_request');
-            $table->dateTime('dt_generated');
+            $table->string('serie', 45);
+            $table->string('folio', 45);
+            $table->dateTime('request_at');
+            $table->dateTime('generated_at')->nullable();
             $table->string('comp_version');
             $table->string('xml_version');
             $table->boolean('is_processed')->default(false);
+            $table->boolean('is_signed')->default(false);
             $table->boolean('is_deleted')->default(false);
             $table->string('mongo_document_id');
             $table->bigInteger('carrier_id')->unsigned();
