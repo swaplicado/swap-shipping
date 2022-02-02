@@ -23,19 +23,18 @@ class RequestCore {
         //*********************************************************************************************
         $oObjData->cfdiVersion = "4.0";
         $oObjData->tipoDeComprobante = $oConfigurations->cfdi4_0->tipoComprobante;
-        $oObjData->dtDate = $oDocument->dt_request;
-        $oObjData->serie = "A";
-        $oObjData->folio = "1";
+        $oObjData->dtDate = $oDocument->requested_at;
+        $oObjData->serie = "";
+        $oObjData->folio = 0;
         $oObjData->lugarExpedicion = $oConfigurations->cfdi4_0->lugarExpedicion;
         $oObjData->objetoImp = $oConfigurations->cfdi4_0->objetoImp;
         $oObjData->formaPago = $oRequest->formaPago;
         $oObjData->metodoPago = $oRequest->metodoPago;
         $oObjData->currency = $oRequest->moneda;
         $oObjData->tipoCambio = isset($oRequest->tipoCambio) && $oRequest->tipoCambio > 1 ? $oRequest->tipoCambio : 1;
-        $oObjData->tipoCambioReadonly = $oObjData->currency == $oConfigurations->localCurrency;
-        $oObjData->subTotal = $oRequest->subTotal;
+        $oObjData->subTotal = 0;
         $oObjData->discounts = 0;
-        $oObjData->total = $oRequest->total;
+        $oObjData->total = 0;
 
         /**
          * Emisor
@@ -64,8 +63,8 @@ class RequestCore {
         /**
          * Determinación de retenciones y traslados
          */
-        $oObjData->retenciones = [];
         $oObjData->traslados = [];
+        $oObjData->retenciones = [];
         if (strlen($oReceptor->rfcReceptor) == 12 && strlen($oEmisor->rfcEmisor) == 13) {
             $oObjData->traslados[] = (object) [
                                                     "impuesto" => "002",
@@ -96,6 +95,19 @@ class RequestCore {
                 $taxDescriptions[$oTax->key_code] = $oTax->key_code." - ".$oTax->description;
             }
         }
+
+        foreach ($oObjData->traslados as $tra) {
+            $oTax = \DB::table('sat_taxes')
+                            ->where('key_code', $tra->impuesto)
+                            ->first();
+
+            if (array_key_exists($tra->impuesto, $taxDescriptions)) {
+                continue;
+            }
+            else {
+                $taxDescriptions[$oTax->key_code] = $oTax->key_code." - ".$oTax->description;
+            }
+        }
         
         /**
          * Conceptos
@@ -107,6 +119,7 @@ class RequestCore {
         $iSource = 0;
         $iDestination = 1;
         $traveledDistance = 0;
+        $dSubTotal = 0;
         while ($iDestination < $nLocationsTemp) {
             $oLocSource = $oRequest->ubicaciones[$iSource];
             $oLocDest = $oRequest->ubicaciones[$iDestination];
@@ -150,7 +163,7 @@ class RequestCore {
 
                 $oTraslado->base = $oConcept->importe;
                 $oTraslado->impuesto = $trasImp->impuesto;
-                $oTraslado->impuesto_name = $taxDescriptions[$trasImp->impuesto];
+                $oTraslado->impuesto_name = $taxDescriptions[$trasImp->impuesto.""];
                 $oTraslado->tasa = $trasImp->tasa;
                 $oTraslado->importe = $oTraslado->base * $oTraslado->tasa;
 
@@ -162,13 +175,14 @@ class RequestCore {
                 $oRetencion = new \stdClass();
                 $oRetencion->base = $oConcept->importe;
                 $oRetencion->impuesto = $retImp->impuesto;
-                $oRetencion->impuesto_name = $taxDescriptions[$retImp->impuesto];
+                $oRetencion->impuesto_name = $taxDescriptions[$retImp->impuesto.""];
                 $oRetencion->tasa = $retImp->tasa;
                 $oRetencion->importe = $oRetencion->base * $oRetencion->tasa;
 
                 $oConcept->oImpuestos->lRetenciones[] = $oRetencion;
             }
 
+            $dSubTotal += $oConcept->importe;
             $lConcepts[] = $oConcept;
 
             /**
@@ -202,7 +216,7 @@ class RequestCore {
         $oObjData->totalImpuestosTrasladados = 0.00;
         $oObjData->totalImpuestosRetenidos = 0.00;
 
-        foreach ($lConcepts as $oConcept) {
+        foreach ($oObjData->conceptos as $oConcept) {
             foreach ($oConcept->oImpuestos->lTraslados as $traslado) {
                 $oObjData->totalImpuestosTrasladados += $traslado->importe;
             }
@@ -210,6 +224,13 @@ class RequestCore {
                 $oObjData->totalImpuestosRetenidos += $retencion->importe;
             }
         }
+
+        /**
+         * Totales
+         */
+        //*********************************************************************************************
+        $oObjData->subTotal = $dSubTotal;
+        $oObjData->total = $dSubTotal + $oObjData->totalImpuestosTrasladados - $oObjData->totalImpuestosRetenidos;
 
         /**
          * Carta Porte
@@ -229,6 +250,7 @@ class RequestCore {
         $oObjData->oCartaPorte->mercancia = $oRequest->mercancia;
         $oUnitP = \DB::table('sat_units')->where('key_code', $oRequest->mercancia->unidadPeso)->first();
         $oObjData->oCartaPorte->mercancia->unidadPesoName = $oRequest->mercancia->unidadPeso." - ".$oUnitP->description;
+        $oObjData->oCartaPorte->mercancia->numTotalMercancias = count($oRequest->mercancia->mercancias);
         foreach ($oObjData->oCartaPorte->mercancia->mercancias as $merch) {
             $oItem = \DB::table('sat_items')->where('key_code', $merch->bienesTransp)->first();
             $merch->descripcion = $oItem->description;
@@ -257,7 +279,12 @@ class RequestCore {
         $lMunicipies = \DB::table('sat_municipalities AS m')
                             ->join('sat_states AS s', 's.id', '=', 'm.state_id');
 
+        $index = 100;
         foreach ($oObjData->oCartaPorte->ubicaciones as $location) {
+            $location->IDUbicacion = $location->domicilio->municipio."-".
+                                        $location->domicilio->estado."-".
+                                        $location->domicilio->pais."-".$index;
+
             $location->domicilio->paisName = $lCountries[$location->domicilio->pais];
             $location->domicilio->estadoName = $lStates[$location->domicilio->estado];
 
@@ -271,6 +298,8 @@ class RequestCore {
             else {
                 $location->domicilio->municipioName = $location->domicilio->municipio;
             }
+
+            $index++;
         }
 
         return $oObjData;
