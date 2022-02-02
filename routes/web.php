@@ -23,8 +23,6 @@ Auth::routes();
 
 Route::post('/login', 'Auth\LoginController@authenticate')->name('MyLogin');
 
-Route::get('/cfdi', 'CfdiController@generatePDF')->name('cfdi');
-
 Route::middleware('auth')->group( function () {
 
     Route::get('/home', 'HomeController@index')->name('home');

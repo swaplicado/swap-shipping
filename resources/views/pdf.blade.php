@@ -19,7 +19,7 @@
 @section('content')
     <h1 class="normal-text">PDF</h1>
 
-    <iframe src='data:application/pdf;base64,{{$base64}}' width="80%" height="700" style="border:1px solid black;"></iframe>
+    <iframe src='data:application/pdf;base64,{{$pdf}}' width="100%" height="700" style="border:1px solid black;"></iframe>
 @endsection
 
 @section('scripts')
