@@ -8,5 +8,8 @@ class States extends Model
 {
     protected $table = 'sat_states';
     protected $primaryKey = 'id';
-    protected $fillable = [];
+    protected $fillable = [
+        'rate',
+        'distance'
+    ];
 }

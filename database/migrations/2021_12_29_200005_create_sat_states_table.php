@@ -19,6 +19,8 @@ class CreateSatStatesTable extends Migration
             $table->string('state_name');
             $table->decimal('rate', 8, 3)->default(1.000);
             $table->decimal('distance', 8, 3)->default(1.000);
+            $table->bigInteger('usr_upd_id')->unsigned()->default(1);
+            $table->timestamps();
         });
     }
 

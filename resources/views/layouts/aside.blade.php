@@ -3,7 +3,7 @@
         <div class="sidebar-head">
             <a href="/" class="logo-wrapper" title="Home">
                 <span class="sr-only">Home</span>
-                <span class="logo" aria-hidden="true"><img src="{{ asset('img/svg/logo-sombra.png') }}"></span>
+                <span class="logo" aria-hidden="true"><img src="{{ asset('img/svg/orange.svg') }}"></span>
             </a>
             <button class="sidebar-toggle transparent-btn" title="Menu" type="button">
                 <span class="sr-only">Toggle menu</span>
@@ -64,6 +64,20 @@
                         </li>
                         <li>
                             <a href="{{ route('role') }}"><span class="icon bx bxs-user-badge bx-sm" aria-hidden="true"></span>Roles de usuarios</a>
+                        </li>
+                    </ul>
+                </li>
+                <li>
+                    <a class="show-cat-btn" href="##">
+                        <span class="icon bx bxs-book-content bx-sm" aria-hidden="true"></span>Catálogos
+                        <span class="category__btn transparent-btn" title="Open list">
+                            <span class="sr-only">Open list</span>
+                            <span class="icon arrow-down" aria-hidden="true"></span>
+                        </span>
+                    </a>
+                    <ul class="cat-sub-menu">
+                        <li>
+                            <a href="{{ route('states') }}"><span class="icon bx bxs-map-alt bx-sm" aria-hidden="true"></span>Estados</a>
                         </li>
                     </ul>
                 </li>

@@ -83,6 +83,13 @@ Route::middleware('auth')->group( function () {
 
     //Rutas cfdi
     Route::get('/cfdiToPdf', 'CfdiController@index')->name('cfdiToPdf');
+
+    //Rutas config catalogos
+    Route::get('states', 'StatesController@index')->name('states');
+    Route::get('/states/{id}/edit', 'StatesController@edit')->name('editar_states');
+    Route::put('/states/{id}', 'StatesController@update')->name('actualizar_states');
+    Route::delete('##', 'StatesController@destroy')->name('eliminar_states');
+    Route::put('##', 'StatesController@recover')->name('recuperar_states');
 });
 
 // Rutas Documentos
