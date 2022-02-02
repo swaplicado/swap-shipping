@@ -12,7 +12,7 @@ use App\Core\RequestCore;
 
 class DocumentController extends Controller
 {
-    public function index(Request $request)
+    public function index(Request $request, $viewType = 0)
     {
         $lDocuments = \DB::table('f_documents')
                         ->join('f_carriers', 'f_carriers.id_carrier', '=', 'f_documents.carrier_id')
