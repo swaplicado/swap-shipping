@@ -18,6 +18,7 @@ class CreatePermissionsTable extends Migration
             $table->string('key_code');
             $table->string('description');
             $table->boolean('is_deleted')->default(0);
+            $table->boolean('is_system');
             $table->timestamps();
         });
     }
