@@ -27,6 +27,7 @@ class CreateRoleUserTable extends Migration
             array(
                 'username' => 'admin',
                 'email' => 'edwin.carmona@swaplicado.com.mx',
+                'email_verified_at' => date('y-m-j, h-i-s'),
                 'password' => bcrypt('123456'),
                 'full_name' => 'Edwin Carmona',
                 'user_type_id' => 1,

@@ -19,11 +19,11 @@ Route::get('/login', function () {
     return view('auth/login');
 });
 
-Auth::routes();
+Auth::routes(['verify' => true]);
 
 Route::post('/login', 'Auth\LoginController@authenticate')->name('MyLogin');
 
-Route::middleware(['auth', 'menu'])->group( function () {
+Route::middleware(['auth', 'verified', 'menu'])->group( function () {
 
     Route::get('/home', 'HomeController@index')->name('home');
     Route::get('/logout', 'Auth\LoginController@logout');
