@@ -61,6 +61,15 @@ class Menu {
         }
 
         if($oUser->hasAnyPermission(['210', '220', '230'])){
+            if($oUser->user_type_id == 3){
+                $menu = $menu.'
+                    <li>
+                        <a href="'.route('editar_carrier', $oUser->carrier()->first()->id_carrier).'">
+                            <span class="icon bx bxs-user-rectangle bx-sm" aria-hidden="true"></span>Mis datos fiscales
+                        </a>
+                    </li>
+                ';
+            }
             $menu = $menu.'
                 <li>
                     <a class="show-cat-btn" href="##">
@@ -104,6 +113,15 @@ class Menu {
         }
 
         if($oUser->hasAnyPermission(['310'])){
+            if($oUser->user_type_id == 4){
+                $menu = $menu.'
+                    <li>
+                        <a href="'.route('editar_driver', $oUser->driver()->first()->id_trans_figure).'">
+                            <span class="icon bx bxs-user-rectangle bx-sm" aria-hidden="true"></span>Mis datos fiscales
+                        </a>
+                    </li>
+                ';
+            }
             $route = route('drivers');
             $menu = $menu.'
                 <li>

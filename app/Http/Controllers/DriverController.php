@@ -73,7 +73,6 @@ class DriverController extends Controller
         $error = "0";
 
         $validator = Validator::make($request->all(), [
-            'username' => ['required', 'string', 'max:255'],
             'fullname' => 'required',
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'RFC' => 'required',
@@ -96,7 +95,7 @@ class DriverController extends Controller
         try {
             DB::transaction(function () use ($sta_id, $sta_name, $user_id, $request) {
                 $user = User::create([
-                    'username' => $request->username,
+                    'username' => $request->fullname,
                     'email' => $request->email,
                     'password' => Hash::make($request->password),
                     'full_name' => $request->fullname,
@@ -106,7 +105,7 @@ class DriverController extends Controller
         
                 $user->roles()->attach(Role::where('id', 4)->first());
 
-                $tf = Driver::create([
+                $Driver = Driver::create([
                     'fullname' => $request->fullname,
                     'fiscal_id' => $request->RFC,
                     'fiscal_fgr_id' => $request->RFC_ex,
@@ -128,7 +127,7 @@ class DriverController extends Controller
                     'locality' => $request->locality,
                     'state' => $sta_name,
                     'zip_code' => $request->zip_code,
-                    'trans_figure_id' => $tf->id_trans_figure,
+                    'trans_figure_id' => $Driver->id_trans_figure,
                     'country_id' => $request->country,
                     'state_id' => $sta_id,
                     'usr_new_id' => $user_id,
@@ -136,7 +135,7 @@ class DriverController extends Controller
                 ]);
 
                 $UserPivot = UserPivot::create([
-                    'trans_figure_id' => $tf->id_trans_figure,
+                    'trans_figure_id' => $Driver->id_trans_figure,
                     'user_id' => $user->id
                 ]);
             });
@@ -179,13 +178,12 @@ class DriverController extends Controller
         $data = Driver::where('id_trans_figure', $id)->get();
         $data->each(function ($data) {
             $data->FAddress;
-            $data->User;
+            $data->users;
         });
         $tp_figures = TpFigure::pluck('id', 'description');
         $carriers = Carrier::where('is_deleted', 0)->orderBy('fullname', 'ASC')->pluck('id_carrier', 'fullname');
         $countrys = FiscalAddress::orderBy('description', 'ASC')->pluck('id', 'description');
         $states = States::pluck('id', 'state_name');
-
         return view('ship/drivers/edit', [
             'data' => $data, 'tp_figures' => $tp_figures, 'carriers' => $carriers,
             'countrys' => $countrys, 'states' => $states
@@ -203,7 +201,6 @@ class DriverController extends Controller
     {
         // auth()->user()->authorizeRoles(['user', 'admin', 'carrier']);
         $validator = Validator::make($request->all(), [
-            'username' => ['required', 'string', 'max:255'],
             'fullname' => 'required',
             'email' => ['required', 'string', 'email', 'max:255'],
             'RFC' => 'required',
@@ -225,17 +222,17 @@ class DriverController extends Controller
         $user_id = (auth()->check()) ? auth()->user()->id : null;
         try {
             DB::transaction(function () use ($sta_id, $sta_name, $request, $id, $user_id) {
-                $tf = Driver::findOrFail($id);
+                $Driver = Driver::findOrFail($id);
                 $address = FAddress::where('trans_figure_id', $id)->firstOrFail();
 
-                $tf->fullname = $request->fullname;
-                $tf->fiscal_id = $request->RFC;
-                $tf->fiscal_fgr_id = $request->RFC_ex;
-                $tf->driver_lic = $request->licence;
-                $tf->tp_figure_id = $request->tp_figure;
-                $tf->fis_address_id = $request->country;
-                $tf->carrier_id = $request->carrier;
-                $tf->usr_upd_id = $user_id;
+                $Driver->fullname = $request->fullname;
+                $Driver->fiscal_id = $request->RFC;
+                $Driver->fiscal_fgr_id = $request->RFC_ex;
+                $Driver->driver_lic = $request->licence;
+                $Driver->tp_figure_id = $request->tp_figure;
+                $Driver->fis_address_id = $request->country;
+                $Driver->carrier_id = $request->carrier;
+                $Driver->usr_upd_id = $user_id;
 
                 $address->telephone = $request->telephone;
                 $address->street = $request->street;
@@ -250,13 +247,13 @@ class DriverController extends Controller
                 $address->state_id = $sta_id;
                 $address->usr_upd_id = $user_id;
 
-                $user = User::findOrFail($tf->usr_id);
+                $user = User::findOrFail($Driver->users()->first()->id);
 
-                $user->username = $request->username;
+                $user->username = $request->fullname;
                 $user->full_name = $request->fullname;
                 $user->email = $request->email;
 
-                $tf->update();
+                $Driver->update();
                 $address->update();
                 $user->update();
             });
@@ -288,22 +285,22 @@ class DriverController extends Controller
         $user_id = (auth()->check()) ? auth()->user()->id : null;
         try {
             DB::transaction(function () use ($id, $user_id) {
-                $tf = Driver::findOrFail($id);
+                $Driver = Driver::findOrFail($id);
                 $address = FAddress::where('trans_figure_id', $id)->firstOrFail();
-                $user = User::findOrFail($tf->usr_id);
+                $user = User::findOrFail($Driver->usr_id);
 
-                $tf->is_deleted = 1;
-                $tf->usr_upd_id = $user_id;
+                $Driver->is_deleted = 1;
+                $Driver->usr_upd_id = $user_id;
 
                 $address->is_deleted = 1;
                 $address->usr_upd_id = $user_id;
 
                 $user->is_deleted = 1;
 
-                $userPivot = UserPivot::where('trans_figure_id', $tf->id_trans_figure)->firstOrFail();
+                $userPivot = UserPivot::where('trans_figure_id', $Driver->id_trans_figure)->firstOrFail();
                 $userPivot->is_deleted = 1;
 
-                $tf->update();
+                $Driver->update();
                 $address->update();
                 $user->update();
                 $userPivot->update();
@@ -331,22 +328,22 @@ class DriverController extends Controller
         $user_id = (auth()->check()) ? auth()->user()->id : null;
         try {
             DB::transaction(function () use ($id, $user_id) {
-                $tf = Driver::findOrFail($id);
+                $Driver = Driver::findOrFail($id);
                 $address = FAddress::where('trans_figure_id', $id)->firstOrFail();
-                $user = User::findOrFail($tf->usr_id);
+                $user = User::findOrFail($Driver->usr_id);
 
-                $tf->is_deleted = 0;
-                $tf->usr_upd_id = $user_id;
+                $Driver->is_deleted = 0;
+                $Driver->usr_upd_id = $user_id;
 
                 $address->is_deleted = 0;
                 $address->usr_upd_id = $user_id;
 
                 $user->is_deleted = 0;
 
-                $userPivot = UserPivot::where('trans_figure_id', $tf->id_trans_figure)->firstOrFail();
+                $userPivot = UserPivot::where('trans_figure_id', $Driver->id_trans_figure)->firstOrFail();
                 $userPivot->is_deleted = 1;
 
-                $tf->update();
+                $Driver->update();
                 $address->update();
                 $user->update();
                 $userPivot->update();
