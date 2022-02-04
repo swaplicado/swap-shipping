@@ -11,6 +11,7 @@ use Auth;
 use App\User;
 use App\Role;
 use App\UserPivot;
+use App\Models\Sat\Tax_regimes;
 use Illuminate\Support\Facades\Hash;
 
 class CarrierController extends Controller
@@ -25,6 +26,9 @@ class CarrierController extends Controller
         // auth()->user()->authorizeRoles(['user', 'admin']);
         // auth()->user()->authorizePermission(['A1','A2','A3']);
         $data = Carrier::get();
+        $data->each(function ($data) {
+            $data->tax_regime;
+        });
         return view('ship/carriers/index', ['data' => $data]);
     }
 
@@ -37,7 +41,10 @@ class CarrierController extends Controller
     {
         // auth()->user()->authorizeRoles(['user', 'admin']);
         $data = new Carrier;
-        return view('ship/carriers/create', ['data' => $data]);
+        $data->tax_regime = new Tax_regimes;
+        $data->users = null;
+        $tax_regimes = Tax_regimes::pluck('id', 'description');
+        return view('ship/carriers/create', ['data' => $data, 'tax_regimes' => $tax_regimes]);
     }
 
     /**
@@ -51,23 +58,26 @@ class CarrierController extends Controller
         // auth()->user()->authorizeRoles(['user', 'admin']);
         $success = true;
         $error = "0";
-
         $validator = Validator::make($request->all(), [
-            'username' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
+            'tax_regimes' => 'required|not_in:0',
             'fullname' => 'required',
             'RFC' => 'required'
         ]);
 
         $validator->validate();
+
+        $values = json_decode($request->post('tax_regimes'));
+        $tr_name = $values->name;
+        $tr_id = $values->id;
         
         $user_id = (auth()->check()) ? auth()->user()->id : null;
         
         try {
-            DB::transaction(function () use ($request, $user_id) {
+            DB::transaction(function () use ($request, $user_id, $tr_id) {
                 $user = User::create([
-                    'username' => $request->username,
+                    'username' => $request->fullname,
                     'email' => $request->email,
                     'password' => Hash::make($request->password),
                     'full_name' => $request->fullname,
@@ -80,6 +90,7 @@ class CarrierController extends Controller
                 $carrier = Carrier::create([
                     'fullname' => $request->fullname,
                     'fiscal_id' => $request->RFC,
+                    'tax_regimes_id' => $tr_id,
                     'usr_new_id' => $user_id,
                     'usr_upd_id' => $user_id
                 ]);
@@ -128,9 +139,11 @@ class CarrierController extends Controller
         // auth()->user()->authorizeRoles(['user', 'admin']);
         $data = Carrier::where('id_carrier', $id)->get();
         $data->each(function ($data) {
-            $data->User;
+            $data->users;
+            $data->tax_regime;
         });
-        return view('ship/carriers/edit', ['data' => $data]);
+        $tax_regimes = Tax_regimes::pluck('id', 'description');
+        return view('ship/carriers/edit', ['data' => $data, 'tax_regimes' => $tax_regimes]);
     }
 
     /**
@@ -147,26 +160,29 @@ class CarrierController extends Controller
         $error = "0";
 
         $validator = Validator::make($request->all(), [
-            'username' => 'required',
             'fullname' => 'required',
             'email' => 'required',
-            'RFC' => 'required'
+            'RFC' => 'required',
+            'tax_regimes' => 'required|not_in:0'
         ]);
-
         $validator->validate();
         
         $user_id = (auth()->check()) ? auth()->user()->id : null;
 
+        $values = json_decode($request->post('tax_regimes'));
+        $tr_name = $values->name;
+        $tr_id = $values->id;
         try {
-            DB::transaction(function () use ($request, $user_id, $id) {
+            DB::transaction(function () use ($request, $user_id, $id, $tr_id) {
                 $carrier = Carrier::findOrFail($id);
-                $user = User::findOrFail($carrier->usr_id);
+                $user = User::findOrFail($carrier->users()->first()->id);
 
                 $carrier->fullname = $request->fullname;
                 $carrier->fiscal_id = $request->RFC;
+                $carrier->tax_regimes_id = $tr_id;
                 $carrier->usr_upd_id = $user_id;
 
-                $user->username = $request->username;
+                $user->username = $request->fullname;
                 $user->full_name = $request->fullname;
                 $user->email = $request->email;
 
@@ -204,7 +220,7 @@ class CarrierController extends Controller
         try {
             DB::transaction(function () use ($id, $user_id) {
                 $carrier = Carrier::findOrFail($id);
-                $user = User::findOrFail($carrier->usr_id);
+                $user = User::findOrFail($carrier->users()->first()->id);
 
                 $carrier->is_deleted = 1;
                 $carrier->usr_upd_id = $user_id;
@@ -242,7 +258,7 @@ class CarrierController extends Controller
         try {
             DB::transaction(function () use ($id, $user_id) {
                 $carrier = Carrier::findOrFail($id);
-                $user = User::findOrFail($carrier->usr_id);
+                $user = User::findOrFail($carrier->users()->first()->id);
 
                 $carrier->is_deleted = 0;
                 $carrier->usr_upd_id = $user_id;

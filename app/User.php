@@ -5,6 +5,7 @@ namespace App;
 use App\Role;
 use App\RoleUser;
 use App\RolePermission;
+use App\UserPivot;
 use Laravel\Passport\HasApiTokens;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
@@ -116,4 +117,17 @@ class User extends Authenticatable implements MustVerifyEmail
         }
     }
 
+    public function userPivot() {
+        return $this->hasMany(UserPivot::class, 'user_id');
+    }
+
+    public function carrier() {
+        $userPivot = $this->userPivot()->first();
+        return $userPivot->carrier();
+    }
+
+    public function driver() {
+        $userPivot = $this->userPivot()->first();
+        return $userPivot->driver();
+    }
 }

@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\User;
+use App\UserPivot;
 
 class Carrier extends Model
 {
@@ -13,12 +15,23 @@ class Carrier extends Model
         'fullname',
         'fiscal_id',
         'is_deleted',
-        'usr_id',
+        'tax_regimes_id',
         'usr_new_id',
         'usr_upd_id'
     ];
 
-    public function User(){
-        return $this->hasOne('App\User', 'id', 'usr_id');
+    public function userPivot() {
+        return $this->hasMany(UserPivot::class, 'carrier_id');
+    }
+
+    public function users()
+    {
+        // $this->hasMany(UserPivot::class, 'carrier_id')->select('user_id')->first()->user_id
+        $userPivot = $this->userPivot()->first();
+        return $userPivot->user();
+    }
+    
+    public function tax_regime(){
+        return $this->hasOne('App\Models\Sat\tax_regimes', 'id', 'tax_regimes_id');
     }
 }

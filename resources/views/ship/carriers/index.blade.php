@@ -41,6 +41,7 @@
                 <th>is deleted</th>
                 <th>Nombre</th>
                 <th>RFC</th>
+                <th>Regimen fiscal</th>
             </tr>
         </thead>
         <tbody>
@@ -50,6 +51,7 @@
                 <td>{{$d->is_deleted}}</td>
                 <td>{{$d->fullname}}</td>
                 <td>{{$d->fiscal_id}}</td>
+                <td>{{$d->tax_regime->description}}</td>
             </tr>
             @endforeach
         </tbody>

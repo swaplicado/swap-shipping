@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\UserPivot;
 
 class Driver extends Model
 {
@@ -22,8 +23,15 @@ class Driver extends Model
         'usr_upd_id'
     ];
 
-    public function User(){
-        return $this->hasOne('App\User', 'id', 'usr_id');
+    public function userPivot() {
+        return $this->hasMany(UserPivot::class, 'trans_figure_id');
+    }
+
+    public function users()
+    {
+        // $this->hasMany(UserPivot::class, 'carrier_id')->select('user_id')->first()->user_id
+        $userPivot = $this->userPivot()->first();
+        return $userPivot->user();
     }
 
     public function FAddress(){
