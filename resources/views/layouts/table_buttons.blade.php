@@ -18,7 +18,13 @@
     </button>
 </form>
 
-@yield('add_buttons')
+@if (isset($moreButtons))
+    @foreach ($moreButtons as $button)
+        <button id="{{ $button['id'] }}" title="{{ $button['title'] }}" class="btn btn-{{ $button['class'] }}" style="border-radius: 50%; padding: 5px 10px;">
+            <span class="icon bx {{ $button['icon'] }}"></span>
+        </button>
+    @endforeach
+@endif
 
 {{-- <a style="border-radius: 50%; padding: 5px 10px;" class="btn btn-primary" href="#" title="Descagar XML">
     <span class="icon bx bx-download"></span>

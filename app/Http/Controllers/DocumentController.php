@@ -288,8 +288,15 @@ class DocumentController extends Controller
         return redirect("documents");
     }
 
-    public function sign(Type $var = null)
+    public function sign($id)
     {
+        $oDocument = Document::find($id);
+        $oMongoDocument = MDocument::find($oDocument->mongo_document_id);
+        // sellar
+        $originalString = XmlGeneration::createOriginalStringFromString($oMongoDocument->xml_cfdi);
+        $sello = XmlGeneration::getStamp($originalString);
+
+        return $sello;
         // timbrar
 
         // generar pdf

@@ -4,8 +4,7 @@ use Carbon\Carbon;
 use DOMDocument;
 use DOMAttr;
 use XSLTProcessor;
-// use Genkgo\Xsl\XsltProcessor;
-// use Genkgo\Xsl\Cache\NullCache;
+use phpseclib\Crypt\RSA;
 
 class XmlGeneration {
 
@@ -590,6 +589,36 @@ class XmlGeneration {
         return $cadenaOriginal;
     }
 
+    public static function createOriginalStringFromString($theXml)
+    {
+        file_put_contents(base_path("temp\\temp.xml"), $theXml);
+
+        //ruta al archivo XML del CFDI
+        $xmlFileRoute = base_path("temp\\temp.xml");
+    
+        // Ruta al archivo XSLT
+        $xslFile = base_path("cadenaoriginal\\cadenaoriginal.xslt"); 
+    
+        // Crear un objeto DOMDocument para cargar el CFDI
+        $xmlObj = new DOMDocument("1.0", "UTF-8");
+        // Cargar el CFDI
+        $xmlObj->load($xmlFileRoute);
+    
+        // Crear un objeto DOMDocument para cargar el archivo de transformación XSLT
+        $xsl = new DOMDocument();
+        $xsl->load($xslFile);
+    
+        // Crear el procesador XSLT que nos generará la cadena original con base en las reglas descritas en el XSLT
+        // $proc = new XsltProcessor(new NullCache());
+        $proc = new XSLTProcessor;
+        // Cargar las reglas de transformación desde el archivo XSLT.
+        $proc->importStyleSheet($xsl);
+        // Generar la cadena original y asignarla a una variable
+        $cadenaOriginal = $proc->transformToXML($xmlObj);
+    
+        return $cadenaOriginal;
+    }
+
     public function sellarXml($originalString, $key, $certificate)
     {
         $pem = chunk_split($certificate, 64, "\n");
@@ -602,18 +631,50 @@ class XmlGeneration {
         return $signature;
     }
 
-    public function FunctionName(Type $var = null)
+    public static function getStamp($originalString = "")
     {
         //Sellar
-        $fileKey = Principal::$AppPath . "docs/sat/ACO560518KW7-20001000000300005692.key"; // Ruta al archivo key
-        $rsa = new RSA();
-        $rsa->setPassword("12345678a");//Clave 
-        $rsa->load(file_get_contents($fileKey));
-        $private = openssl_pkey_get_private($rsa->getPrivateKey(), "12345678a");//Otra vez la clave
-        $sig = "";
-        openssl_sign($this->CadenaOriginal, $sig, $private, OPENSSL_ALGO_SHA256);
-        $sello = base64_encode($sig);
-        $this->Comprobante->Sello = $sello;
+        $fileKey = base_path("docs/sat/CSD_INNOVACION_VALOR_Y_DESARROLLO_SA_DE_CV_IVD920810GU2_20190617_133410.key"); // Ruta al archivo key
+        // $key = new RSA();
+        // $key->setPassword("12345678a");//Clave 
+        $contents = file_get_contents($fileKey);
+        // $key->loadKey($contents);
+        // $key->setEncryptionMode(RSA::ENCRYPTION_PKCS1);
+        // $private = openssl_pkey_get_private($key->getPrivateKey(), "12345678a");//Otra vez la clave
+        // $k = $key->getPrivateKey();
+        // $pkey = openssl_get_privatekey( $key->getPrivateKey() );
+        // $signature = "";
+        // openssl_sign( $originalString, $signature, $pkey );
+        // $sello = $key->sign($originalString);
+        // $sig = "";
+        // openssl_sign($originalString, $sig, $private, OPENSSL_ALGO_SHA256);
+        // $sello = base64_encode($sig);
+
+        // $str = $contents;
+        // $str = chunk_split($str, 64, "\n");
+        // $key = "-----BEGIN RSA PRIVATE KEY-----\n$str-----END RSA PRIVATE KEY-----\n";
+        // $signature = '';
+        // if (openssl_sign($originalString, $signature, $key, OPENSSL_ALGO_MD5)) {
+        //     dd(base64_encode($signature));
+        // }
+
+        $key = new RSA();
+        $key->loadKey($contents);
+        $key->setPassword("12345678a"); //"$this->password_key": your .key file password
+        $key->setPrivateKeyFormat(RSA::PRIVATE_FORMAT_PKCS1);
+        $key->setEncryptionMode(RSA::ENCRYPTION_PKCS1);
+        // $key->setSignatureMode(RSA::SIGNATURE_PSS);
+        $key->setSignatureMode(RSA::SIGNATURE_PKCS1);
+        $signature = $key->sign($originalString);
+
+        return $signature;
+    }
+
+    public function getCertificate()
+    {
+        $certificado = str_replace(array('\n', '\r'), '', base64_encode(file_get_contents($archivo_cer)));
+
+        return $certificado;
     }
 
     public static function loadCarta() {
