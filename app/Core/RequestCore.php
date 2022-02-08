@@ -4,6 +4,9 @@ use App\Models\Carrier;
 
 class RequestCore {
 
+    const MORAL = 12;
+    const FISICA = 13;
+
     public static function requestToJson($oDocument, $oRequest, $lCurrencies)
     {
         $oConfigurations = \App\Utils\Configuration::getConfigurations();
@@ -65,7 +68,7 @@ class RequestCore {
          */
         $oObjData->traslados = [];
         $oObjData->retenciones = [];
-        if (strlen($oReceptor->rfcReceptor) == 12 && strlen($oEmisor->rfcEmisor) == 13) {
+        if (strlen($oEmisor->rfcEmisor) == self::FISICA && strlen($oReceptor->rfcReceptor) == self::MORAL) {
             $oObjData->traslados[] = (object) [
                                                     "impuesto" => "002",
                                                     "tasa" => 0.16
@@ -75,10 +78,14 @@ class RequestCore {
                                                     "tasa" => 0.04
                                                 ];
         }
-        elseif (strlen($oReceptor->rfcReceptor) == 12 && strlen($oEmisor->rfcEmisor) == 12) {
+        elseif (strlen($oEmisor->rfcEmisor) == self::MORAL && strlen($oReceptor->rfcReceptor) == self::MORAL) {
             $oObjData->traslados[] = (object) [
                                                     "impuesto" => "002",
                                                     "tasa" => 0.16
+                                                ];
+            $oObjData->retenciones[] = (object) [
+                                                    "impuesto" => "002",
+                                                    "tasa" => 0.04
                                                 ];
         }
 
@@ -281,10 +288,6 @@ class RequestCore {
 
         $index = 100;
         foreach ($oObjData->oCartaPorte->ubicaciones as $location) {
-            $location->IDUbicacion = $location->domicilio->municipio."-".
-                                        $location->domicilio->estado."-".
-                                        $location->domicilio->pais."-".$index;
-
             $location->domicilio->paisName = $lCountries[$location->domicilio->pais];
             $location->domicilio->estadoName = $lStates[$location->domicilio->estado];
 
@@ -298,6 +301,16 @@ class RequestCore {
             else {
                 $location->domicilio->municipioName = $location->domicilio->municipio;
             }
+
+            $startId = "";
+            if ($location->tipoUbicacion == "Origen") {
+                $startId = "OR";
+            }
+            else {
+                $startId = "DE";
+            }
+
+            $location->IDUbicacion = $startId.$location->domicilio->municipio.$index;
 
             $index++;
         }
