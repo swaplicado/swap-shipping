@@ -45,6 +45,7 @@
                 <th>Núm. Permiso Sct</th>
                 <th>Reg Trib</th>
                 <th>Poliza</th>
+                <th>Aseguradora</th>
                 <th>Conf. Vehícular</th>
                 <th>Transportista</th>
             </tr>
@@ -60,6 +61,7 @@
                 <td>{{$d->license_sct_num}}</td>
                 <td>{{$d->drvr_reg_trib}}</td>
                 <td>{{$d->policy}}</td>
+                <td>{{$d->Insurance->full_name}}</td>
                 <td>{{$d->VehicleConfig->key_code}}</td>
                 <td>{{$d->Carrier->fullname}}</td>
             </tr>

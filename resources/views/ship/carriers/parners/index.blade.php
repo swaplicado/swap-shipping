@@ -28,38 +28,28 @@
         })
     </script>
 @endif
-<h2>Transportistas</h2>
+<h2>Asociados</h2>
 <br>
 
-@include('layouts.table_buttons', ['crear' => 'crear_carrier'])
-<div class="col-lg-2" style="float: left">
-    <select class="form-select" name="carriers" id="carriers">
-        <option value="0" selected>Transportista</option>
-        @foreach ($data as $d)
-            <option value="{{$d->id_carrier}}">{{$d->fullname}}</option>
-        @endforeach
-    </select>
-</div>
+@include('layouts.table_buttons', ['crear' => 'crear_parner'])
 
 <div class="container table-responsive">
-    <table id="T_carriers" class="display" style="width:100%;">
+    <table id="T_parners" class="display" style="width:100%;">
         <thead>
             <tr>
                 <th>id</th>
                 <th>is deleted</th>
                 <th>Nombre</th>
-                <th>RFC</th>
-                <th>Regimen fiscal</th>
+                <th>E-mail</th>
             </tr>
         </thead>
         <tbody>
             @foreach($data as $d)
             <tr>
-                <td>{{$d->id_carrier}}</td>
-                <td>{{$d->is_deleted}}</td>
-                <td>{{$d->fullname}}</td>
-                <td>{{$d->fiscal_id}}</td>
-                <td>{{$d->tax_regime->description}}</td>
+                <td>{{$d->user()->first()->id}}</td>
+                <td>{{$d->user()->first()->is_deleted}}</td>
+                <td>{{$d->user()->first()->full_name}}</td>
+                <td>{{$d->user()->first()->email}}</td>
             </tr>
             @endforeach
         </tbody>
@@ -68,6 +58,6 @@
 @endsection
 
 @section('scripts')
-    @include('layouts.table_Jscontroll', ['table_id' => 'T_carriers', 'editar' => 'editar_carrier', 
-        'eliminar' => 'eliminar_carrier', 'recuperar' => 'recuperar_carrier'] )
+    @include('layouts.table_Jscontroll', ['table_id' => 'T_parners', 'editar' => 'editar_parner', 
+        'eliminar' => 'eliminar_parner', 'recuperar' => 'recuperar_parner'] )
 @endsection

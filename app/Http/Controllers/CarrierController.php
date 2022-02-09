@@ -10,7 +10,7 @@ use Validator;
 use Auth;
 use App\User;
 use App\Role;
-use App\UserPivot;
+use App\UserVsTypes;
 use App\Models\Sat\Tax_regimes;
 use Illuminate\Support\Facades\Hash;
 
@@ -25,7 +25,12 @@ class CarrierController extends Controller
     {
         // auth()->user()->authorizeRoles(['user', 'admin']);
         // auth()->user()->authorizePermission(['A1','A2','A3']);
-        $data = Carrier::get();
+        if(auth()->user()->isCarrier()){
+            $data = Carrier::where('id_carrier', auth()->user()->carrier()->first()->id_carrier)->get();
+        } else if (auth()->user()->isAdmin()){
+            $data = Carrier::get();    
+        }
+        
         $data->each(function ($data) {
             $data->tax_regime;
         });
@@ -95,9 +100,10 @@ class CarrierController extends Controller
                     'usr_upd_id' => $user_id
                 ]);
                 
-                $UserPivot = UserPivot::create([
+                $UserVsTypes = UserVsTypes::create([
                     'carrier_id' => $carrier->id_carrier,
-                    'user_id' => $user->id
+                    'user_id' => $user->id,
+                    'is_principal' => 1
                 ]);
 
             });
@@ -137,7 +143,8 @@ class CarrierController extends Controller
     public function edit($id)
     {
         // auth()->user()->authorizeRoles(['user', 'admin']);
-        $data = Carrier::where('id_carrier', $id)->get();
+        auth()->user()->carrierAutorization($id);
+        $data = Carrier::where('id_carrier', $id)->first();
         $data->each(function ($data) {
             $data->users;
             $data->tax_regime;
@@ -156,6 +163,7 @@ class CarrierController extends Controller
     public function update(Request $request, $id)
     {
         // auth()->user()->authorizeRoles(['user', 'admin']);
+        auth()->user()->carrierAutorization($id);
         $success = true;
         $error = "0";
 
@@ -215,6 +223,7 @@ class CarrierController extends Controller
     public function destroy($id)
     {
         // auth()->user()->authorizeRoles(['user', 'admin']);
+        auth()->user()->carrierAutorization($id);
         $success = true;
         $user_id = (auth()->check()) ? auth()->user()->id : null;
         try {
@@ -227,12 +236,12 @@ class CarrierController extends Controller
 
                 $user->is_deleted = 1;
 
-                $userPivot = UserPivot::where('carrier_id', $carrier->id_carrier)->firstOrFail();
-                $userPivot->is_deleted = 1;
+                $UserVsTypes = UserVsTypes::where('carrier_id', $carrier->id_carrier)->firstOrFail();
+                $UserVsTypes->is_deleted = 1;
 
                 $carrier->update();
                 $user->update();
-                $userPivot->update();
+                $UserVsTypes->update();
             });
         } catch (QueryException $e) {
             $success = false;
@@ -253,6 +262,7 @@ class CarrierController extends Controller
     public function recover($id) 
     {
         // auth()->user()->authorizeRoles(['user', 'admin']);
+        auth()->user()->carrierAutorization($id);
         $success = true;
         $user_id = (auth()->check()) ? auth()->user()->id : null;
         try {
@@ -265,12 +275,12 @@ class CarrierController extends Controller
 
                 $user->is_deleted = 0;
 
-                $userPivot = UserPivot::where('carrier_id', $carrier->id_carrier)->firstOrFail();
-                $userPivot->is_deleted = 0;
+                $UserVsTypes = UserVsTypes::where('carrier_id', $carrier->id_carrier)->firstOrFail();
+                $UserVsTypes->is_deleted = 0;
 
                 $carrier->update();
                 $user->update();
-                $userPivot->update();
+                $UserVsTypes->update();
             });
         } catch (QueryException $e) {
             $success = false;

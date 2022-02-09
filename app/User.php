@@ -5,7 +5,7 @@ namespace App;
 use App\Role;
 use App\RoleUser;
 use App\RolePermission;
-use App\UserPivot;
+use App\UserVsTypes;
 use Laravel\Passport\HasApiTokens;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
@@ -117,17 +117,55 @@ class User extends Authenticatable implements MustVerifyEmail
         }
     }
 
-    public function userPivot() {
-        return $this->hasMany(UserPivot::class, 'user_id');
+    public function UserVsTypes() {
+        return $this->hasMany(UserVsTypes::class, 'user_id');
     }
 
     public function carrier() {
-        $userPivot = $this->userPivot()->first();
-        return $userPivot->carrier();
+        $UserVsTypes = $this->UserVsTypes()->first();
+        return $UserVsTypes->carrier();
     }
 
     public function driver() {
-        $userPivot = $this->userPivot()->first();
-        return $userPivot->driver();
+        $UserVsTypes = $this->UserVsTypes()->first();
+        return $UserVsTypes->driver();
+    }
+
+    public function isCarrier(){
+        return $this->user_type_id == 3;
+    }
+    
+    public function isDriver(){
+        return $this->user_type_id == 4;
+    }
+    
+    public function isAdmin(){
+        return $this->user_type_id == 1;
+    }
+
+    public function carrierAutorization($carriers){
+        if(!$this->isAdmin()){
+            abort_unless($this->hasAnyCarrier($carriers), 401);
+        }
+        return true;
+    }
+
+    public function hasAnyCarrier($carriers) {
+        if (is_array($carriers)) {
+            foreach ($carriers as $carrier) {
+                if ($this->hasCarrier($carrier)) {
+                    return true;
+                }
+            }
+        } else {
+            if ($this->hasCarrier($carriers)) {
+                return true; 
+            }   
+        }
+        return false;
+    }
+    
+    public function hasCarrier($carrier) {
+        return $this->carrier()->first()->id_carrier == $carrier;
     }
 }

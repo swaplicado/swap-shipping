@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateUserPivotesTable extends Migration
+class CreateUserVsTypesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,9 +13,10 @@ class CreateUserPivotesTable extends Migration
      */
     public function up()
     {
-        Schema::create('user_pivotes', function (Blueprint $table) {
+        Schema::create('user_vs_types', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->boolean('is_deleted')->default(0);
+            $table->boolean('is_principal')->default(0);
             $table->bigInteger('trans_figure_id')->unsigned()->nullable();
             $table->bigInteger('carrier_id')->unsigned()->nullable();
             $table->bigInteger('user_id')->unsigned()->nullable();
@@ -34,6 +35,6 @@ class CreateUserPivotesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('user_pivotes');
+        Schema::dropIfExists('user_vs_types');
     }
 }

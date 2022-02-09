@@ -50,22 +50,6 @@
     @enderror
 </div>
 <div class="form-group">
-    <label for="carrier" class="form-label">Transportista</label>
-    <select class="form-select" name="carrier">
-        <option value="0" selected>Transportista</option>
-        @foreach($carriers as $c => $index)
-            @if($data->carrier_id == $index)
-                <option selected value='{{$index}}'>{{$c}}</option>
-            @else
-                <option value='{{$index}}'>{{$c}}</option>
-            @endif
-        @endforeach
-    </select>
-    @error('carrier')
-        <span class="text-danger">{{$message}}</span>
-    @enderror
-</div>
-<div class="form-group">
     <label for="country" class="form-label">País</label>
     <select class="form-select" name="country">
         <option value="0" selected>País</option>
@@ -153,6 +137,7 @@
         <span class="text-danger">{{ $message }}</span>
     @enderror
 </div>
+{!! $data->id_trans_figure == null ? (session()->has('form') ? session('form') : "") : "" !!}
 @if(!$data->users)
 <div class="form-group">
     <label for="password" class="form-label">{{ __('Password') }}</label>

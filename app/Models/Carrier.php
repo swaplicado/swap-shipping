@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use App\User;
-use App\UserPivot;
+use App\UserVsTypes;
 
 class Carrier extends Model
 {
@@ -20,18 +20,22 @@ class Carrier extends Model
         'usr_upd_id'
     ];
 
-    public function userPivot() {
-        return $this->hasMany(UserPivot::class, 'carrier_id');
+    public function UserVsTypes() {
+        return $this->hasMany(UserVsTypes::class, 'carrier_id');
     }
 
     public function users()
     {
-        // $this->hasMany(UserPivot::class, 'carrier_id')->select('user_id')->first()->user_id
-        $userPivot = $this->userPivot()->first();
-        return $userPivot->user();
+        // $this->hasMany(UserVsTypes::class, 'carrier_id')->select('user_id')->first()->user_id
+        $UserVsTypes = $this->UserVsTypes()->first();
+        return $UserVsTypes->user();
     }
     
     public function tax_regime(){
         return $this->hasOne('App\Models\Sat\tax_regimes', 'id', 'tax_regimes_id');
+    }
+
+    public function parners(){
+        return $this->hasMany(UserVsTypes::class, 'carrier_id')->where([['is_principal', 0]]);
     }
 }

@@ -9,7 +9,7 @@ class Menu {
     public static function createMenu($oUser = null)
     {
         $menu = "";
-        if($oUser->hasAnyPermission(['110', '120', '130', '140'])){
+        if($oUser->hasAnyPermission(['100'])){
             $menu = $menu.'
                 <li>
                     <a class="show-cat-btn" href="##">
@@ -21,7 +21,7 @@ class Menu {
                     </a>
                     <ul class="cat-sub-menu">
             ';
-            if($oUser->hasPermission('110')){
+            if($oUser->hasPermission('111')){
                 $route = route('documents', 1);
                 $menu = $menu.'
                         <li>
@@ -29,7 +29,7 @@ class Menu {
                         </li>
                 ';
             }
-            if($oUser->hasPermission('120')){
+            if($oUser->hasPermission('121')){
                 $route = route('documents', 2);
                 $menu = $menu.'
                         <li>
@@ -37,7 +37,7 @@ class Menu {
                         </li>
                 ';
             }
-            if($oUser->hasPermission('130')){
+            if($oUser->hasPermission('131')){
                 $route = route('documents', 3);
                 $menu = $menu.'
                         <li>
@@ -45,7 +45,7 @@ class Menu {
                         </li>
                 ';
             }
-            if($oUser->hasPermission('140')){
+            if($oUser->hasPermission('141')){
                 $route = route('documents', 3);
                 $menu = $menu.'
                         <li>
@@ -60,8 +60,8 @@ class Menu {
             ';
         }
 
-        if($oUser->hasAnyPermission(['210', '220', '230'])){
-            if($oUser->user_type_id == 3){
+        if($oUser->hasAnyPermission(['200'])){
+            if($oUser->isCarrier()){
                 $menu = $menu.'
                     <li>
                         <a href="'.route('editar_carrier', $oUser->carrier()->first()->id_carrier).'">
@@ -81,7 +81,7 @@ class Menu {
                     </a>
                     <ul class="cat-sub-menu">
             ';
-            if($oUser->hasPermission('210')){
+            if($oUser->hasPermission('211')){
                 $route = route('carriers');
                 $menu = $menu.'
                         <li>
@@ -89,7 +89,7 @@ class Menu {
                         </li>
                 ';
             }
-            if($oUser->hasPermission('220')){
+            if($oUser->hasPermission('221')){
                 $route = route('vehicles');
                 $menu = $menu.'
                         <li>
@@ -97,7 +97,7 @@ class Menu {
                         </li>
                 ';
             }
-            if($oUser->hasPermission('230')){
+            if($oUser->hasPermission('231')){
                 $route = route('trailers');
                 $menu = $menu.'
                         <li>
@@ -112,7 +112,7 @@ class Menu {
             ';
         }
 
-        if($oUser->hasAnyPermission(['310'])){
+        if($oUser->hasAnyPermission(['300'])){
             if($oUser->user_type_id == 4){
                 $menu = $menu.'
                     <li>
@@ -132,7 +132,77 @@ class Menu {
             ';
         }
 
-        if($oUser->hasAnyPermission(['410', '420', '430'])){
+        if($oUser->hasAnyPermission(['240'])){
+            $menu = $menu.'
+                <li>
+                    <a class="show-cat-btn" href="##">
+                        <span class="icon bx bxs-user bx-sm" aria-hidden="true"></span>Asociados
+                        <span class="category__btn transparent-btn" title="Open list">
+                            <span class="sr-only">Open list</span>
+                            <span class="icon arrow-down" aria-hidden="true"></span>
+                        </span>
+                    </a>
+                    <ul class="cat-sub-menu">
+            ';
+            if($oUser->hasPermission('242')){
+                $route = route('crear_parner');
+                $menu = $menu.'
+                        <li>
+                            <a href="'.$route.'"><span class="icon bx bxs-user-plus bx-sm" aria-hidden="true"></span>Agregar socio</a>
+                        </li>
+                ';
+            }
+            if($oUser->hasPermission('241')){
+                $route = route('parners');
+                $menu = $menu.'
+                        <li>
+                            <a href="'.$route.'"><span class="icon bx bxs-user-detail bx-sm" aria-hidden="true"></span>Ver socios</a>
+                        </li>
+                ';
+            }
+
+            $menu =  $menu.'
+                    </ul>
+                </li>
+            ';
+        }
+
+        if($oUser->hasAnyPermission(['400'])){
+            $menu = $menu.'
+                <li>
+                    <a class="show-cat-btn" href="##">
+                        <span class="icon bx bxs-book-content bx-sm" aria-hidden="true"></span>Catálogos
+                        <span class="category__btn transparent-btn" title="Open list">
+                            <span class="sr-only">Open list</span>
+                            <span class="icon arrow-down" aria-hidden="true"></span>
+                        </span>
+                    </a>
+                    <ul class="cat-sub-menu">
+            ';
+            if($oUser->hasPermission('411')){
+                $route = route('states');
+                $menu = $menu.'
+                        <li>
+                            <a href="'.$route.'"><span class="icon bx bxs-map-alt bx-sm" aria-hidden="true"></span>Estados</a>
+                        </li>
+                ';
+            }
+            if($oUser->hasPermission('421')){
+                $route = route('insurances');
+                $menu = $menu.'
+                        <li>
+                            <a href="'.$route.'"><span class="icon bx bx-clinic bx-sm" aria-hidden="true"></span>Aseguradoras</a>
+                        </li>
+                ';
+            }
+
+            $menu =  $menu.'
+                    </ul>
+                </li>
+            ';
+        }
+
+        if($oUser->hasAnyPermission(['500'])){
             $menu = $menu.'
                 <li>
                     <a class="show-cat-btn" href="##">
@@ -144,7 +214,7 @@ class Menu {
                     </a>
                     <ul class="cat-sub-menu">
             ';
-            if($oUser->hasPermission('410')){
+            if($oUser->hasPermission('512')){
                 $route = route('register');
                 $menu = $menu.'
                         <li>
@@ -152,7 +222,7 @@ class Menu {
                         </li>
                 ';
             }
-            if($oUser->hasPermission('420')){
+            if($oUser->hasPermission('511')){
                 $route = route('users');
                 $menu = $menu.'
                         <li>
@@ -160,7 +230,7 @@ class Menu {
                         </li>
                 ';
             }
-            if($oUser->hasPermission('430')){
+            if($oUser->hasPermission('611')){
                 $route = route('role');
                 $menu = $menu.'
                         <li>
