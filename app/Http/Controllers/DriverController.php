@@ -14,7 +14,7 @@ use Illuminate\Database\QueryException;
 use Validator;
 use App\User;
 use App\Role;
-use App\UserPivot;
+use App\UserVsTypes;
 use Auth;
 use Illuminate\Support\Facades\Hash;
 
@@ -29,13 +29,18 @@ class DriverController extends Controller
     public function index()
     {
         // auth()->user()->authorizeRoles(['admin']);
-        $data = Driver::get();
+
+        if(auth()->user()->isCarrier()){
+            $data = Driver::where('carrier_id', auth()->user()->carrier()->first()->id_carrier)->get();
+        } else if (auth()->user()->isAdmin()){
+            $data = Driver::get();    
+        }
+
         $data->each(function ($data) {
             $data->FAddress;
             $data->sat_FAddress;
             $data->User;
         });
-
         return view('ship/drivers/index', ['data' => $data]);
     }
 
@@ -49,6 +54,7 @@ class DriverController extends Controller
         // auth()->user()->authorizeRoles(['user', 'admin', 'carrier']);
         $data = new Driver;
         $data->FAddress = new FAddress;
+        $data->users = NULL;
         $tp_figures = TpFigure::pluck('id', 'description');
         $carriers = Carrier::where('is_deleted', 0)->orderBy('fullname', 'ASC')->pluck('id_carrier', 'fullname');
         $countrys = FiscalAddress::orderBy('description', 'ASC')->pluck('id', 'description');
@@ -56,8 +62,7 @@ class DriverController extends Controller
 
         return view('ship/drivers/create', [
             'data' => $data, 'tp_figures' => $tp_figures, 'carriers' => $carriers,
-            'countrys' => $countrys, 'states' => $states
-        ]);
+            'countrys' => $countrys, 'states' => $states]);
     }
 
     /**
@@ -69,6 +74,9 @@ class DriverController extends Controller
     public function store(Request $request)
     {
         // auth()->user()->authorizeRoles(['user', 'admin', 'carrier']);
+        if(auth()->user()->isCarrier()){
+            $request->request->add(['carrier' => auth()->user()->carrier()->first()->id_carrier]);
+        }
         $success = true;
         $error = "0";
 
@@ -78,10 +86,10 @@ class DriverController extends Controller
             'RFC' => 'required',
             'licence' => 'required',
             'tp_figure' => 'required|not_in:0',
-            'carrier' => 'required|not_in:0',
             'country' => 'required|not_in:0',
             'zip_code' => 'required',
             'state' => 'required|not_in:0',
+            'carrier' => 'required|not_in:0',
             'password' => ['required', 'string', 'min:8', 'confirmed']
         ]);
 
@@ -134,7 +142,7 @@ class DriverController extends Controller
                     'usr_upd_id' => $user_id
                 ]);
 
-                $UserPivot = UserPivot::create([
+                $UserVsTypes = UserVsTypes::create([
                     'trans_figure_id' => $Driver->id_trans_figure,
                     'user_id' => $user->id
                 ]);
@@ -175,7 +183,8 @@ class DriverController extends Controller
     public function edit($id)
     {
         // auth()->user()->authorizeRoles(['user', 'admin', 'carrier']);
-        $data = Driver::where('id_trans_figure', $id)->get();
+        $data = Driver::where([['id_trans_figure', $id], ['is_deleted', 0]])->first();
+        auth()->user()->carrierAutorization($data->carrier_id);
         $data->each(function ($data) {
             $data->FAddress;
             $data->users;
@@ -206,7 +215,6 @@ class DriverController extends Controller
             'RFC' => 'required',
             'licence' => 'required',
             'tp_figure' => 'required|not_in:0',
-            'carrier' => 'required|not_in:0',
             'country' => 'required|not_in:0',
             'zip_code' => 'required',
             'state' => 'required|not_in:0'
@@ -223,6 +231,7 @@ class DriverController extends Controller
         try {
             DB::transaction(function () use ($sta_id, $sta_name, $request, $id, $user_id) {
                 $Driver = Driver::findOrFail($id);
+                auth()->user()->carrierAutorization($Driver->carrier_id);
                 $address = FAddress::where('trans_figure_id', $id)->firstOrFail();
 
                 $Driver->fullname = $request->fullname;
@@ -231,7 +240,6 @@ class DriverController extends Controller
                 $Driver->driver_lic = $request->licence;
                 $Driver->tp_figure_id = $request->tp_figure;
                 $Driver->fis_address_id = $request->country;
-                $Driver->carrier_id = $request->carrier;
                 $Driver->usr_upd_id = $user_id;
 
                 $address->telephone = $request->telephone;
@@ -286,8 +294,9 @@ class DriverController extends Controller
         try {
             DB::transaction(function () use ($id, $user_id) {
                 $Driver = Driver::findOrFail($id);
+                auth()->user()->carrierAutorization($Driver->carrier_id);
                 $address = FAddress::where('trans_figure_id', $id)->firstOrFail();
-                $user = User::findOrFail($Driver->usr_id);
+                $user = User::findOrFail($Driver->users()->first()->id);
 
                 $Driver->is_deleted = 1;
                 $Driver->usr_upd_id = $user_id;
@@ -297,13 +306,13 @@ class DriverController extends Controller
 
                 $user->is_deleted = 1;
 
-                $userPivot = UserPivot::where('trans_figure_id', $Driver->id_trans_figure)->firstOrFail();
-                $userPivot->is_deleted = 1;
+                $UserVsTypes = UserVsTypes::where('trans_figure_id', $Driver->id_trans_figure)->firstOrFail();
+                $UserVsTypes->is_deleted = 1;
 
                 $Driver->update();
                 $address->update();
                 $user->update();
-                $userPivot->update();
+                $UserVsTypes->update();
             });
         } catch (QueryException $e) {
             $success = false;
@@ -329,8 +338,9 @@ class DriverController extends Controller
         try {
             DB::transaction(function () use ($id, $user_id) {
                 $Driver = Driver::findOrFail($id);
+                auth()->user()->carrierAutorization($Driver->carrier_id);
                 $address = FAddress::where('trans_figure_id', $id)->firstOrFail();
-                $user = User::findOrFail($Driver->usr_id);
+                $user = User::findOrFail($Driver->users()->first()->id);
 
                 $Driver->is_deleted = 0;
                 $Driver->usr_upd_id = $user_id;
@@ -340,13 +350,13 @@ class DriverController extends Controller
 
                 $user->is_deleted = 0;
 
-                $userPivot = UserPivot::where('trans_figure_id', $Driver->id_trans_figure)->firstOrFail();
-                $userPivot->is_deleted = 1;
+                $UserVsTypes = UserVsTypes::where('trans_figure_id', $Driver->id_trans_figure)->firstOrFail();
+                $UserVsTypes->is_deleted = 0;
 
                 $Driver->update();
                 $address->update();
                 $user->update();
-                $userPivot->update();
+                $UserVsTypes->update();
             });
         } catch (QueryException $e) {
             $success = false;

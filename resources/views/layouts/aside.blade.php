@@ -23,20 +23,7 @@
                     </a>
                 </li>
                 {!! session()->has('menu') ? session('menu') : "" !!}
-                <li>
-                    <a class="show-cat-btn" href="##">
-                        <span class="icon bx bxs-book-content bx-sm" aria-hidden="true"></span>Catálogos
-                        <span class="category__btn transparent-btn" title="Open list">
-                            <span class="sr-only">Open list</span>
-                            <span class="icon arrow-down" aria-hidden="true"></span>
-                        </span>
-                    </a>
-                    <ul class="cat-sub-menu">
-                        <li>
-                            <a href="{{ route('states') }}"><span class="icon bx bxs-map-alt bx-sm" aria-hidden="true"></span>Estados</a>
-                        </li>
-                    </ul>
-                </li>
+                
             </ul>
         </div>
     </div>

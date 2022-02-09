@@ -30,7 +30,7 @@ Route::middleware(['auth', 'verified', 'menu'])->group( function () {
 
     // Rutas Choferes
     Route::get('/drivers', 'DriverController@index')->name('drivers');
-    Route::get('/drivers/create', 'DriverController@create')->name('crear_driver');
+    Route::get('/drivers/create', 'DriverController@create')->name('crear_driver')->middleware('form');
     Route::post('/drivers', 'DriverController@store')->name('guardar_driver');
     Route::get('/drivers/{id}/edit', 'DriverController@edit')->name('editar_driver');
     Route::put('/drivers/{id}', 'DriverController@update')->name('actualizar_driver');
@@ -46,9 +46,18 @@ Route::middleware(['auth', 'verified', 'menu'])->group( function () {
     Route::delete('/carriers/{id}', 'CarrierController@destroy')->name('eliminar_carrier');
     Route::put('/carriers/recover/{id}', 'CarrierController@recover')->name('recuperar_carrier');
 
+    // Rutas asociados
+    Route::get('/parners', 'BussinesParnerController@index')->name('parners');
+    Route::get('/parners/create', 'BussinesParnerController@create')->name('crear_parner');
+    Route::post('/parners', 'BussinesParnerController@store')->name('guardar_parner');
+    Route::get('/parners/{id}/edit', 'BussinesParnerController@edit')->name('editar_parner');
+    Route::put('/parners/{id}', 'BussinesParnerController@update')->name('actualizar_parner');
+    Route::delete('/parners/{id}', 'BussinesParnerController@destroy')->name('eliminar_parner');
+    Route::put('/parners/recover/{id}', 'BussinesParnerController@recover')->name('recuperar_parner');
+
     //Rutas Vehiculos
     Route::get('/vehicles', 'VehicleController@index')->name('vehicles');
-    Route::get('/vehicles/create', 'VehicleController@create')->name('crear_vehicle');
+    Route::get('/vehicles/create', 'VehicleController@create')->name('crear_vehicle')->middleware('form');
     Route::post('/vehicles', 'VehicleController@store')->name('guardar_vehicle');
     Route::get('/vehicles/{id}/edit', 'VehicleController@edit')->name('editar_vehicle');
     Route::put('/vehicles/{id}', 'VehicleController@update')->name('actualizar_vehicle');
@@ -57,7 +66,7 @@ Route::middleware(['auth', 'verified', 'menu'])->group( function () {
 
     //Rutas Trailers
     Route::get('/trailers', 'TrailerController@index')->name('trailers');
-    Route::get('/trailers/create', 'TrailerController@create')->name('crear_trailer');
+    Route::get('/trailers/create', 'TrailerController@create')->name('crear_trailer')->middleware('form');
     Route::post('/trailers', 'TrailerController@store')->name('guardar_trailer');
     Route::get('/trailers/{id}/edit', 'TrailerController@edit')->name('editar_trailer');
     Route::put('/trailers/{id}', 'TrailerController@update')->name('actualizar_trailer');
@@ -71,6 +80,7 @@ Route::middleware(['auth', 'verified', 'menu'])->group( function () {
     Route::put('/users/{id}', 'UserController@update')->name('actualizar_user');
     Route::delete('/users/{id}', 'UserController@destroy')->name('eliminar_user');
     Route::put('/users/recover/{id}', 'UserController@recover')->name('recuperar_user');
+
     //Rutas Roles de usuario
     Route::get('/role', 'RoleUserController@index')->name('role');
     Route::get('/role/create', 'RoleUserController@create')->name('crear_role');
@@ -84,17 +94,26 @@ Route::middleware(['auth', 'verified', 'menu'])->group( function () {
     Route::get('/cfdiToPdf', 'CfdiController@index')->name('cfdiToPdf');
 
     //Rutas config catalogos
+        //Estados
     Route::get('states', 'StatesController@index')->name('states');
     Route::get('/states/{id}/edit', 'StatesController@edit')->name('editar_states');
     Route::put('/states/{id}', 'StatesController@update')->name('actualizar_states');
     Route::delete('##', 'StatesController@destroy')->name('eliminar_states');
     Route::put('##', 'StatesController@recover')->name('recuperar_states');
-    
+    //Aseguradoras
+    Route::get('/insurances', 'InsurancesController@index')->name('insurances');
+    Route::get('/insurances/create', 'InsurancesController@create')->name('crear_insurance')->middleware('form');
+    Route::post('/insurances', 'InsurancesController@store')->name('guardar_insurance');
+    Route::get('/insurances/{id}/edit', 'InsurancesController@edit')->name('editar_insurance');
+    Route::put('/insurances/{id}', 'InsurancesController@update')->name('actualizar_insurance');
+    Route::delete('/insurances/{id}', 'InsurancesController@destroy')->name('eliminar_insurance');
+    Route::put('/insurances/recover/{id}', 'InsurancesController@recover')->name('recuperar_insurance');
     // Rutas Documentos
     Route::get('documents/{id?}', 'DocumentController@index')->name('documents');
     Route::resource('documents', 'DocumentController');
     Route::put('documents/restore/{id}', 'DocumentController@restore')->name('documents.restore');
     Route::get('documents/sign/{id}', 'DocumentController@sign')->name('documents.sign');
+
 });
 
 

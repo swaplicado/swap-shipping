@@ -35,13 +35,10 @@
 
 <br>
 <br>
-<div class="row">
-    <div class="col-lg-2">
-        <select class="form-select" name="filter" id="filter">
-            <option value="0" selected>Activos</option>
-            <option value="1">Eliminados</option>
-            <option value="2">Todos</option>
-        </select>
-    </div>
+<div class="col-lg-2" style="float: left;">
+    <select class="form-select" name="isDeleted" id="isDeleted">
+        <option value="0" selected>Activos</option>
+        <option value="1">Eliminados</option>
+        <option value="2">Todos</option>
+    </select>
 </div>
-<br>

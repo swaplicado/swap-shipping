@@ -17,6 +17,7 @@ class Vehicle extends Model
         'license_sct_id',
         'veh_cfg_id',
         'carrier_id',
+        'insurance_id',
         'is_deleted',
         'usr_new_id',
         'usr_upd_id'
@@ -32,5 +33,9 @@ class Vehicle extends Model
 
     public function Carrier(){
         return $this->hasOne('App\Models\Carrier', 'id_carrier', 'carrier_id');
+    }
+
+    public function Insurance(){
+        return $this->hasOne('App\Models\Insurances', 'id_insurance', 'insurance_id');
     }
 }

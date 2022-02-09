@@ -3,7 +3,7 @@
         
         $.fn.dataTable.ext.search.push(
             function( settings, data, dataIndex ) {
-                let registerVal = parseInt( $('#filter').val(), 10 );
+                let registerVal = parseInt( $('#isDeleted').val(), 10 );
                 let isDeleted = 0;
 
                 switch (registerVal) {
@@ -25,6 +25,8 @@
                 return false;
             }
         );
+
+        
 
         var table = $('#{{$table_id}}').DataTable({
             "columnDefs": [
@@ -124,7 +126,10 @@
             })
         });
 
-        $('#filter').change( function() {
+        $('#isDeleted').change( function() {
+            table.draw();
+        });
+        $('#carriers').change( function() {
             table.draw();
         });
 

@@ -14,12 +14,12 @@
         <div class="col-lg-8">
             <div class="card">
                 <div class="card-header">
-                    <span>Editar chofer</span>
+                    <span>Nueva aseguradora</span>
                 </div>
                 <div class="card-body">
-                    <form action="{{ route('actualizar_driver', ['id' => $data->id_trans_figure]) }}" method="POST">
-                        @csrf @method("put")
-                        @include('ship.drivers.form')
+                    <form action="{{ route('guardar_insurance') }}" method="POST">
+                        @csrf
+                        @include('catalogos.insurances.form')
                     </form>
                 </div>
             </div>

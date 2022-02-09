@@ -17,12 +17,10 @@
                     <span>Editar vehículo</span>
                 </div>
                 <div class="card-body">
-                    @foreach($data as $data)
                     <form action="{{ route('actualizar_vehicle', ['id' => $data->id_vehicle]) }}" method="POST">
                         @csrf @method("put")
                         @include('ship.vehicles.form')
                     </form>
-                    @endforeach
                 </div>
             </div>
         </div>

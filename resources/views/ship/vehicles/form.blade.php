@@ -41,6 +41,23 @@
     @error('drvr_reg_trib')
         <span class="text-danger">{{ $message }}</span>
     @enderror
+</div>
+<div class="form-group">
+    <label for="insurance" class="form-label">Aseguradora</label>
+    <select class="form-select" name="insurance">
+        <option value="0" selected>Select Aseguradora</option>
+        @foreach($insurances as $i => $index)
+            @if($data->insurance_id == $index)
+                <option selected value='{{$index}}'>{{$i}}</option>
+            @else
+                <option value='{{$index}}'>{{$i}}</option>
+            @endif
+        @endforeach
+    </select>
+    @error('insurance')
+        <span class="text-danger">{{$message}}</span>
+    @enderror
+</div>
 <div class="form-group">
     <label for="policy" class="form-label">Poliza</label>
     <input name="policy" type="text" class="form-control" value="{{ old('policy', $data->policy ?? '') }}">
@@ -64,21 +81,6 @@
         <span class="text-danger">{{$message}}</span>
     @enderror
 </div>
-<div class="form-group">
-    <label for="carrier_id" class="form-label">Transportista</label>
-    <select class="form-select" name="carrier_id">
-        <option value="0" selected>Select Transportista</option>
-        @foreach($Carrier as $c => $index)
-            @if($data->carrier_id == $index)
-                <option selected value='{{$index}}'>{{$c}}</option>
-            @else
-                <option value='{{$index}}'>{{$c}}</option>
-            @endif
-        @endforeach
-    </select>
-    @error('carrier_id')
-        <span class="text-danger">{{$message}}</span>
-    @enderror
-</div>
+{!! $data->id_vehicle == null ? (session()->has('form') ? session('form') : "") : "" !!}
 <br>
 <button type="submit" class="btn btn-primary">Guardar</button>

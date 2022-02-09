@@ -7,9 +7,9 @@ use App\User;
 use App\Models\Carrier;
 use App\Models\Driver;
 
-class UserPivot extends Model
+class UserVsTypes extends Model
 {
-    protected $table = 'user_pivotes';
+    protected $table = 'user_vs_types';
     protected $primarykey = 'id';
 
     protected $fillable = [

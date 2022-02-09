@@ -17,12 +17,10 @@
                     <span>Editar Transportista</span>
                 </div>
                 <div class="card-body">
-                    @foreach($data as $data)
                     <form action="{{ route('actualizar_carrier', ['id' => $data->id_carrier]) }}" method="POST">
                         @csrf @method("put")
                         @include('ship.carriers.form')
                     </form>
-                    @endforeach
                 </div>
             </div>
         </div>
