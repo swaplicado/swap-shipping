@@ -31,16 +31,14 @@
 <h2>Cartas Porte ({{ $title }})</h2>
 <br>
 
-@include('layouts.table_buttons', ['crear' => 'crear_carrier'])
-
-@section('add_buttons')
-    <a style="border-radius: 50%; padding: 5px 10px;" class="btn btn-primary" href="#" target="_blank" title="Descagar XML">
-        <span class="icon bx bx-download"></span>
-    </a>
-    <a style="border-radius: 50%; padding: 5px 10px;" class="btn btn-secondary" href="#" target="_blank" title="Descagar PDF">
-        <span class="icon bx bxs-file-pdf"></span>
-    </a>
-@endsection
+@include('layouts.table_buttons', [
+        'crear' => 'crear_carrier', 
+        'moreButtons' => [
+            ['id' => 'id_sign', 'class' => 'dark', 'icon' => 'bx-bell', 'url' => '#', 'title' => 'Timbrar'],
+            ['id' => 'id_down_xml', 'class' => 'primary', 'icon' => 'bx-download', 'url' => '#', 'title' => 'Descagar XML'],
+            ['id' => 'id_down_pdf', 'class' => 'secondary', 'icon' => 'bxs-file-pdf', 'url' => '#', 'title' => 'Descagar PDF'],
+        ],
+    ])
 
 <div class="container table-responsive">
     <table id="t_documents" class="display" style="width:100%;">
@@ -81,5 +79,9 @@
 @endsection
 
 @section('scripts')
-@include('layouts.table_Jscontroll', ['table_id' => 't_documents', 'editar' => 'documents.edit', 'eliminar' => 'documents.destroy', 'recuperar' => 'documents.restore'])
+@include('layouts.table_Jscontroll', ['table_id' => 't_documents', 
+                                        'signRoute' => 'documents.sign', 
+                                        'editar' => 'documents.edit', 
+                                        'eliminar' => 'documents.destroy', 
+                                        'recuperar' => 'documents.restore'])
 @endsection

@@ -52,6 +52,13 @@
             table.$('tr.selected').removeClass('selected');
         });
 
+        $('#id_sign').click(function () {
+            var id = table.row('.selected').data()[0];
+            var url = '{{ isset($signRoute) ? route($signRoute, ":id") : "#" }}';
+            url = url.replace(':id',id);
+            window.location.href = url;
+        });
+        
         $('#btn_edit').click(function () {
             var id = table.row('.selected').data()[0];
             var url = '{{route($editar, ":id")}}';

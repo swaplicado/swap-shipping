@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Carbon\Carbon;
 use App\Models\Document;
 use App\Models\M\MDocument;
 use App\Models\Carrier;
@@ -228,11 +229,18 @@ class DocumentController extends Controller
                 $aTraslado["importe"] = $aTraslado["base"] * $aTraslado["tasa"];
 
                 if (array_key_exists(($aTraslado["tasa"].""), $aTraslados)) {
-                    $aTraslados[($aTraslado["tasa"]."")] = $aTraslados[($aTraslado["tasa"]."")] + $aTraslado["importe"];
+                    $aTraslados[($aTraslado["tasa"]."")] = [
+                                                                "base" => ($aTraslados[($aTraslado["tasa"]."")]["base"] + $aTraslado["base"]),
+                                                                "importe" => ($aTraslados[($aTraslado["tasa"]."")]["importe"] + $aTraslado["importe"]),
+                                                            ];
                 }
                 else {
-                    $aTraslados[($aTraslado["tasa"]."")] = $aTraslado["importe"];
+                    $aTraslados[($aTraslado["tasa"]."")] = [
+                                                                "base" => $aTraslado["base"],
+                                                                "importe" => $aTraslado["importe"],
+                                                            ];
                 }
+
                 $dTraslados += $aTraslado["importe"];
             }
 
@@ -257,7 +265,8 @@ class DocumentController extends Controller
         foreach ($aTraslados as $key => $value) {
             $oTraslado = new \stdClass();
             $oTraslado->tasa = $key;
-            $oTraslado->importe = $value;
+            $oTraslado->base = $value["base"];
+            $oTraslado->importe = $value["importe"];
             $oImpuestos->lTraslados[] = $oTraslado;
         }
         
@@ -273,6 +282,17 @@ class DocumentController extends Controller
         $oMongoDocument->oVehicle = json_decode(json_encode($oCfdiData->oVehicle), true);
         $oMongoDocument->oFigure = json_decode(json_encode($oCfdiData->oFigure), true);
         $oMongoDocument->lTrailers = isset($oCfdiData->lTrailers) && count($oCfdiData->lTrailers) > 0 ? json_decode(json_encode($oCfdiData->lTrailers), true) : [];
+
+        // Mercancías
+        $pesoBrutoTotal = 0.0;
+        foreach ($oMongoDocument->oCartaPorte["mercancia"]["mercancias"] as $key => $value) {
+            $oClientMerch = $oCfdiData->oData->oCartaPorte->mercancia->mercancias[$key];
+            $value["pesoEnKg"] = $oClientMerch->pesoEnKg;
+            $pesoBrutoTotal += $oClientMerch->pesoEnKg;
+        }
+        $oCP = $oMongoDocument->oCartaPorte;
+        $oCP["mercancia"]["pesoBrutoTotal"] = $pesoBrutoTotal;
+        $oMongoDocument->oCartaPorte = $oCP;
         
         $sXml = XmlGeneration::generateCartaPorte($oDocument, $oMongoDocument, $oCarrier);
         $oDocument->generated_at = date('Y-m-d H:i:s');
@@ -288,8 +308,18 @@ class DocumentController extends Controller
         return redirect("documents");
     }
 
-    public function sign(Type $var = null)
+    public function sign($id)
     {
+        $oDocument = Document::find($id);
+        $oMongoDocument = MDocument::find($oDocument->mongo_document_id);
+
+        $oMongoDocument->save();
+        dd($oMongoDocument->xml_cfdi, base64_encode($oMongoDocument->xml_cfdi));
+        // sellar
+        $originalString = XmlGeneration::createOriginalStringFromString($oMongoDocument->xml_cfdi);
+        $sello = XmlGeneration::getStamp($originalString);
+
+        return $sello;
         // timbrar
 
         // generar pdf

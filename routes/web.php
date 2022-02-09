@@ -100,7 +100,7 @@ Route::middleware(['auth', 'verified', 'menu'])->group( function () {
     Route::put('/states/{id}', 'StatesController@update')->name('actualizar_states');
     Route::delete('##', 'StatesController@destroy')->name('eliminar_states');
     Route::put('##', 'StatesController@recover')->name('recuperar_states');
-        //Aseguradoras
+    //Aseguradoras
     Route::get('/insurances', 'InsurancesController@index')->name('insurances');
     Route::get('/insurances/create', 'InsurancesController@create')->name('crear_insurance')->middleware('form');
     Route::post('/insurances', 'InsurancesController@store')->name('guardar_insurance');
@@ -108,10 +108,12 @@ Route::middleware(['auth', 'verified', 'menu'])->group( function () {
     Route::put('/insurances/{id}', 'InsurancesController@update')->name('actualizar_insurance');
     Route::delete('/insurances/{id}', 'InsurancesController@destroy')->name('eliminar_insurance');
     Route::put('/insurances/recover/{id}', 'InsurancesController@recover')->name('recuperar_insurance');
+    // Rutas Documentos
+    Route::get('documents/{id?}', 'DocumentController@index')->name('documents');
+    Route::resource('documents', 'DocumentController');
+    Route::put('documents/restore/{id}', 'DocumentController@restore')->name('documents.restore');
+    Route::get('documents/sign/{id}', 'DocumentController@sign')->name('documents.sign');
+
 });
 
-// Rutas Documentos
-Route::get('documents/{id?}', 'DocumentController@index')->name('documents');
-Route::resource('documents', 'DocumentController');
-Route::put('documents/restore/{id}', 'DocumentController@restore')->name('documents.restore');
 
