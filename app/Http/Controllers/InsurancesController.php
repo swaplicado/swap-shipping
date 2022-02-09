@@ -3,14 +3,14 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Support\Facades\DB;
-use Illuminate\Http\Request;
 use Illuminate\Database\QueryException;
-use App\Models\Trailer;
-use App\Models\Sat\TrailerSubtype;
+use Illuminate\Http\Request;
+use App\Models\Insurances;
 use App\Models\Carrier;
 use Validator;
+use Auth;
 
-class TrailerController extends Controller
+class InsurancesController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -19,18 +19,16 @@ class TrailerController extends Controller
      */
     public function index()
     {
-        auth()->user()->authorizeRoles(['user', 'admin', 'carrier']);
         if(auth()->user()->isCarrier()){
-            $data = Trailer::where('carrier_id', auth()->user()->carrier()->first()->id_carrier)->get();
-        } else if(auth()->user()->isAdmin()) {
-            $data = Trailer::get();
+            $data = Insurances::where('carrier_id', auth()->user()->carrier()->first()->id_carrier)->get();
+        } else if (auth()->user()->isAdmin()){
+            $data = Insurances::get();    
         }
-        $data->each( function ($data) {
-            $data->TrailerSubtype;
+
+        $data->each(function ($data) {
             $data->Carrier;
         });
-
-        return view('ship/trailers/index', ['data' => $data]);
+        return view('catalogos/insurances/index', ['data' => $data]);
     }
 
     /**
@@ -40,14 +38,9 @@ class TrailerController extends Controller
      */
     public function create()
     {
-        auth()->user()->authorizeRoles(['user', 'admin', 'carrier']);
-        $data = new Trailer;
-        $data->TrailerSubtype = new TrailerSubtype;
-        $data->Carrier = new Carrier;
-        $TrailerSubtype = TrailerSubtype::pluck('id', 'description');
+        $data = new Insurances;
         $carriers = Carrier::where('is_deleted', 0)->orderBy('fullname', 'ASC')->pluck('id_carrier', 'fullname');
-
-        return view('ship/trailers/create', ['data' => $data, 'TrailerSubtype' => $TrailerSubtype, 'carriers' => $carriers]);
+        return view('catalogos/insurances/create', ['data' => $data, 'carriers' => $carriers]);
     }
 
     /**
@@ -58,28 +51,47 @@ class TrailerController extends Controller
      */
     public function store(Request $request)
     {
-        auth()->user()->authorizeRoles(['user', 'admin', 'carrier']);
         if(auth()->user()->isCarrier()){
             $request->request->add(['carrier' => auth()->user()->carrier()->first()->id_carrier]);
         }
         $success = true;
         $error = "0";
-
         $validator = Validator::make($request->all(), [
-            'plates' => 'required',
+            'fullname' => 'required',
             'carrier' => 'required|not_in:0',
-            'trailer_subtype_id' => 'required'
+            'checkbox' => 'required'
         ]);
 
         $validator->validate();
-        
+
+        $resp_civ = 0;
+        $ambiental = 0;
+        $carga = 0;
+        foreach($request->checkbox as $c){
+            switch($c){
+                case "1":
+                    $resp_civ = 1;
+                    break;
+                case "2":
+                    $ambiental = 1;
+                    break;
+                case "3":
+                    $carga = 1;
+                    break;
+                default:
+                    break;
+            }
+        }
+
         $user_id = (auth()->check()) ? auth()->user()->id : null;
         
         try {
-            DB::transaction(function () use ($request, $user_id) {
-                $trailer = Trailer::create([
-                    'plates' => $request->plates,
-                    'trailer_subtype_id' => $request->trailer_subtype_id,
+            DB::transaction(function () use ($request, $user_id, $resp_civ, $ambiental, $carga) {
+                $Insurance = Insurances::create([
+                    'full_name' => $request->fullname,
+                    'is_civ_resp' => $resp_civ,
+                    'is_ambiental' => $ambiental,
+                    'is_cargo' => $carga,
                     'carrier_id' => $request->carrier,
                     'usr_new_id' => $user_id,
                     'usr_upd_id' => $user_id
@@ -98,7 +110,7 @@ class TrailerController extends Controller
             $icon = "error";
         }
 
-        return redirect('trailers')->with(['mesage' => $msg, 'icon' => $icon]);
+        return redirect('insurances')->with(['mesage' => $msg, 'icon' => $icon]);
     }
 
     /**
@@ -120,16 +132,9 @@ class TrailerController extends Controller
      */
     public function edit($id)
     {
-        auth()->user()->authorizeRoles(['user', 'admin', 'carrier']);
-        $data = Trailer::where('id_trailer', $id)->first();
+        $data = Insurances::where('id_insurance', $id)->first();
         auth()->user()->carrierAutorization($data->carrier_id);
-        $data->each(function ($data) {
-            $data->TrailerSubtype;
-            $data->Carrier;
-        });
-        $TrailerSubtype = TrailerSubtype::pluck('id', 'description');
-
-        return view('ship/trailers/edit', ['data' => $data, 'TrailerSubtype' => $TrailerSubtype]);
+        return view('catalogos/insurances/edit', ['data' => $data]);
     }
 
     /**
@@ -141,29 +146,47 @@ class TrailerController extends Controller
      */
     public function update(Request $request, $id)
     {
-        auth()->user()->authorizeRoles(['user', 'admin', 'carrier']);
         $success = true;
         $error = "0";
-
         $validator = Validator::make($request->all(), [
-            'plates' => 'required',
-            'trailer_subtype_id' => 'required'
+            'fullname' => 'required',
+            'checkbox' => 'required'
         ]);
 
         $validator->validate();
-        
+
+        $resp_civ = 0;
+        $ambiental = 0;
+        $carga = 0;
+        foreach($request->checkbox as $c){
+            switch($c){
+                case "1":
+                    $resp_civ = 1;
+                    break;
+                case "2":
+                    $ambiental = 1;
+                    break;
+                case "3":
+                    $carga = 1;
+                    break;
+                default:
+                    break;
+            }
+        }
+
         $user_id = (auth()->check()) ? auth()->user()->id : null;
-
+        
         try {
-            DB::transaction(function () use ($request, $user_id, $id) {
-                $trailer = Trailer::findOrFail($id);
-                auth()->user()->carrierAutorization($trailer->carrier_id);
-                $trailer->plates = $request->plates;
-                $trailer->trailer_subtype_id = $request->trailer_subtype_id;
-                // $trailer->carrier_id = $request->carrier_id;
-                $trailer->usr_upd_id = $user_id;
-
-                $trailer->update();
+            DB::transaction(function () use ($request, $user_id, $resp_civ, $ambiental, $carga, $id) {
+                $Insurance = Insurances::findOrFail($id);
+                auth()->user()->carrierAutorization($Insurance->carrier_id);
+                $Insurance->full_name = $request->fullname;
+                $Insurance->is_civ_resp = $resp_civ;
+                $Insurance->is_ambiental = $ambiental;
+                $Insurance->is_cargo = $carga;
+                $Insurance->usr_upd_id = $user_id;
+                
+                $Insurance->update();
             });
         } catch (QueryException $e) {
             $success = false;
@@ -174,11 +197,11 @@ class TrailerController extends Controller
             $msg = "Se actualizó el registro con éxito";
             $icon = "success";
         } else {
-            $msg = "Error al actualizar el registro. Error: " . $error;
+            $msg = "Error al actualizar el registro Error: " . $error;
             $icon = "error";
         }
 
-        return redirect('trailers')->with(['mesage' => $msg, 'icon' => $icon]);
+        return redirect('insurances')->with(['mesage' => $msg, 'icon' => $icon]);
     }
 
     /**
@@ -189,17 +212,16 @@ class TrailerController extends Controller
      */
     public function destroy($id)
     {
-        auth()->user()->authorizeRoles(['user', 'admin', 'carrier']);
         $success = true;
         $user_id = (auth()->check()) ? auth()->user()->id : null;
         try {
             DB::transaction(function () use ($id, $user_id) {
-                $trailer = Trailer::findOrFail($id);
-                auth()->user()->carrierAutorization($trailer->carrier_id);
-                $trailer->is_deleted = 1;
-                $trailer->usr_upd_id = $user_id;
+                $Insurance = Insurances::findOrFail($id);
+                auth()->user()->carrierAutorization($Insurance->carrier_id);
+                $Insurance->is_deleted = 1;
+                $Insurance->usr_upd_id = $user_id;
 
-                $trailer->update();
+                $Insurance->update();
             });
         } catch (QueryException $e) {
             $success = false;
@@ -214,22 +236,21 @@ class TrailerController extends Controller
             $icon = "error";
         }
 
-        return redirect('trailers')->with(['mesage' => $msg, 'icon' => $icon]);
+        return redirect('insurances')->with(['mesage' => $msg, 'icon' => $icon]);
     }
 
     public function recover($id)
     {
-        auth()->user()->authorizeRoles(['user', 'admin', 'carrier']);
         $success = true;
         $user_id = (auth()->check()) ? auth()->user()->id : null;
         try {
             DB::transaction(function () use ($id, $user_id) {
-                $trailer = Trailer::findOrFail($id);
-                auth()->user()->carrierAutorization($trailer->carrier_id);
-                $trailer->is_deleted = 0;
-                $trailer->usr_upd_id = $user_id;
+                $Insurance = Insurances::findOrFail($id);
+                auth()->user()->carrierAutorization($Insurance->carrier_id);
+                $Insurance->is_deleted = 0;
+                $Insurance->usr_upd_id = $user_id;
 
-                $trailer->update();
+                $Insurance->update();
             });
         } catch (QueryException $e) {
             $success = false;
@@ -244,6 +265,6 @@ class TrailerController extends Controller
             $icon = "error";
         }
 
-        return redirect('trailers')->with(['mesage' => $msg, 'icon' => $icon]);
+        return redirect('insurances')->with(['mesage' => $msg, 'icon' => $icon]);
     }
 }

@@ -175,6 +175,76 @@ class Menu {
             ';
         }
 
+        if($oUser->hasAnyPermission(['240'])){
+            $menu = $menu.'
+                <li>
+                    <a class="show-cat-btn" href="##">
+                        <span class="icon bx bxs-user bx-sm" aria-hidden="true"></span>Asociados
+                        <span class="category__btn transparent-btn" title="Open list">
+                            <span class="sr-only">Open list</span>
+                            <span class="icon arrow-down" aria-hidden="true"></span>
+                        </span>
+                    </a>
+                    <ul class="cat-sub-menu">
+            ';
+            if($oUser->hasPermission('241')){
+                $route = route('crear_parner');
+                $menu = $menu.'
+                        <li>
+                            <a href="'.$route.'"><span class="icon bx bxs-user-plus bx-sm" aria-hidden="true"></span>Agregar socio</a>
+                        </li>
+                ';
+            }
+            if($oUser->hasPermission('242')){
+                $route = route('parners');
+                $menu = $menu.'
+                        <li>
+                            <a href="'.$route.'"><span class="icon bx bxs-user-detail bx-sm" aria-hidden="true"></span>Ver socios</a>
+                        </li>
+                ';
+            }
+
+            $menu =  $menu.'
+                    </ul>
+                </li>
+            ';
+        }
+
+        if($oUser->hasAnyPermission(['500'])){
+            $menu = $menu.'
+                <li>
+                    <a class="show-cat-btn" href="##">
+                        <span class="icon bx bxs-book-content bx-sm" aria-hidden="true"></span>Catálogos
+                        <span class="category__btn transparent-btn" title="Open list">
+                            <span class="sr-only">Open list</span>
+                            <span class="icon arrow-down" aria-hidden="true"></span>
+                        </span>
+                    </a>
+                    <ul class="cat-sub-menu">
+            ';
+            if($oUser->hasPermission('510')){
+                $route = route('states');
+                $menu = $menu.'
+                        <li>
+                            <a href="'.$route.'"><span class="icon bx bxs-map-alt bx-sm" aria-hidden="true"></span>Estados</a>
+                        </li>
+                ';
+            }
+            if($oUser->hasPermission('520')){
+                $route = route('insurances');
+                $menu = $menu.'
+                        <li>
+                            <a href="'.$route.'"><span class="icon bx bx-clinic bx-sm" aria-hidden="true"></span>Aseguradoras</a>
+                        </li>
+                ';
+            }
+
+            $menu =  $menu.'
+                    </ul>
+                </li>
+            ';
+        }
+
         return $menu;
     }
 }
