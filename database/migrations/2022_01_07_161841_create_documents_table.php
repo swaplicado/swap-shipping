@@ -17,12 +17,16 @@ class CreateDocumentsTable extends Migration
             $table->bigIncrements('id_document');
             $table->string('serie', 45);
             $table->string('folio', 45);
-            $table->dateTime('request_at');
+            $table->dateTime('requested_at');
             $table->dateTime('generated_at')->nullable();
+            $table->dateTime('signed_at')->nullable();
+            $table->dateTime('canceled_at')->nullable();
             $table->string('comp_version');
             $table->string('xml_version');
+            $table->string('uuid', 36)->nullable();
             $table->boolean('is_processed')->default(false);
             $table->boolean('is_signed')->default(false);
+            $table->boolean('is_canceled')->default(false);
             $table->boolean('is_deleted')->default(false);
             $table->string('mongo_document_id');
             $table->bigInteger('carrier_id')->unsigned();
@@ -49,6 +53,6 @@ class CreateDocumentsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('f_documents');
+        Schema::connection($this->connection)->drop('f_documents');
     }
 }

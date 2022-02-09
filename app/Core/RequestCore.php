@@ -47,7 +47,7 @@ class RequestCore {
         $oEmisor = new \stdClass();
         $oEmisor->rfcEmisor = $oCarrier->fiscal_id;
         $oEmisor->nombreEmisor = $oCarrier->fullname;
-        $oEmisor->regimenFiscal = "601";
+        $oEmisor->regimenFiscal = $oCarrier->tax_regime->key_code;
 
         /**
          * Receptor

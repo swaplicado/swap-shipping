@@ -62,7 +62,7 @@
             <tr>
                 <td>{{ $doc->id_document }}</td>
                 <td>{{ $doc->is_deleted }}</td>
-                <td>{{ (!$doc->is_processed && !$doc->is_signed) ? "PENDIENTE" : ($doc->is_processed ? "PROCESADO" : ($doc->is_signed ? "TIMBRADO" : "CANCELADO")) }}</td>
+                <td>{{ (!$doc->is_processed) ? "PENDIENTE" : ($doc->is_signed ? "TIMBRADO" : ($doc->is_processed ? "PROCESADO" : "CANCELADO")) }}</td>
                 <td>{{ $doc->xml_version }}</td>
                 <td>{{ $doc->comp_version }}</td>
                 <td>{{ $doc->fiscal_id }}</td>
