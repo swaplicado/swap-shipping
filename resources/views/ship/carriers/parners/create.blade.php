@@ -14,12 +14,12 @@
         <div class="col-lg-8">
             <div class="card">
                 <div class="card-header">
-                    <span>Editar chofer</span>
+                    <span>Nuevo asociado</span>
                 </div>
                 <div class="card-body">
-                    <form action="{{ route('actualizar_driver', ['id' => $data->id_trans_figure]) }}" method="POST">
-                        @csrf @method("put")
-                        @include('ship.drivers.form')
+                    <form action="{{ route('guardar_parner') }}" method="POST">
+                        @csrf
+                        @include('ship.carriers.parners.form')
                     </form>
                 </div>
             </div>

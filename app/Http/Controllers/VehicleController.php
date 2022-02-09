@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Support\Facades\DB;
 use App\Models\Vehicle;
+use App\Models\Insurances;
 use App\Models\Sat\LicenceSct;
 use App\Models\Sat\VehicleConfig;
 use App\Models\Carrier;
@@ -22,11 +23,16 @@ class VehicleController extends Controller
     public function index()
     {
         auth()->user()->authorizeRoles(['user', 'admin', 'carrier']);
-        $data = Vehicle::get();
+        if(auth()->user()->isCarrier()){
+            $data = Vehicle::where('carrier_id', auth()->user()->carrier()->first()->id_carrier)->get();
+        } else if (auth()->user()->isAdmin()){
+            $data = Vehicle::get();
+        }
+        
         $data->each(function ($data) {
             $data->LicenceSct;
             $data->VehicleConfig;
-            $data->Carrier;
+            $data->Insurance;
         });
 
         return view('ship/vehicles/index', ['data' => $data]);
@@ -46,10 +52,16 @@ class VehicleController extends Controller
         $data->Carrier = new Carrier;
         $LicenceSct = LicenceSct::pluck('id', 'description');
         $VehicleConfig = VehicleConfig::pluck('id', 'description');
-        $Carrier = Carrier::pluck('id_carrier', 'fullname');
+        if(auth()->user()->isCarrier()){
+            $Insurances = Insurances::where('carrier_id', auth()->user()->carrier()->first()->id_carrier)->pluck('id_insurance', 'full_name');
+        } else if (auth()->user()->isAdmin()){
+            $Insurances = Insurances::pluck('id_insurance', 'full_name');
+        }
+        
+        $carriers = Carrier::where('is_deleted', 0)->orderBy('fullname', 'ASC')->pluck('id_carrier', 'fullname');
 
         return view('ship/vehicles/create', ['data' => $data, 'LicenceSct' => $LicenceSct, 
-            'VehicleConfig' => $VehicleConfig, 'Carrier' => $Carrier]);
+            'VehicleConfig' => $VehicleConfig, 'insurances' => $Insurances, 'carriers' => $carriers]);
     }
 
     /**
@@ -61,21 +73,23 @@ class VehicleController extends Controller
     public function store(Request $request)
     {
         auth()->user()->authorizeRoles(['user', 'admin', 'carrier']);
+        if(auth()->user()->isCarrier()){
+            $request->request->add(['carrier' => auth()->user()->carrier()->first()->id_carrier]);
+        }
         $success = true;
         $error = "0";
-
+        
         $validator = Validator::make($request->all(), [
             'plates' => 'required',
             'license_sct_num' => 'required',
             'license_sct_id' => 'required',
             'veh_cfg_id' => 'required',
-            'carrier_id' => 'required'
+            'carrier' => 'required|not_in:0',
+            'insurance' => 'required'
         ]);
 
         $validator->validate();
-        
         $user_id = (auth()->check()) ? auth()->user()->id : null;
-        
         try {
             DB::transaction(function () use ($request, $user_id) {
                 $vehicle = Vehicle::create([
@@ -86,7 +100,8 @@ class VehicleController extends Controller
                     'policy' => $request->policy,
                     'license_sct_id' => $request->license_sct_id,
                     'veh_cfg_id' => $request->veh_cfg_id,
-                    'carrier_id' => $request->carrier_id,
+                    'carrier_id' => $request->carrier,
+                    'insurance_id' => $request->insurance,
                     'usr_new_id' => $user_id,
                     'usr_upd_id' => $user_id
                 ]);
@@ -94,6 +109,7 @@ class VehicleController extends Controller
         } catch (QueryException $e) {
             $success = false;
             $error = $e->errorInfo[0];
+            dd($e);
         }
 
         if ($success) {
@@ -127,7 +143,8 @@ class VehicleController extends Controller
     public function edit($id)
     {
         auth()->user()->authorizeRoles(['user', 'admin', 'carrier']);
-        $data = Vehicle::where('id_vehicle', $id)->get();
+        $data = Vehicle::where('id_vehicle', $id)->first();
+        auth()->user()->carrierAutorization($data->carrier_id);
         $data->each(function ($data) {
             $data->LicenceSct;
             $data->VehicleConfig;
@@ -135,10 +152,10 @@ class VehicleController extends Controller
         });
         $LicenceSct = LicenceSct::pluck('id', 'description');
         $VehicleConfig = VehicleConfig::pluck('id', 'description');
-        $Carrier = Carrier::pluck('id_carrier', 'fullname');
+        $Insurances = Insurances::where('carrier_id', $data->carrier_id)->pluck('id_insurance', 'full_name');
 
         return view('ship/vehicles/edit', ['data' => $data, 'LicenceSct' => $LicenceSct, 
-            'VehicleConfig' => $VehicleConfig, 'Carrier' => $Carrier ]);
+            'VehicleConfig' => $VehicleConfig, 'insurances' => $Insurances ]);
     }
 
     /**
@@ -158,8 +175,7 @@ class VehicleController extends Controller
             'plates' => 'required',
             'license_sct_num' => 'required',
             'license_sct_id' => 'required',
-            'veh_cfg_id' => 'required',
-            'carrier_id' => 'required'
+            'veh_cfg_id' => 'required'
         ]);
 
         $validator->validate();
@@ -169,7 +185,7 @@ class VehicleController extends Controller
         try {
             DB::transaction(function () use ($request, $user_id, $id) {
                 $Vehicle = Vehicle::findOrFail($id);
-
+                auth()->user()->carrierAutorization($Vehicle->carrier_id);
                 $Vehicle->plates = $request->plates;
                 $Vehicle->year_model = $request->year_model;
                 $Vehicle->license_sct_num = $request->license_sct_num;
@@ -177,7 +193,6 @@ class VehicleController extends Controller
                 $Vehicle->policy = $request->policy;
                 $Vehicle->license_sct_id = $request->license_sct_id;
                 $Vehicle->veh_cfg_id = $request->veh_cfg_id;
-                $Vehicle->carrier_id = $request->carrier_id;
                 $Vehicle->usr_upd_id = $user_id;
 
                 $Vehicle->update();
@@ -213,7 +228,7 @@ class VehicleController extends Controller
         try {
             DB::transaction(function () use ($id, $user_id) {
                 $Vehicle = Vehicle::findOrFail($id);
-
+                auth()->user()->carrierAutorization($vehicle->carrier_id);
                 $Vehicle->is_deleted = 1;
                 $Vehicle->usr_upd_id = $user_id;
 
@@ -243,7 +258,7 @@ class VehicleController extends Controller
         try {
             DB::transaction(function () use ($id, $user_id) {
                 $Vehicle = Vehicle::findOrFail($id);
-
+                auth()->user()->carrierAutorization($vehicle->carrier_id);
                 $Vehicle->is_deleted = 0;
                 $Vehicle->usr_upd_id = $user_id;
 

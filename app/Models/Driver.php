@@ -3,7 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use App\UserPivot;
+use App\UserVsTypes;
 
 class Driver extends Model
 {
@@ -23,15 +23,15 @@ class Driver extends Model
         'usr_upd_id'
     ];
 
-    public function userPivot() {
-        return $this->hasMany(UserPivot::class, 'trans_figure_id');
+    public function UserVsTypes() {
+        return $this->hasMany(UserVsTypes::class, 'trans_figure_id');
     }
 
     public function users()
     {
-        // $this->hasMany(UserPivot::class, 'carrier_id')->select('user_id')->first()->user_id
-        $userPivot = $this->userPivot()->first();
-        return $userPivot->user();
+        // $this->hasMany(UserVsTypes::class, 'carrier_id')->select('user_id')->first()->user_id
+        $UserVsTypes = $this->UserVsTypes()->first();
+        return $UserVsTypes->user();
     }
 
     public function FAddress(){

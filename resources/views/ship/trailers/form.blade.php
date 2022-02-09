@@ -21,21 +21,6 @@
         <span class="text-danger">{{$message}}</span>
     @enderror
 </div>
-<div class="form-group">
-    <label for="carrier_id" class="form-label">Transportista</label>
-    <select class="form-select" name="carrier_id">
-        <option value="0" selected>Select Transportista</option>
-        @foreach($Carrier as $c => $index)
-            @if($data->carrier_id == $index)
-                <option selected value='{{$index}}'>{{$c}}</option>
-            @else
-                <option value='{{$index}}'>{{$c}}</option>
-            @endif
-        @endforeach
-    </select>
-    @error('carrier_id')
-        <span class="text-danger">{{$message}}</span>
-    @enderror
-</div>
+{!! $data->id_trailer == null ? (session()->has('form') ? session('form') : "") : "" !!}
 <br>
 <button type="submit" class="btn btn-primary">Guardar</button>

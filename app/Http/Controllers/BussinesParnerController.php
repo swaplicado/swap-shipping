@@ -2,15 +2,21 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Database\QueryException;
-use App\Models\Trailer;
-use App\Models\Sat\TrailerSubtype;
 use App\Models\Carrier;
+use App\Models\BussinesParner;
+use App\User;
+use App\Role;
+use App\RoleUser;
+use App\UserVsTypes;
+use App\Models\Sat\Tax_regimes;
+use Illuminate\Support\Facades\Hash;
 use Validator;
+use Auth;
 
-class TrailerController extends Controller
+class BussinesParnerController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -19,18 +25,8 @@ class TrailerController extends Controller
      */
     public function index()
     {
-        auth()->user()->authorizeRoles(['user', 'admin', 'carrier']);
-        if(auth()->user()->isCarrier()){
-            $data = Trailer::where('carrier_id', auth()->user()->carrier()->first()->id_carrier)->get();
-        } else if(auth()->user()->isAdmin()) {
-            $data = Trailer::get();
-        }
-        $data->each( function ($data) {
-            $data->TrailerSubtype;
-            $data->Carrier;
-        });
-
-        return view('ship/trailers/index', ['data' => $data]);
+        $data = auth()->user()->carrier()->first()->parners()->get();
+        return view('ship/carriers/parners/index', ['data' => $data]);
     }
 
     /**
@@ -40,14 +36,8 @@ class TrailerController extends Controller
      */
     public function create()
     {
-        auth()->user()->authorizeRoles(['user', 'admin', 'carrier']);
-        $data = new Trailer;
-        $data->TrailerSubtype = new TrailerSubtype;
-        $data->Carrier = new Carrier;
-        $TrailerSubtype = TrailerSubtype::pluck('id', 'description');
-        $carriers = Carrier::where('is_deleted', 0)->orderBy('fullname', 'ASC')->pluck('id_carrier', 'fullname');
-
-        return view('ship/trailers/create', ['data' => $data, 'TrailerSubtype' => $TrailerSubtype, 'carriers' => $carriers]);
+        $data = null;
+        return view('ship/carriers/parners/create', ['data' => $data]);
     }
 
     /**
@@ -58,17 +48,12 @@ class TrailerController extends Controller
      */
     public function store(Request $request)
     {
-        auth()->user()->authorizeRoles(['user', 'admin', 'carrier']);
-        if(auth()->user()->isCarrier()){
-            $request->request->add(['carrier' => auth()->user()->carrier()->first()->id_carrier]);
-        }
         $success = true;
         $error = "0";
-
         $validator = Validator::make($request->all(), [
-            'plates' => 'required',
-            'carrier' => 'required|not_in:0',
-            'trailer_subtype_id' => 'required'
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
+            'password' => ['required', 'string', 'min:8', 'confirmed'],
+            'fullname' => 'required'
         ]);
 
         $validator->validate();
@@ -77,13 +62,23 @@ class TrailerController extends Controller
         
         try {
             DB::transaction(function () use ($request, $user_id) {
-                $trailer = Trailer::create([
-                    'plates' => $request->plates,
-                    'trailer_subtype_id' => $request->trailer_subtype_id,
-                    'carrier_id' => $request->carrier,
-                    'usr_new_id' => $user_id,
-                    'usr_upd_id' => $user_id
+                $user = User::create([
+                    'username' => $request->fullname,
+                    'email' => $request->email,
+                    'password' => Hash::make($request->password),
+                    'full_name' => $request->fullname,
+                    'user_type_id' => 3,
+                    'is_carrier' => 1
                 ]);
+        
+                $user->roles()->attach(Role::where('id', 3)->first());
+                
+                $UserVsTypes = UserVsTypes::create([
+                    'carrier_id' => auth()->user()->carrier()->first()->id_carrier,
+                    'user_id' => $user->id,
+                    'is_principal' => 0
+                ]);
+
             });
         } catch (QueryException $e) {
             $success = false;
@@ -98,7 +93,7 @@ class TrailerController extends Controller
             $icon = "error";
         }
 
-        return redirect('trailers')->with(['mesage' => $msg, 'icon' => $icon]);
+        return redirect('parners')->with(['mesage' => $msg, 'icon' => $icon]);
     }
 
     /**
@@ -120,16 +115,8 @@ class TrailerController extends Controller
      */
     public function edit($id)
     {
-        auth()->user()->authorizeRoles(['user', 'admin', 'carrier']);
-        $data = Trailer::where('id_trailer', $id)->first();
-        auth()->user()->carrierAutorization($data->carrier_id);
-        $data->each(function ($data) {
-            $data->TrailerSubtype;
-            $data->Carrier;
-        });
-        $TrailerSubtype = TrailerSubtype::pluck('id', 'description');
-
-        return view('ship/trailers/edit', ['data' => $data, 'TrailerSubtype' => $TrailerSubtype]);
+        $data = User::where('id', $id)->get();
+        return view('ship/carriers/parners/edit', ['data' => $data]);
     }
 
     /**
@@ -141,13 +128,12 @@ class TrailerController extends Controller
      */
     public function update(Request $request, $id)
     {
-        auth()->user()->authorizeRoles(['user', 'admin', 'carrier']);
         $success = true;
         $error = "0";
-
+        
         $validator = Validator::make($request->all(), [
-            'plates' => 'required',
-            'trailer_subtype_id' => 'required'
+            'fullname' => 'required',
+            'email' => 'required'
         ]);
 
         $validator->validate();
@@ -156,14 +142,15 @@ class TrailerController extends Controller
 
         try {
             DB::transaction(function () use ($request, $user_id, $id) {
-                $trailer = Trailer::findOrFail($id);
-                auth()->user()->carrierAutorization($trailer->carrier_id);
-                $trailer->plates = $request->plates;
-                $trailer->trailer_subtype_id = $request->trailer_subtype_id;
-                // $trailer->carrier_id = $request->carrier_id;
-                $trailer->usr_upd_id = $user_id;
+                $User = User::findOrFail($id);
 
-                $trailer->update();
+                $User->username = $request->fullname;
+                $User->full_name = $request->fullname;
+                $User->email = $request->email;
+                // $User->user_type_id = $request->user_type_id;
+
+                $User->update();
+                
             });
         } catch (QueryException $e) {
             $success = false;
@@ -178,7 +165,7 @@ class TrailerController extends Controller
             $icon = "error";
         }
 
-        return redirect('trailers')->with(['mesage' => $msg, 'icon' => $icon]);
+        return redirect('parners')->with(['mesage' => $msg, 'icon' => $icon]);
     }
 
     /**
@@ -189,17 +176,26 @@ class TrailerController extends Controller
      */
     public function destroy($id)
     {
-        auth()->user()->authorizeRoles(['user', 'admin', 'carrier']);
         $success = true;
         $user_id = (auth()->check()) ? auth()->user()->id : null;
         try {
             DB::transaction(function () use ($id, $user_id) {
-                $trailer = Trailer::findOrFail($id);
-                auth()->user()->carrierAutorization($trailer->carrier_id);
-                $trailer->is_deleted = 1;
-                $trailer->usr_upd_id = $user_id;
+                $User = User::findOrFail($id);
+                $User->is_deleted = 1;
 
-                $trailer->update();
+                $RoleUser = RoleUser::where('user_id', $id)->get();
+                foreach($RoleUser as $ru){
+                    $ru->is_deleted = 1;
+                    $ru->update();
+                }
+
+                $UserVsTypes = UserVsTypes::where('user_id', $id)->get();
+                foreach($UserVsTypes as $ut){
+                    $ut->is_deleted = 1;
+                    $ut->update();
+                }
+
+                $User->update();
             });
         } catch (QueryException $e) {
             $success = false;
@@ -214,22 +210,31 @@ class TrailerController extends Controller
             $icon = "error";
         }
 
-        return redirect('trailers')->with(['mesage' => $msg, 'icon' => $icon]);
+        return redirect('parners')->with(['mesage' => $msg, 'icon' => $icon]);
     }
 
     public function recover($id)
     {
-        auth()->user()->authorizeRoles(['user', 'admin', 'carrier']);
         $success = true;
         $user_id = (auth()->check()) ? auth()->user()->id : null;
         try {
             DB::transaction(function () use ($id, $user_id) {
-                $trailer = Trailer::findOrFail($id);
-                auth()->user()->carrierAutorization($trailer->carrier_id);
-                $trailer->is_deleted = 0;
-                $trailer->usr_upd_id = $user_id;
+                $User = User::findOrFail($id);
+                $User->is_deleted = 0;
 
-                $trailer->update();
+                $RoleUser = RoleUser::where('user_id', $id)->get();
+                foreach($RoleUser as $ru){
+                    $ru->is_deleted = 0;
+                    $ru->update();
+                }
+
+                $UserVsTypes = UserVsTypes::where('user_id', $id)->get();
+                foreach($UserVsTypes as $ut){
+                    $ut->is_deleted = 0;
+                    $ut->update();
+                }
+
+                $User->update();
             });
         } catch (QueryException $e) {
             $success = false;
@@ -240,10 +245,10 @@ class TrailerController extends Controller
             $msg = "Se recuperó el registro con éxito";
             $icon = "success";
         } else {
-            $msg = "Error al recuperar el registro. Error: " . $error;
+            $msg = "Error al recuperó el registro. Error: " . $error;
             $icon = "error";
         }
 
-        return redirect('trailers')->with(['mesage' => $msg, 'icon' => $icon]);
+        return redirect('parners')->with(['mesage' => $msg, 'icon' => $icon]);
     }
 }
