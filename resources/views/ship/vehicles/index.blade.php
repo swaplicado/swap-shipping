@@ -31,7 +31,8 @@
 <h2>Vehículos</h2>
 <br>
 
-@include('layouts.table_buttons', ['crear' => 'crear_vehicle'])
+{{-- filterCarrier => [requerido?, id carrier es relacion?] --}}
+@include('layouts.table_buttons', ['crear' => 'crear_vehicle', 'filterCarrier' => auth()->user()->isAdmin()])
 
 <div class="container table-responsive">
     <table id="T_vehicles" class="display" style="width:100%;">
@@ -39,6 +40,7 @@
             <tr>
                 <th>id</th>
                 <th>is deleted</th>
+                <th>id carrier</th>
                 <th>Placas</th>
                 <th>Modelo</th>
                 <th>Permiso Sct</th>
@@ -55,6 +57,7 @@
             <tr>
                 <td>{{$d->id_vehicle}}</td>
                 <td>{{$d->is_deleted}}</td>
+                <td>{{$d->carrier_id}}</td>
                 <td>{{$d->plates}}</td>
                 <td>{{$d->year_model}}</td>
                 <td>{{$d->LicenceSct->key_code}}</td>

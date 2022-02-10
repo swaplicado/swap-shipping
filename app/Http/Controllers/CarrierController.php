@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Database\QueryException;
 use Validator;
 use Auth;
+use stdClass;
 use App\User;
 use App\Role;
 use App\UserVsTypes;
@@ -34,6 +35,12 @@ class CarrierController extends Controller
         $data->each(function ($data) {
             $data->tax_regime;
         });
+        
+        foreach($data as $d){
+            $d->Carrier = new stdClass();
+            $d->Carrier->id_carrier = $d->id_carrier;
+            $d->Carrier->fullname = $d->fullname;
+        }
         return view('ship/carriers/index', ['data' => $data]);
     }
 

@@ -31,7 +31,7 @@
 <h2>Aseguradoras</h2>
 <br>
 
-@include('layouts.table_buttons', ['crear' => 'crear_insurance'])
+@include('layouts.table_buttons', ['crear' => 'crear_insurance', 'filterCarrier' => auth()->user()->isAdmin()])
 
 <div class="container table-responsive">
     <table id="T_insurances" class="display" style="width:100%;">
@@ -39,6 +39,7 @@
             <tr>
                 <th>id</th>
                 <th>is deleted</th>
+                <th>id carrier</th>
                 <th>Nombre</th>
                 <th>Responsabilidad civil</th>
                 <th>Ambiental</th>
@@ -51,6 +52,7 @@
             <tr>
                 <td>{{$d->id_insurance}}</td>
                 <td>{{$d->is_deleted}}</td>
+                <td>{{$d->carrier_id}}</td>
                 <td>{{$d->full_name}}</td>
                 @if ($d->is_civ_resp)
                     <td style="text-align: center"><i class='bx bx-check bx-sm'></i></td>

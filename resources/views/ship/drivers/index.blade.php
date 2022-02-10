@@ -31,7 +31,7 @@
 <h2>Choferes</h2>
 <br>
 
-@include('layouts.table_buttons', ['crear' => 'crear_driver'])
+@include('layouts.table_buttons', ['crear' => 'crear_driver', 'filterCarrier' => auth()->user()->isAdmin()])
 
 <div class="container table-responsive">
     <table id="T_drivers" class="display" style="width:100%;">
@@ -39,6 +39,7 @@
             <tr>
                 <th>id</th>
                 <th>is deleted</th>
+                <th>id carrier</th>
                 <th>Nombre</th>
                 <th>RFC</th>
                 <th>RFC extranjero</th>
@@ -52,6 +53,7 @@
                 <th>Número exterior</th>
                 <th>Número interior</th>
                 <th>Teléfono</th>
+                <th>Transportista</th>
             </tr>
         </thead>
         <tbody>
@@ -59,6 +61,7 @@
             <tr>
                 <td>{{$d->id_trans_figure}}</td>
                 <td>{{$d->is_deleted}}</td>
+                <td>{{$d->carrier_id}}</td>
                 <td>{{$d->fullname}}</td>
                 <td>{{$d->fiscal_id}}</td>
                 <td>{{$d->fiscal_fgr_id}}</td>
@@ -72,6 +75,7 @@
                 <td>{{$d->FAddress->street_num_ext}}</td>
                 <td>{{$d->FAddress->street_num_int}}</td>
                 <td>{{$d->FAddress->telephone}}</td>
+                <td>{{$d->Carrier->fullname}}</td>
             </tr>
             @endforeach
         </tbody>

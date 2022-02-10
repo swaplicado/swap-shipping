@@ -31,15 +31,7 @@
 <h2>Transportistas</h2>
 <br>
 
-@include('layouts.table_buttons', ['crear' => 'crear_carrier'])
-<div class="col-lg-2" style="float: left">
-    <select class="form-select" name="carriers" id="carriers">
-        <option value="0" selected>Transportista</option>
-        @foreach ($data as $d)
-            <option value="{{$d->id_carrier}}">{{$d->fullname}}</option>
-        @endforeach
-    </select>
-</div>
+@include('layouts.table_buttons', ['crear' => 'crear_carrier', 'filterCarrier' => auth()->user()->isAdmin()])
 
 <div class="container table-responsive">
     <table id="T_carriers" class="display" style="width:100%;">
@@ -47,6 +39,7 @@
             <tr>
                 <th>id</th>
                 <th>is deleted</th>
+                <th>id carrier</th>
                 <th>Nombre</th>
                 <th>RFC</th>
                 <th>Regimen fiscal</th>
@@ -61,6 +54,7 @@
             <tr>
                 <td>{{$d->id_carrier}}</td>
                 <td>{{$d->is_deleted}}</td>
+                <td>{{$d->id_carrier}}</td>
                 <td>{{$d->fullname}}</td>
                 <td>{{$d->fiscal_id}}</td>
                 <td>{{$d->tax_regime->description}}</td>

@@ -101,7 +101,7 @@ class Menu {
                 $route = route('trailers');
                 $menu = $menu.'
                         <li>
-                            <a href="'.$route.'"><span class="icon bx bxs-package bx-sm" aria-hidden="true"></span>Trailers</a>
+                            <a href="'.$route.'"><span class="icon bx bxs-package bx-sm" aria-hidden="true"></span>Remolques</a>
                         </li>
                 ';
             }
