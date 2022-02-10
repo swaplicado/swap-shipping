@@ -68,7 +68,9 @@ class CarrierController extends Controller
             'password' => ['required', 'string', 'min:8', 'confirmed'],
             'tax_regimes' => 'required|not_in:0',
             'fullname' => 'required',
-            'RFC' => 'required'
+            'RFC' => 'required',
+            'contact1' => 'required',
+            'telephone1' => 'required'
         ]);
 
         $validator->validate();
@@ -78,7 +80,6 @@ class CarrierController extends Controller
         $tr_id = $values->id;
         
         $user_id = (auth()->check()) ? auth()->user()->id : null;
-        
         try {
             DB::transaction(function () use ($request, $user_id, $tr_id) {
                 $user = User::create([
@@ -96,6 +97,10 @@ class CarrierController extends Controller
                     'fullname' => $request->fullname,
                     'fiscal_id' => $request->RFC,
                     'tax_regimes_id' => $tr_id,
+                    'contact1' => $request->contact1,
+                    'telephone1' => $request->telephone1,
+                    'contact2' => $request->contact2,
+                    'telephone2' => $request->telephone2,
                     'usr_new_id' => $user_id,
                     'usr_upd_id' => $user_id
                 ]);
@@ -110,6 +115,7 @@ class CarrierController extends Controller
         } catch (QueryException $e) {
             $success = false;
             $error = $e->errorInfo[0];
+            dd($e);
         }
 
         if ($success) {

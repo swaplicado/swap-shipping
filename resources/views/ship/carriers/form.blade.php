@@ -35,6 +35,34 @@
         <span class="text-danger">{{$message}}</span>
     @enderror
 </div>
+<div class="form-group">
+    <label for="contact1" class="form-label">Contacto 1</label>
+    <input name="contact1" type="text" class="form-control" value="{{ old('contact1', $data->contact1 ?? '') }}">
+    @error('contact1')
+        <span class="text-danger">{{ $message }}</span>
+    @enderror
+</div>
+<div class="form-group">
+    <label for="telephone1" class="form-label">Teléfono 1</label>
+    <input name="telephone1" type="text" class="form-control" value="{{ old('telephone1', $data->telephone1 ?? '') }}">
+    @error('telephone1')
+        <span class="text-danger">{{ $message }}</span>
+    @enderror
+</div>
+<div class="form-group">
+    <label for="contact2" class="form-label">Contacto 2</label>
+    <input name="contact2" type="text" class="form-control" value="{{ old('contact2', $data->contact2 ?? '') }}">
+    @error('contact2')
+        <span class="text-danger">{{ $message }}</span>
+    @enderror
+</div>
+<div class="form-group">
+    <label for="telephone2" class="form-label">Teléfono 2</label>
+    <input name="telephone2" type="text" class="form-control" value="{{ old('telephone2', $data->telephone2 ?? '') }}">
+    @error('telephone2')
+        <span class="text-danger">{{ $message }}</span>
+    @enderror
+</div>
 @if(!$data->users)
 <div class="form-group">
     <label for="password" class="form-label">{{ __('Password') }}</label>

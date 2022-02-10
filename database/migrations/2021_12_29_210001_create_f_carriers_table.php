@@ -17,6 +17,10 @@ class CreateFCarriersTable extends Migration
             $table->bigIncrements('id_carrier');
             $table->string('fullname');
             $table->string('fiscal_id')->unique();
+            $table->string('telephone1');
+            $table->string('telephone2')->nullable();
+            $table->string('contact1');
+            $table->string('contact2')->nullable();
             $table->boolean('is_deleted')->default(0);
             $table->bigInteger('tax_regimes_id')->unsigned();
             $table->bigInteger('usr_new_id')->unsigned();
