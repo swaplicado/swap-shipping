@@ -39,6 +39,7 @@
             <tr>
                 <th>id</th>
                 <th>is deleted</th>
+                <th></th>
                 <th>Nombre</th>
                 <th>E-mail</th>
             </tr>
@@ -48,6 +49,7 @@
             <tr>
                 <td>{{$d->user()->first()->id}}</td>
                 <td>{{$d->user()->first()->is_deleted}}</td>
+                <td></td>
                 <td>{{$d->user()->first()->full_name}}</td>
                 <td>{{$d->user()->first()->email}}</td>
             </tr>
