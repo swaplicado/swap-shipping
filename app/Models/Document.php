@@ -26,11 +26,18 @@ class Document extends Model
      * @var array
      */
     protected $fillable = [
-        'dt_request',
-        'dt_generated',
+        'serie',
+        'folio',
+        'requested_at',
+        'generated_at',
+        'canceled_at',
+        'signed_at',
         'comp_version',
         'xml_version',
+        'uuid',
         'is_processed',
+        'is_signed',
+        'is_canceled',
         'is_deleted',
         'mongo_document_id',
         'carrier_id',

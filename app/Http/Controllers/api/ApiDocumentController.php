@@ -35,6 +35,7 @@ class ApiDocumentController extends Controller
         $oDoc->xml_version = $oConfigurations->cfdi4_0->cfdiVersion;
         $oDoc->is_processed = false;
         $oDoc->is_signed = false;
+        $oDoc->is_canceled = false;
         $oDoc->is_deleted = false;
         $oDoc->mongo_document_id = $oMongoDocument->id;
         $oDoc->carrier_id = $oCarrier->id_carrier;
@@ -43,6 +44,7 @@ class ApiDocumentController extends Controller
         $oDoc->usr_can_id = 1;
         $oDoc->usr_new_id = 1;
         $oDoc->usr_upd_id = 1;
+        
         $oDoc->save();
 
         return json_encode($oDoc->id_document);

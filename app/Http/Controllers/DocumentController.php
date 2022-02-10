@@ -5,11 +5,14 @@ namespace App\Http\Controllers;
 use Carbon\Carbon;
 use App\Models\Document;
 use App\Models\M\MDocument;
+use App\Models\M\MSignLog;
 use App\Models\Carrier;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use App\Http\Controllers\Controller;
 use App\SXml\XmlGeneration;
 use App\Core\RequestCore;
+use App\Core\FinkokCore;
 
 class DocumentController extends Controller
 {
@@ -313,17 +316,57 @@ class DocumentController extends Controller
         $oDocument = Document::find($id);
         $oMongoDocument = MDocument::find($oDocument->mongo_document_id);
 
-        $oMongoDocument->save();
-        dd($oMongoDocument->xml_cfdi, base64_encode($oMongoDocument->xml_cfdi));
-        // sellar
-        $originalString = XmlGeneration::createOriginalStringFromString($oMongoDocument->xml_cfdi);
-        $sello = XmlGeneration::getStamp($originalString);
+        if (! $oDocument->is_processed) {
+            return redirect("documents")->with(['icon' => "error", 'mesage' => "El documento no ha sido procesado"]);
+        }
 
-        return $sello;
-        // timbrar
+        if ($oDocument->is_signed) {
+            return redirect("documents")->with(['icon' => "error", 'mesage' => "El documento ya ha sido timbrado"]);
+        }
+
+        // timbrar cfdi
+        $cfdiResponse = FinkokCore::signCfdi($oMongoDocument->xml_cfdi);
+
+        if (is_array($cfdiResponse) || null === $cfdiResponse) {
+            if ($cfdiResponse != null) {
+                $log = new MSignLog();
+                $log->message = $cfdiResponse[0]["message"];
+                $log->idError = $cfdiResponse[0]["error_code"];
+                $log->mongoDocumentId = $oMongoDocument->id;
+                $log->idDocument = $oDocument->id_document;
+                $log->idUser = \Auth::user()->id;
+                $log->save();
+    
+                return redirect()->back()->with(['icon' => "error", 'mesage' => $log->idError."-".$log->message]);
+            }
+        }
+
+        $oMongoDocument->xml_cfdi = $cfdiResponse->xml;
+        $oMongoDocument->uuid = $cfdiResponse->UUID;
+        $oMongoDocument->is_signed = true;
+        $oMongoDocument->signed_at = Carbon::parse($cfdiResponse->Fecha)->toDateTimeString();
+        $oMongoDocument->save();
+
+        $oDocument->is_signed = true;
+        $oDocument->uuid = $cfdiResponse->UUID;
+        $oDocument->signed_at = Carbon::parse($cfdiResponse->Fecha)->toDateTimeString();
+        $oDocument->usr_sign_id = \Auth::user()->id;
+        $oDocument->save();
+
+        $log = new MSignLog();
+        $log->message = $cfdiResponse->CodEstatus;
+        $log->satSeal = $cfdiResponse->SatSeal;
+        $log->satCert = $cfdiResponse->NoCertificadoSAT;
+        $log->mongoDocumentId = $oMongoDocument->id;
+        $log->idDocument = $oDocument->id_document;
+        $log->idUser = \Auth::user()->id;
+        $log->idError = null;
+        $log->save();
 
         // generar pdf
 
         // enviar correo
+
+        return redirect("documents")->with(['mesage' => "El documento ha sido timbrado exitosamente", 'icon' => "success"]);
     }
 }
