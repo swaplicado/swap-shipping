@@ -23,7 +23,7 @@ class RoleUserController extends Controller
         $data->each(function ($data) {
             $data->RolePermissions;
         });
-        // dd($data[0]->RolePermissions[0]->Permission()->get());
+        
         return view('sys/roles/index', ['data' => $data]);
     }
 

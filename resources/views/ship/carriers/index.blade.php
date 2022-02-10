@@ -50,6 +50,10 @@
                 <th>Nombre</th>
                 <th>RFC</th>
                 <th>Regimen fiscal</th>
+                <th>Teléfono 1</th>
+                <th>Contacto 1</th>
+                <th>Teléfono 2</th>
+                <th>Contacto 2</th>
             </tr>
         </thead>
         <tbody>
@@ -60,6 +64,10 @@
                 <td>{{$d->fullname}}</td>
                 <td>{{$d->fiscal_id}}</td>
                 <td>{{$d->tax_regime->description}}</td>
+                <td>{{$d->telephone1}}</td>
+                <td>{{$d->contact1}}</td>
+                <td>{{$d->telephone2}}</td>
+                <td>{{$d->contact2}}</td>
             </tr>
             @endforeach
         </tbody>

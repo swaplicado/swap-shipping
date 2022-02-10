@@ -14,6 +14,10 @@ class Carrier extends Model
     protected $fillable = [
         'fullname',
         'fiscal_id',
+        'telephone1',
+        'contact1',
+        'telephone2',
+        'contact2',
         'is_deleted',
         'tax_regimes_id',
         'usr_new_id',
