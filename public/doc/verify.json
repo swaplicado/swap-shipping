@@ -1,0 +1,94 @@
+{
+    "info": {
+        "rfcTransportista": "XIQB891116QE4",
+        "formaPago": "04",
+        "metodoPago": "PUE",
+        "moneda": "MXN",
+        "exportacion": "01",
+        "transpInternac": "No",
+        "entradaSalidaMerc": "Entrada",
+        "paisOrigenDestino": "",
+        "ubicaciones": [{
+                "tipoUbicacion": "Origen",
+                "rFCRemitenteDestinatario": "CAR120903D34",
+                "fechaHoraSalidaLlegada": "2022-01-03T15:03:23",
+                "nombreRFC": "",
+                "numRegIdTrib": "",
+                "residenciaFiscal": "",
+                "distanciaRecorrida": "0",
+                "domicilio": {
+                    "calle": "Hortencia",
+                    "numeroExterior": "420",
+                    "numeroInterior": "",
+                    "colonia": "0640",
+                    "localidad": "10",
+                    "referencia": "",
+                    "municipio": "095",
+                    "estado": "MEX",
+                    "pais": "MEX",
+                    "codigoPostal": "50000"
+                }
+            },
+            {
+                "tipoUbicacion": "Destino",
+                "rFCRemitenteDestinatario": "KIJ0906199R1",
+                "fechaHoraSalidaLlegada": "2022-01-03T20:03:23",
+                "nombreRFC": "",
+                "numRegIdTrib": "",
+                "residenciaFiscal": "",
+                "domicilio": {
+                    "calle": "AV JOSE DE GALVEZ",
+                    "numeroExterior": "645",
+                    "numeroInterior": "",
+                    "colonia": "1666",
+                    "localidad": "01",
+                    "referencia": "Referencias",
+                    "municipio": "053",
+                    "estado": "MIC",
+                    "pais": "MEX",
+                    "codigoPostal": "58200"
+                }
+            },
+            {
+                "tipoUbicacion": "Destino",
+                "rFCRemitenteDestinatario": "KIJ0906199R1",
+                "fechaHoraSalidaLlegada": "2022-01-04T20:03:23",
+                "nombreRFC": "",
+                "numRegIdTrib": "",
+                "residenciaFiscal": "",
+                "domicilio": {
+                    "municipio": "098",
+                    "estado": "JAL",
+                    "pais": "MEX",
+                    "codigoPostal": "44000"
+                }
+            }
+        ],
+        "mercancia": {
+            "pesoBrutoTotal": "12.000000",
+            "unidadPeso": "KGM",
+            "mercancias": [{
+                "bienesTransp": "14111513",
+                "cantidad": 50,
+                "claveUnidad": "H87",
+                "dimensiones": 0,
+                "pesoEnKg": 300.000000,
+                "valorMercancia": 100000.000000,
+                "moneda": "MXN",
+                "fraccionArancelaria": "",
+                "pedimento": ""
+            },
+			{
+                "bienesTransp": "60122508",
+                "cantidad": 100,
+                "claveUnidad": "H87",
+                "dimensiones": 0,
+                "pesoEnKg": 150.000000,
+                "valorMercancia": 200000.000000,
+                "moneda": "MXN",
+                "fraccionArancelaria": "",
+                "pedimento": ""
+            }]
+        }
+    }
+}

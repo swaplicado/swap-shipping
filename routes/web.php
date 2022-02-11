@@ -92,6 +92,7 @@ Route::middleware(['auth', 'verified', 'menu'])->group( function () {
 
     //Rutas cfdi
     Route::get('/cfdiToPdf', 'CfdiController@index')->name('cfdiToPdf');
+    Route::get('/verify', 'VerifyController@verifyJson')->name('verify');
 
     //Rutas config catalogos
         //Estados
