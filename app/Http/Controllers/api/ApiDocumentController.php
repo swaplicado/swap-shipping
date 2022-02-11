@@ -8,6 +8,7 @@ use App\Models\Carrier;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\SXml\XmlGeneration;
+use App\SXml\verifyDocument;
 
 class ApiDocumentController extends Controller
 {
@@ -16,37 +17,43 @@ class ApiDocumentController extends Controller
         $oConfigurations = \App\Utils\Configuration::getConfigurations();
         $oObjData = (object) $request->info;
 
-        $oCarrier = Carrier::where('fiscal_id', $oObjData->rfcTransportista)
-                            ->where('is_deleted', false)
-                            ->first();
+        $verify = json_decode(verifyDocument::verifyJson($oObjData));
 
-        $oMongoDocument = new MDocument();
-        $oMongoDocument->body_request = json_encode($oObjData);
-        $oMongoDocument->xml_cfdi = null;
-        $oMongoDocument->carrier_id = $oCarrier->id_carrier;
-        $oMongoDocument->save();
+        if($verify->code == 200){
+            $oCarrier = Carrier::where('fiscal_id', $oObjData->rfcTransportista)
+                                ->where('is_deleted', false)
+                                ->first();
 
-        $oDoc = new Document();
-        $oDoc->serie = "";
-        $oDoc->folio = "";
-        $oDoc->requested_at = date('Y-m-d H:i:s');
-        $oDoc->generated_at = date('Y-m-d H:i:s');
-        $oDoc->comp_version = $oConfigurations->cfdi4_0->cartaPorteVersion;
-        $oDoc->xml_version = $oConfigurations->cfdi4_0->cfdiVersion;
-        $oDoc->is_processed = false;
-        $oDoc->is_signed = false;
-        $oDoc->is_canceled = false;
-        $oDoc->is_deleted = false;
-        $oDoc->mongo_document_id = $oMongoDocument->id;
-        $oDoc->carrier_id = $oCarrier->id_carrier;
-        $oDoc->usr_gen_id = 1;
-        $oDoc->usr_sign_id = 1;
-        $oDoc->usr_can_id = 1;
-        $oDoc->usr_new_id = 1;
-        $oDoc->usr_upd_id = 1;
-        
-        $oDoc->save();
+            $oMongoDocument = new MDocument();
+            $oMongoDocument->body_request = json_encode($oObjData);
+            $oMongoDocument->xml_cfdi = null;
+            $oMongoDocument->carrier_id = $oCarrier->id_carrier;
+            $oMongoDocument->save();
 
-        return json_encode($oDoc->id_document);
+            $oDoc = new Document();
+            $oDoc->serie = "";
+            $oDoc->folio = "";
+            $oDoc->requested_at = date('Y-m-d H:i:s');
+            $oDoc->generated_at = date('Y-m-d H:i:s');
+            $oDoc->comp_version = $oConfigurations->cfdi4_0->cartaPorteVersion;
+            $oDoc->xml_version = $oConfigurations->cfdi4_0->cfdiVersion;
+            $oDoc->is_processed = false;
+            $oDoc->is_signed = false;
+            $oDoc->is_canceled = false;
+            $oDoc->is_deleted = false;
+            $oDoc->mongo_document_id = $oMongoDocument->id;
+            $oDoc->carrier_id = $oCarrier->id_carrier;
+            $oDoc->usr_gen_id = 1;
+            $oDoc->usr_sign_id = 1;
+            $oDoc->usr_can_id = 1;
+            $oDoc->usr_new_id = 1;
+            $oDoc->usr_upd_id = 1;
+            
+            $oDoc->save();
+        } else {
+            return $verify->message;
+        }
+
+        // return json_encode($oDoc->id_document);
     }
 }
