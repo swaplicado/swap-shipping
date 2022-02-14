@@ -20,6 +20,7 @@ class Carrier extends Model
         'contact2',
         'is_deleted',
         'tax_regimes_id',
+        'prod_serv_id',
         'usr_new_id',
         'usr_upd_id'
     ];
@@ -41,5 +42,9 @@ class Carrier extends Model
 
     public function parners(){
         return $this->hasMany(UserVsTypes::class, 'carrier_id')->where([['is_principal', 0]]);
+    }
+
+    public function prod_serv(){
+        return $this->hasOne('App\Models\Sat\ProdServ', 'id', 'prod_serv_id');
     }
 }

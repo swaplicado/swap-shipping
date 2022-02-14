@@ -25,7 +25,9 @@ class SeriesController extends Controller
             $data = Series::get();
         }
 
-        return view('catalogos/series/index', ['data' => $data]);
+        $carriers = Carrier::where('is_deleted', 0)->select('id_carrier','fullname')->get();
+
+        return view('catalogos/series/index', ['data' => $data, 'carriers' => $carriers]);
     }
 
     /**

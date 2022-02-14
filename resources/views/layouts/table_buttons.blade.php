@@ -48,8 +48,8 @@
         <div class="col-lg-2" style="float: left">
             <select class="form-select" name="carriers" id="carriers">
                 <option value="0" selected>Transportista</option>
-                @foreach ($data as $d)
-                    <option value="{{$d->Carrier->id_carrier}}">{{$d->Carrier->fullname}}</option>
+                @foreach ($carriers as $c)
+                    <option value="{{$c->id_carrier}}">{{$c->fullname}}</option>
                 @endforeach
             </select>
         </div>

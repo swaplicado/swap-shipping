@@ -35,7 +35,9 @@ class VehicleController extends Controller
             $data->Insurance;
         });
 
-        return view('ship/vehicles/index', ['data' => $data]);
+        $carriers = Carrier::where('is_deleted', 0)->select('id_carrier','fullname')->get();
+
+        return view('ship/vehicles/index', ['data' => $data, 'carriers' => $carriers]);
     }
 
     /**
@@ -50,8 +52,9 @@ class VehicleController extends Controller
         $data->LicenceSct = new LicenceSct;
         $data->VehicleConfig = new VehicleConfig;
         $data->Carrier = new Carrier;
-        $LicenceSct = LicenceSct::pluck('id', 'description');
-        $VehicleConfig = VehicleConfig::pluck('id', 'description');
+        
+        $LicenceSct = LicenceSct::selectRaw('CONCAT(key_code, " - ", description) AS kd, id')->pluck('id', 'kd');
+        $VehicleConfig = VehicleConfig::selectRaw('CONCAT(key_code, " - ", description) AS kd, id')->pluck('id', 'kd');
         if(auth()->user()->isCarrier()){
             $Insurances = Insurances::where('carrier_id', auth()->user()->carrier()->first()->id_carrier)->pluck('id_insurance', 'full_name');
         } else if (auth()->user()->isAdmin()){
@@ -149,10 +152,11 @@ class VehicleController extends Controller
             $data->VehicleConfig;
             $data->Carrier;
         });
-        $LicenceSct = LicenceSct::pluck('id', 'description');
-        $VehicleConfig = VehicleConfig::pluck('id', 'description');
+        
+        $LicenceSct = LicenceSct::selectRaw('CONCAT(key_code, " - ", description) AS kd, id')->pluck('id', 'kd');
+        $VehicleConfig = VehicleConfig::selectRaw('CONCAT(key_code, " - ", description) AS kd, id')->pluck('id', 'kd');
         $Insurances = Insurances::where('carrier_id', $data->carrier_id)->pluck('id_insurance', 'full_name');
-
+        
         return view('ship/vehicles/edit', ['data' => $data, 'LicenceSct' => $LicenceSct, 
             'VehicleConfig' => $VehicleConfig, 'insurances' => $Insurances ]);
     }

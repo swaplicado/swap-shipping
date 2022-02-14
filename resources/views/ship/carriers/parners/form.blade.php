@@ -32,6 +32,7 @@
         name="password_confirmation" required
         autocomplete="new-password">
 </div>
+{!! is_null($data) ? (session()->has('form') ? session('form') : "") : "" !!}
 @endif
 <br>
 <button type="submit" class="btn btn-primary">Guardar</button>

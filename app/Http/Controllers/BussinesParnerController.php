@@ -25,8 +25,13 @@ class BussinesParnerController extends Controller
      */
     public function index()
     {
-        $data = auth()->user()->carrier()->first()->parners()->get();
-        return view('ship/carriers/parners/index', ['data' => $data]);
+        if(auth()->user()->isCarrier()){
+            $data = auth()->user()->carrier()->first()->parners()->get();
+        } else if (auth()->user()->isAdmin()){
+            $data = UserVsTypes::where([['is_principal', 0], ['is_deleted', 0]])->get();
+        }
+        $carriers = Carrier::where('is_deleted', 0)->select('id_carrier','fullname')->get();
+        return view('ship/carriers/parners/index', ['data' => $data, 'carriers' => $carriers]);
     }
 
     /**
@@ -48,12 +53,16 @@ class BussinesParnerController extends Controller
      */
     public function store(Request $request)
     {
+        if(auth()->user()->isCarrier()){
+            $request->request->add(['carrier' => auth()->user()->carrier()->first()->id_carrier]);
+        }
         $success = true;
         $error = "0";
         $validator = Validator::make($request->all(), [
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
-            'fullname' => 'required'
+            'fullname' => 'required',
+            'carrier' => 'required|not_in:0'
         ]);
 
         $validator->validate();
@@ -74,7 +83,7 @@ class BussinesParnerController extends Controller
                 $user->roles()->attach(Role::where('id', 3)->first());
                 
                 $UserVsTypes = UserVsTypes::create([
-                    'carrier_id' => auth()->user()->carrier()->first()->id_carrier,
+                    'carrier_id' => $request->carrier,
                     'user_id' => $user->id,
                     'is_principal' => 0
                 ]);

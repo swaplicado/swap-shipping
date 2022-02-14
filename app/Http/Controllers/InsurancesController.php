@@ -28,7 +28,10 @@ class InsurancesController extends Controller
         $data->each(function ($data) {
             $data->Carrier;
         });
-        return view('catalogos/insurances/index', ['data' => $data]);
+
+        $carriers = Carrier::where('is_deleted', 0)->select('id_carrier','fullname')->get();
+
+        return view('catalogos/insurances/index', ['data' => $data, 'carriers' => $carriers]);
     }
 
     /**

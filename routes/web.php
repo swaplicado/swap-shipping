@@ -48,7 +48,7 @@ Route::middleware(['auth', 'verified', 'menu'])->group( function () {
 
     // Rutas asociados
     Route::get('/parners', 'BussinesParnerController@index')->name('parners');
-    Route::get('/parners/create', 'BussinesParnerController@create')->name('crear_parner');
+    Route::get('/parners/create', 'BussinesParnerController@create')->name('crear_parner')->middleware('form');
     Route::post('/parners', 'BussinesParnerController@store')->name('guardar_parner');
     Route::get('/parners/{id}/edit', 'BussinesParnerController@edit')->name('editar_parner');
     Route::put('/parners/{id}', 'BussinesParnerController@update')->name('actualizar_parner');

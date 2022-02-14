@@ -41,7 +41,10 @@ class DriverController extends Controller
             $data->sat_FAddress;
             $data->User;
         });
-        return view('ship/drivers/index', ['data' => $data]);
+
+        $carriers = Carrier::where('is_deleted', 0)->select('id_carrier','fullname')->get();
+
+        return view('ship/drivers/index', ['data' => $data, 'carriers' => $carriers]);
     }
 
     /**

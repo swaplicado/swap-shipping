@@ -36,6 +36,22 @@
     @enderror
 </div>
 <div class="form-group">
+    <label for="prod_serv" class="form-label">Concepto</label>
+    <select class="form-select" name="prod_serv">
+        <option value="0" selected>Concepto</option>
+        @foreach($prod_serv as $ps => $index)
+            @if($data->prod_serv->id == $index)
+                <option selected value='{"id":"{{$index}}","name":"{{$ps}}"}'>{{$ps}}</option>
+            @else
+                <option value='{"id":"{{$index}}","name":"{{$ps}}"}'>{{$ps}}</option>
+            @endif
+        @endforeach
+    </select>
+    @error('prod_serv')
+        <span class="text-danger">{{$message}}</span>
+    @enderror
+</div>
+<div class="form-group">
     <label for="contact1" class="form-label">Contacto 1</label>
     <input name="contact1" type="text" class="form-control" value="{{ old('contact1', $data->contact1 ?? '') }}">
     @error('contact1')
