@@ -109,7 +109,6 @@ class VehicleController extends Controller
         } catch (QueryException $e) {
             $success = false;
             $error = $e->errorInfo[0];
-            dd($e);
         }
 
         if ($success) {

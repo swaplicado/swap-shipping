@@ -17,6 +17,7 @@ class CreateSeriesTable extends Migration
             $table->bigIncrements('id_serie');
             $table->string('serie_name', 50);
             $table->string('prefix', 10);
+            $table->Integer('initial_number');
             $table->string('description');
             $table->boolean('is_deleted')->default(false);
             $table->bigInteger('carrier_id')->unsigned();

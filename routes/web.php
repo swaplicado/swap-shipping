@@ -91,7 +91,7 @@ Route::middleware(['auth', 'verified', 'menu'])->group( function () {
     Route::put('/role/recover/{id}', 'RoleUserController@recover')->name('recuperar_role');
 
     //Rutas cfdi
-    Route::get('/cfdiToPdf', 'CfdiController@index')->name('cfdiToPdf');
+    Route::get('/cfdiToPdf/{id}', 'CfdiController@index')->name('cfdiToPdf');
     Route::get('/verify', 'VerifyController@verifyJson')->name('verify');
 
     //Rutas config catalogos
@@ -109,6 +109,14 @@ Route::middleware(['auth', 'verified', 'menu'])->group( function () {
     Route::put('/insurances/{id}', 'InsurancesController@update')->name('actualizar_insurance');
     Route::delete('/insurances/{id}', 'InsurancesController@destroy')->name('eliminar_insurance');
     Route::put('/insurances/recover/{id}', 'InsurancesController@recover')->name('recuperar_insurance');
+    //Series
+    Route::get('/series', 'SeriesController@index')->name('series');
+    Route::get('/series/create', 'SeriesController@create')->name('crear_serie')->middleware('form');
+    Route::post('/series', 'SeriesController@store')->name('guardar_serie');
+    Route::get('/series/{id}/edit', 'SeriesController@edit')->name('editar_serie');
+    Route::put('/series/{id}', 'SeriesController@update')->name('actualizar_serie');
+    Route::delete('/series/{id}', 'SeriesController@destroy')->name('eliminar_serie');
+    Route::put('/series/recover/{id}', 'SeriesController@recover')->name('recuperar_serie');
     // Rutas Documentos
     Route::get('documents/{id?}', 'DocumentController@index')->name('documents');
     Route::resource('documents', 'DocumentController');

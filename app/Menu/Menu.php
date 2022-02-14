@@ -195,6 +195,14 @@ class Menu {
                         </li>
                 ';
             }
+            if($oUser->hasPermission('431')){
+                $route = route('series');
+                $menu = $menu.'
+                        <li>
+                            <a href="'.$route.'"><span class="icon bx bx-sort-a-z bx-sm" aria-hidden="true"></span>Series</a>
+                        </li>
+                ';
+            }
 
             $menu =  $menu.'
                     </ul>

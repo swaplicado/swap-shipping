@@ -85,5 +85,6 @@
                                         'signRoute' => 'documents.sign', 
                                         'editar' => 'documents.edit', 
                                         'eliminar' => 'documents.destroy', 
-                                        'recuperar' => 'documents.restore'])
+                                        'recuperar' => 'documents.restore',
+                                        'Pdf' => 'cfdiToPdf'])
 @endsection

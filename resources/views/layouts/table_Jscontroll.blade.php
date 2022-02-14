@@ -140,6 +140,13 @@
             })
         });
 
+        $('#id_down_pdf').click(function () {
+            var id = table.row('.selected').data()[0];
+            var url = '{{route("cfdiToPdf", ":id")}}';
+            url = url.replace(':id',id);
+            window.location.href = url;
+        });
+
         $('#isDeleted').change( function() {
             table.draw();
         });

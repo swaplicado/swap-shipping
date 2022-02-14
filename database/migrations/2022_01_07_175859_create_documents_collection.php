@@ -20,6 +20,7 @@ class CreateDocumentsCollection extends Migration
             $table->increments('id');
             $table->string('body_request');
             $table->string('xml_cfdi');
+            $table->string('pdf');
             $table->bigInteger('carrier_id');
             $table->timestamps();
         });
