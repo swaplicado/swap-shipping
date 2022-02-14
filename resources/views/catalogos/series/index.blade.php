@@ -28,40 +28,36 @@
         })
     </script>
 @endif
-<h2>Transportistas</h2>
+<h2>Series de documentos</h2>
 <br>
 
-@include('layouts.table_buttons', ['crear' => 'crear_carrier', 'filterCarrier' => auth()->user()->isAdmin()])
+@include('layouts.table_buttons', ['crear' => 'crear_serie'])
 
 <div class="container table-responsive">
-    <table id="T_carriers" class="display" style="width:100%;">
+    <table id="T_series" class="display" style="width:100%;">
         <thead>
             <tr>
                 <th>id</th>
                 <th>is deleted</th>
                 <th>id carrier</th>
                 <th>Nombre</th>
-                <th>RFC</th>
-                <th>Regimen fiscal</th>
-                <th>Teléfono 1</th>
-                <th>Contacto 1</th>
-                <th>Teléfono 2</th>
-                <th>Contacto 2</th>
+                <th>Prefijo</th>
+                <th>Numero inicial</th>
+                <th>Descripción</th>
+                <th>Transportista</th>
             </tr>
         </thead>
         <tbody>
             @foreach($data as $d)
             <tr>
-                <td>{{$d->id_carrier}}</td>
+                <td>{{$d->id_serie}}</td>
                 <td>{{$d->is_deleted}}</td>
                 <td>{{$d->id_carrier}}</td>
-                <td>{{$d->fullname}}</td>
-                <td>{{$d->fiscal_id}}</td>
-                <td>{{$d->tax_regime->description}}</td>
-                <td>{{$d->telephone1}}</td>
-                <td>{{$d->contact1}}</td>
-                <td>{{$d->telephone2}}</td>
-                <td>{{$d->contact2}}</td>
+                <td>{{$d->serie_name}}</td>
+                <td>{{$d->prefix}}</td>
+                <td>{{$d->initial_number}}</td>
+                <td>{{$d->description}}</td>
+                <td>{{$d->Carrier->fullname}}</td>
             </tr>
             @endforeach
         </tbody>
@@ -70,6 +66,6 @@
 @endsection
 
 @section('scripts')
-    @include('layouts.table_Jscontroll', ['table_id' => 'T_carriers', 'editar' => 'editar_carrier', 
-        'eliminar' => 'eliminar_carrier', 'recuperar' => 'recuperar_carrier'] )
+    @include('layouts.table_Jscontroll', ['table_id' => 'T_series', 'editar' => 'editar_serie', 
+        'eliminar' => 'eliminar_serie', 'recuperar' => 'recuperar_serie'] )
 @endsection

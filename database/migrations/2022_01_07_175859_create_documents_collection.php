@@ -1,7 +1,8 @@
 <?php
 
 use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
+// use Illuminate\Database\Schema\Blueprint;
+use Jenssegers\Mongodb\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
 class CreateDocumentsCollection extends Migration
@@ -16,9 +17,10 @@ class CreateDocumentsCollection extends Migration
     public function up()
     {
         Schema::connection($this->connection)->create('m_documents', function (Blueprint $table) {
-            $table->bigIncrements('id');
+            $table->increments('id');
             $table->string('body_request');
             $table->string('xml_cfdi');
+            $table->string('pdf');
             $table->bigInteger('carrier_id');
             $table->timestamps();
         });
@@ -31,6 +33,6 @@ class CreateDocumentsCollection extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('m_documents');
+        Schema::connection($this->connection)->drop('m_documents');
     }
 }

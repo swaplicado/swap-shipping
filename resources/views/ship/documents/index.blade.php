@@ -46,6 +46,7 @@
             <tr>
                 <th>id</th>
                 <th>is_deleted</th>
+                <th></th>
                 <th>Estatus</th>
                 <th>Version CFDI</th>
                 <th>Version carta porte</th>
@@ -62,6 +63,7 @@
             <tr>
                 <td>{{ $doc->id_document }}</td>
                 <td>{{ $doc->is_deleted }}</td>
+                <td></td>
                 <td>{{ (!$doc->is_processed) ? "PENDIENTE" : ($doc->is_signed ? "TIMBRADO" : ($doc->is_processed ? "PROCESADO" : "CANCELADO")) }}</td>
                 <td>{{ $doc->xml_version }}</td>
                 <td>{{ $doc->comp_version }}</td>
@@ -83,5 +85,6 @@
                                         'signRoute' => 'documents.sign', 
                                         'editar' => 'documents.edit', 
                                         'eliminar' => 'documents.destroy', 
-                                        'recuperar' => 'documents.restore'])
+                                        'recuperar' => 'documents.restore',
+                                        'Pdf' => 'cfdiToPdf'])
 @endsection

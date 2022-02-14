@@ -31,7 +31,7 @@
 <h2>Trailers</h2>
 <br>
 
-@include('layouts.table_buttons', ['crear' => 'crear_trailer'])
+@include('layouts.table_buttons', ['crear' => 'crear_trailer', 'filterCarrier' => auth()->user()->isAdmin()])
 
 <div class="container table-responsive">
     <table id="T_trailer" class="display" style="width:100%;">
@@ -39,6 +39,7 @@
             <tr>
                 <th>id</th>
                 <th>is deleted</th>
+                <th>id carrier</th>
                 <th>Placas</th>
                 <th>Subtipo de trailer</th>
                 <th>Transportista</th>
@@ -49,6 +50,7 @@
             <tr>
                 <td>{{$d->id_trailer}}</td>
                 <td>{{$d->is_deleted}}</td>
+                <td>{{$d->carrier_id}}</td>
                 <td>{{$d->plates}}</td>
                 <td>{{$d->TrailerSubtype->key_code}}</td>
                 <td>{{$d->Carrier->fullname}}</td>

@@ -13,6 +13,7 @@ use App\Http\Controllers\Controller;
 use App\SXml\XmlGeneration;
 use App\Core\RequestCore;
 use App\Core\FinkokCore;
+use App\Utils\CfdiUtils;
 
 class DocumentController extends Controller
 {
@@ -307,7 +308,8 @@ class DocumentController extends Controller
         $oMongoDocument->save();
 
         //Generamos el pdf
-
+        $pdf = CfdiUtils::updatePdf($oMongoDocument->_id, $sXml);
+        
         return redirect("documents");
     }
 
@@ -364,7 +366,7 @@ class DocumentController extends Controller
         $log->save();
 
         // generar pdf
-
+        $pdf = CfdiUtils::updatePdf($oMongoDocument->_id, $sXml);
         // enviar correo
 
         return redirect("documents")->with(['mesage' => "El documento ha sido timbrado exitosamente", 'icon' => "success"]);

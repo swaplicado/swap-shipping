@@ -42,3 +42,16 @@
         <option value="2">Todos</option>
     </select>
 </div>
+
+@if (isset($filterCarrier))
+    @if ($filterCarrier)
+        <div class="col-lg-2" style="float: left">
+            <select class="form-select" name="carriers" id="carriers">
+                <option value="0" selected>Transportista</option>
+                @foreach ($data as $d)
+                    <option value="{{$d->Carrier->id_carrier}}">{{$d->Carrier->fullname}}</option>
+                @endforeach
+            </select>
+        </div>
+    @endif
+@endif

@@ -41,4 +41,8 @@ class Driver extends Model
     public function sat_FAddress(){
         return $this->hasOne('App\Models\Sat\FiscalAddress', 'id', 'fis_address_id');
     }
+
+    public function Carrier(){
+        return $this->hasOne('App\Models\Carrier', 'id_carrier', 'carrier_id');
+    }
 }

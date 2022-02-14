@@ -26,12 +26,26 @@
             }
         );
 
+        $.fn.dataTable.ext.search.push(
+            function( settings, data, dataIndex ) {
+                let carrier = parseInt( $('#carriers').val(), 10 );
+                let carrierId = 0;
+
+                if(carrier != 0 && !isNaN(carrier)){
+                    carrierId = parseInt( data[2] );
+                    return carrierId == carrier;
+                }
+
+                return true;
+            }
+        );
+
         
 
         var table = $('#{{$table_id}}').DataTable({
             "columnDefs": [
                 {
-                    "targets": [0,1],
+                    "targets": [0,1,2],
                     "visible": false,
                     "searchable": true
                 }
@@ -124,6 +138,13 @@
                     
                 }
             })
+        });
+
+        $('#id_down_pdf').click(function () {
+            var id = table.row('.selected').data()[0];
+            var url = '{{route("cfdiToPdf", ":id")}}';
+            url = url.replace(':id',id);
+            window.location.href = url;
         });
 
         $('#isDeleted').change( function() {

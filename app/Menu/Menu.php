@@ -101,7 +101,7 @@ class Menu {
                 $route = route('trailers');
                 $menu = $menu.'
                         <li>
-                            <a href="'.$route.'"><span class="icon bx bxs-package bx-sm" aria-hidden="true"></span>Trailers</a>
+                            <a href="'.$route.'"><span class="icon bx bxs-package bx-sm" aria-hidden="true"></span>Remolques</a>
                         </li>
                 ';
             }
@@ -192,6 +192,14 @@ class Menu {
                 $menu = $menu.'
                         <li>
                             <a href="'.$route.'"><span class="icon bx bx-clinic bx-sm" aria-hidden="true"></span>Aseguradoras</a>
+                        </li>
+                ';
+            }
+            if($oUser->hasPermission('431')){
+                $route = route('series');
+                $menu = $menu.'
+                        <li>
+                            <a href="'.$route.'"><span class="icon bx bx-sort-a-z bx-sm" aria-hidden="true"></span>Series</a>
                         </li>
                 ';
             }

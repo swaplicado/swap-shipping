@@ -41,7 +41,11 @@
             @if($data->tp_figure_id == $index)
                 <option selected value='{{$index}}'>{{$tp}}</option>
             @else
-                <option value='{{$index}}'>{{$tp}}</option>
+                @if (1 == $index)
+                    <option selected value='{{$index}}'>{{$tp}}</option>
+                @else
+                    <option value='{{$index}}'>{{$tp}}</option>
+                @endif
             @endif
         @endforeach
     </select>
@@ -57,7 +61,11 @@
         @if($data->fis_address_id == $index)
             <option selected value='{{$index}}'>{{$cty}}</option>
         @else
-            <option value='{{$index}}'>{{$cty}}</option>
+            @if (251 == $index)
+                <option selected value='{{$index}}'>{{$cty}}</option>
+            @else
+                <option value='{{$index}}'>{{$cty}}</option>
+            @endif
         @endif
         @endforeach
     </select>
