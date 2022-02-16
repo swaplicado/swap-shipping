@@ -19,6 +19,7 @@ class SeriesController extends Controller
      */
     public function index()
     {
+        auth()->user()->authorizePermission(['431']);
         if(auth()->user()->isCarrier()){
             $data = Series::where('carrier_id', auth()->user()->carrier()->first()->id_carrier)->get();
         } else if (auth()->user()->isAdmin() || auth()->user()->isClient()){
@@ -37,6 +38,7 @@ class SeriesController extends Controller
      */
     public function create()
     {
+        auth()->user()->authorizePermission(['432']);
         $data = new Series;
         $data->Carrier = new Carrier;
         $carriers = Carrier::where('is_deleted', 0)->orderBy('fullname', 'ASC')->pluck('id_carrier', 'fullname');
@@ -52,6 +54,7 @@ class SeriesController extends Controller
      */
     public function store(Request $request)
     {
+        auth()->user()->authorizePermission(['432']);
         if(auth()->user()->isCarrier()){
             $request->request->add(['carrier' => auth()->user()->carrier()->first()->id_carrier]);
         }
@@ -114,6 +117,7 @@ class SeriesController extends Controller
      */
     public function edit($id)
     {
+        auth()->user()->authorizePermission(['433']);
         $data = Series::where('id_serie', $id)->first();
         auth()->user()->carrierAutorization($data->carrier_id);
         $data->Carrier = new Carrier;
@@ -130,6 +134,7 @@ class SeriesController extends Controller
      */
     public function update(Request $request, $id)
     {
+        auth()->user()->authorizePermission(['433']);
         $success = true;
         $error = "0";
 
@@ -180,6 +185,7 @@ class SeriesController extends Controller
      */
     public function destroy($id)
     {
+        auth()->user()->authorizePermission(['434']);
         $success = true;
         $user_id = (auth()->check()) ? auth()->user()->id : null;
         try {
@@ -209,6 +215,7 @@ class SeriesController extends Controller
 
     public function recover($id)
     {
+        auth()->user()->authorizePermission(['435']);
         $success = true;
         $user_id = (auth()->check()) ? auth()->user()->id : null;
         try {

@@ -16,6 +16,7 @@ class MunicipalitiesController extends Controller
      */
     public function index()
     {
+        auth()->user()->authorizePermission(['441']);
         $data = Municipalities::get();
 
         return view('catalogos/municipalities/index', ['data' => $data]);
@@ -61,6 +62,7 @@ class MunicipalitiesController extends Controller
      */
     public function edit($id)
     {
+        auth()->user()->authorizePermission(['443']);
         $data = Municipalities::findOrFail($id);
         
         return view('catalogos/municipalities/edit', ['data' => $data]);
@@ -75,6 +77,7 @@ class MunicipalitiesController extends Controller
      */
     public function update(Request $request, $id)
     {
+        auth()->user()->authorizePermission(['443']);
         $success = true;
         $error = "0";
 

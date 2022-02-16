@@ -22,6 +22,7 @@ class UserController extends Controller
     public function index()
     {
         // auth()->user()->authorizeRoles(['admin']);
+        auth()->user()->authorizePermission(['511']);
         $data = User::get();
         $data->each(function ($data) {
             $data->getRoles;
@@ -70,6 +71,7 @@ class UserController extends Controller
     public function edit($id)
     {
         // auth()->user()->authorizeRoles(['admin']);
+        auth()->user()->authorizePermission(['513']);
         $data = User::where('id', $id)->get();
         $data->each(function ($data) {
             $data->getRoles;
@@ -90,6 +92,7 @@ class UserController extends Controller
     public function update(Request $request, $id)
     {
         // auth()->user()->authorizeRoles(['admin']);
+        auth()->user()->authorizePermission(['513']);
         $success = true;
         $error = "0";
         
@@ -171,6 +174,7 @@ class UserController extends Controller
     public function destroy($id)
     {
         // auth()->user()->authorizeRoles(['admin']);
+        auth()->user()->authorizePermission(['514']);
         $success = true;
         $user_id = (auth()->check()) ? auth()->user()->id : null;
         try {
@@ -205,6 +209,7 @@ class UserController extends Controller
     public function recover($id)
     {
         // auth()->user()->authorizeRoles(['admin']);
+        auth()->user()->authorizePermission(['515']);
         $success = true;
         $user_id = (auth()->check()) ? auth()->user()->id : null;
         try {

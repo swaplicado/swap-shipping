@@ -22,7 +22,8 @@ class VehicleController extends Controller
      */
     public function index()
     {
-        auth()->user()->authorizeRoles(['user', 'admin', 'carrier']);
+        // auth()->user()->authorizeRoles(['user', 'admin', 'carrier']);
+        auth()->user()->authorizePermission(['221']);
         if(auth()->user()->isCarrier()){
             $data = Vehicle::where('carrier_id', auth()->user()->carrier()->first()->id_carrier)->get();
         } else if (auth()->user()->isAdmin() || auth()->user()->isClient()){
@@ -47,7 +48,8 @@ class VehicleController extends Controller
      */
     public function create()
     {
-        auth()->user()->authorizeRoles(['user', 'admin', 'carrier']);
+        // auth()->user()->authorizeRoles(['user', 'admin', 'carrier']);
+        auth()->user()->authorizePermission(['222']);
         $data = new Vehicle;
         $data->LicenceSct = new LicenceSct;
         $data->VehicleConfig = new VehicleConfig;
@@ -75,7 +77,8 @@ class VehicleController extends Controller
      */
     public function store(Request $request)
     {
-        auth()->user()->authorizeRoles(['user', 'admin', 'carrier']);
+        // auth()->user()->authorizeRoles(['user', 'admin', 'carrier']);
+        auth()->user()->authorizePermission(['222']);
         if(auth()->user()->isCarrier()){
             $request->request->add(['carrier' => auth()->user()->carrier()->first()->id_carrier]);
         }
@@ -144,7 +147,8 @@ class VehicleController extends Controller
      */
     public function edit($id)
     {
-        auth()->user()->authorizeRoles(['user', 'admin', 'carrier']);
+        // auth()->user()->authorizeRoles(['user', 'admin', 'carrier']);
+        auth()->user()->authorizePermission(['223']);
         $data = Vehicle::where('id_vehicle', $id)->first();
         auth()->user()->carrierAutorization($data->carrier_id);
         $data->each(function ($data) {
@@ -170,7 +174,8 @@ class VehicleController extends Controller
      */
     public function update(Request $request, $id)
     {
-        auth()->user()->authorizeRoles(['user', 'admin', 'carrier']);
+        // auth()->user()->authorizeRoles(['user', 'admin', 'carrier']);
+        auth()->user()->authorizePermission(['223']);
         $success = true;
         $error = "0";
 
@@ -225,7 +230,8 @@ class VehicleController extends Controller
      */
     public function destroy($id)
     {
-        auth()->user()->authorizeRoles(['user', 'admin', 'carrier']);
+        // auth()->user()->authorizeRoles(['user', 'admin', 'carrier']);
+        auth()->user()->authorizePermission(['224']);
         $success = true;
         $user_id = (auth()->check()) ? auth()->user()->id : null;
         try {
@@ -255,7 +261,8 @@ class VehicleController extends Controller
 
     public function recover($id)
     {
-        auth()->user()->authorizeRoles(['user', 'admin', 'carrier']);
+        // auth()->user()->authorizeRoles(['user', 'admin', 'carrier']);
+        auth()->user()->authorizePermission(['225']);
         $success = true;
         $user_id = (auth()->check()) ? auth()->user()->id : null;
         try {

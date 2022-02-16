@@ -25,6 +25,7 @@ class BussinesParnerController extends Controller
      */
     public function index()
     {
+        auth()->user()->authorizePermission(['241']);
         if(auth()->user()->isCarrier()){
             $data = auth()->user()->carrier()->first()->parners()->get();
         } else if (auth()->user()->isAdmin() || auth()->user()->isClient()){
@@ -42,6 +43,7 @@ class BussinesParnerController extends Controller
      */
     public function create()
     {
+        auth()->user()->authorizePermission(['242']);
         $data = null;
         return view('ship/carriers/parners/create', ['data' => $data]);
     }
@@ -54,6 +56,7 @@ class BussinesParnerController extends Controller
      */
     public function store(Request $request)
     {
+        auth()->user()->authorizePermission(['242']);
         if(auth()->user()->isCarrier()){
             $request->request->add(['carrier' => auth()->user()->carrier()->first()->id_carrier]);
         }
@@ -126,7 +129,10 @@ class BussinesParnerController extends Controller
      */
     public function edit($id)
     {
+        auth()->user()->authorizePermission(['243']);
         $data = User::where('id', $id)->get();
+        $carrier_id = UserVsTypes::where('user_id', $id)->value('carrier_id');
+        auth()->user()->carrierAutorization($carrier_id);
         return view('ship/carriers/parners/edit', ['data' => $data]);
     }
 
@@ -139,6 +145,9 @@ class BussinesParnerController extends Controller
      */
     public function update(Request $request, $id)
     {
+        auth()->user()->authorizePermission(['243']);
+        $carrier_id = UserVsTypes::where('user_id', $id)->value('carrier_id');
+        auth()->user()->carrierAutorization($carrier_id);
         $success = true;
         $error = "0";
         
@@ -192,6 +201,9 @@ class BussinesParnerController extends Controller
      */
     public function destroy($id)
     {
+        auth()->user()->authorizePermission(['244']);
+        $carrier_id = UserVsTypes::where('user_id', $id)->value('carrier_id');
+        auth()->user()->carrierAutorization($carrier_id);
         $success = true;
         $user_id = (auth()->check()) ? auth()->user()->id : null;
         try {
@@ -231,6 +243,9 @@ class BussinesParnerController extends Controller
 
     public function recover($id)
     {
+        auth()->user()->authorizePermission(['245']);
+        $carrier_id = UserVsTypes::where('user_id', $id)->value('carrier_id');
+        auth()->user()->carrierAutorization($carrier_id);
         $success = true;
         $user_id = (auth()->check()) ? auth()->user()->id : null;
         try {
