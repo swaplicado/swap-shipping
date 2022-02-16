@@ -59,17 +59,16 @@
     <script>
         function onSave() {
             let isValid = document.querySelector('#theForm').reportValidity();
-
             if (! isValid) {
                 return;
             }
 
             let allValid = app.validateAll();
-
             if (! allValid) {
                 return;
             }
 
+            SGui.showWaiting(3000);
             app.setData();
 
             document.getElementById("saveButton").disabled = true;

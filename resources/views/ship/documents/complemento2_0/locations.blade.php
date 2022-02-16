@@ -1,9 +1,3 @@
-<div class="row">
-    <div class="col-md-6">
-        <label><b>Ubicaciones:</b></label>
-    </div>
-</div>
-<br>
 <div class="row" v-for="oLocation in oData.oCartaPorte.ubicaciones">
     <label>@{{ oLocation.tipoUbicacion }}</label>
     <div class="row">

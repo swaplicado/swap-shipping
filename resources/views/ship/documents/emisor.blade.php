@@ -1,9 +1,4 @@
 <div class="row">
-    <div class="col-md-6">
-        <label><b> Emisor:</b></label>
-    </div>
-</div>
-<div class="row">
     <div class="col-md-3">
         <label for="rfc_emisor" class="form-label">RFC</label>
         <input type="text" class="form-control" id="rfc_emisor" v-model="oData.emisor.rfcEmisor">

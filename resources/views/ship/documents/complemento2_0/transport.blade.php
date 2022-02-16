@@ -1,14 +1,8 @@
 <div class="row">
-    <div class="col-md-6">
-        <label><b>Autotransporte:</b></label>
-    </div>
-</div>
-<br>
-<div class="row">
     <div class="col-md-12">
         <div class="form-group">
             <label for="autotransporte">Autotransporte</label>
-            <select class="form-select" id="autotransporte" v-model="oVehicle" required>
+            <select class="form-select" id="autotransporte" v-model="oVehicle">
                 <option v-for="vehicle in lVehicles" :value="vehicle">@{{ vehicle.alias }}</option>
             </select>
         </div>
@@ -56,17 +50,17 @@
 <div class="row">
     <div class="col-md-3">
         <label for="insurance">Aseguradora</label>
-        <input type="text" name="" class="form-control" id="insurance" :value="oVehicle.insurance_full_name" readonly>
+        <input type="text" class="form-control" id="insurance" :value="oVehicle.insurance_full_name" readonly>
     </div>
     <div class="col-md-3">
         <label for="insurance">Póliz resp. civ.</label>
-        <input type="text" name="" class="form-control" id="insurance" :value="oVehicle.policy" readonly>
+        <input type="text" class="form-control" id="insurance" :value="oVehicle.policy" readonly>
     </div>
 </div>
 <br>
 <div class="row">
     <div class="col-md-2">
-        <label>Remolques:</label>
+        <label id="labRems">Remolques:</label>
     </div>
 </div>
 <div class="row">
@@ -75,19 +69,23 @@
     </div>
 </div>
 <div class="row" v-for="selTrailer in lSelectedTrailers">
-    <div class="col-md-4">
+    <div class="col-md-3">
         <label>Remolque:</label>
-        <select name="" id="" class="form-select" v-model="selTrailer.oTrailer">
+        <select class="form-select" v-model="selTrailer.oTrailer">
             <option v-for="trailer in lTrailers" :value="trailer">@{{ trailer.plates }}</option>
         </select>
     </div>
     <div class="col-md-3">
         <label>Código</label>
-        <input type="text" name="" class="form-control" :value="selTrailer.oTrailer.trailer_subtype_key_code" readonly>
+        <input type="text" class="form-control" :value="selTrailer.oTrailer.trailer_subtype_key_code" readonly>
     </div>
     <div class="col-md-5">
         <label>Tipo</label>
-        <input type="text" name="" class="form-control" :value="selTrailer.oTrailer.trailer_subtype_description" readonly>
+        <input type="text" class="form-control" :value="selTrailer.oTrailer.trailer_subtype_description" readonly>
+    </div>
+    <div class="col-md-1">
+        <label>Eliminar</label>
+        <button type="button" class="btn btn-danger" v-on:click="removeTrailer(lSelectedTrailers.indexOf(selTrailer))">X</button>
     </div>
 </div>
 <br>

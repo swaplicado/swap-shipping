@@ -16,4 +16,5 @@
     var oServerData = new GlobalData();
     console.log(oServerData);
 </script>
+<script src="{{ asset('js/myapp/gui/SGui.js') }}"></script>
 <script src="{{ asset('js/myapp/documents/SDocumentsApp.js') }}"></script>

@@ -109,6 +109,7 @@ Route::middleware(['auth', 'verified', 'menu'])->group( function () {
     Route::put('/insurances/{id}', 'InsurancesController@update')->name('actualizar_insurance');
     Route::delete('/insurances/{id}', 'InsurancesController@destroy')->name('eliminar_insurance');
     Route::put('/insurances/recover/{id}', 'InsurancesController@recover')->name('recuperar_insurance');
+    
     //Series
     Route::get('/series', 'SeriesController@index')->name('series');
     Route::get('/series/create', 'SeriesController@create')->name('crear_serie')->middleware('form');
@@ -117,12 +118,24 @@ Route::middleware(['auth', 'verified', 'menu'])->group( function () {
     Route::put('/series/{id}', 'SeriesController@update')->name('actualizar_serie');
     Route::delete('/series/{id}', 'SeriesController@destroy')->name('eliminar_serie');
     Route::put('/series/recover/{id}', 'SeriesController@recover')->name('recuperar_serie');
+
     // Rutas Documentos
     Route::get('documents/{id?}', 'DocumentController@index')->name('documents');
     Route::resource('documents', 'DocumentController');
     Route::put('documents/restore/{id}', 'DocumentController@restore')->name('documents.restore');
     Route::get('documents/sign/{id}', 'DocumentController@sign')->name('documents.sign');
 
+    // Configuraciones
+    Route::prefix('config')->group(function () {
+        // Rutas de configuración de impuestos
+        Route::get('taxes', 'TaxConfigurationController@index')->name('config.taxes');
+        Route::get('taxes/create', 'TaxConfigurationController@create')->name('config.taxes.create')->middleware('form');
+        Route::post('taxes/store', 'TaxConfigurationController@store')->name('config.taxes.store');
+        Route::get('taxes/edit/{id}', 'TaxConfigurationController@edit')->name('config.taxes.edit');
+        Route::put('taxes/update/{id}', 'TaxConfigurationController@update')->name('config.taxes.update');
+        Route::delete('taxes/{id}', 'TaxConfigurationController@destroy')->name('config.taxes.delete');
+        Route::put('taxes/recover/{id}', 'TaxConfigurationController@recover')->name('config.taxes.recovery');
+    });
 });
 
 

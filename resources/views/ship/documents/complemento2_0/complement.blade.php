@@ -1,9 +1,4 @@
 <div class="row">
-    <div class="col-md-6">
-        <label><b>Complemento Carta Porte:</b></label>
-    </div>
-</div>
-<div class="row">
     <div class="col-md-2">
         <label for="version_comp">Version</label>
         <input type="text" class="form-control" name="version_comp" id="version_comp" :value="oData.oCartaPorte.version" readonly>

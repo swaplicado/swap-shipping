@@ -1,10 +1,4 @@
 <div class="row">
-    <div class="col-md-6">
-        <label><b>Mercancías:</b></label>
-    </div>
-</div>
-<br>
-<div class="row">
     <div class="col-md-2">
         <label for="num_mercancias">Num total merc.</label>
         <input style="text-align: right" type="number" class="form-control" id="num_mercancias" :value="oData.oCartaPorte.mercancia.numTotalMercancias" readonly>

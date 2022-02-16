@@ -1,6 +1,7 @@
 <?php namespace App\Core;
 
 use App\Models\Carrier;
+use Carbon\Carbon;
 
 class RequestCore {
 
@@ -20,6 +21,8 @@ class RequestCore {
         $oObjData->localCurrency = $lCurrencies[$oConfigurations->localCurrency];
         $oObjData->localCurrencyCode = $oConfigurations->localCurrency;
 
+        $oDate = Carbon::parse($oDocument->requested_at);
+
         /**
          * Encabezado
          */
@@ -31,6 +34,7 @@ class RequestCore {
         $oObjData->folio = 0;
         $oObjData->lugarExpedicion = $oConfigurations->cfdi4_0->lugarExpedicion;
         $oObjData->objetoImp = $oConfigurations->cfdi4_0->objetoImp;
+        $oObjData->usoCFDI = $oConfigurations->cfdi4_0->usoCFDI;
         $oObjData->formaPago = $oRequest->formaPago;
         $oObjData->metodoPago = $oRequest->metodoPago;
         $oObjData->currency = $oRequest->moneda;
@@ -66,53 +70,66 @@ class RequestCore {
         /**
          * Determinación de retenciones y traslados
          */
+        $sDate = $oDate->format('Y-m-d');
+        $lCfgTaxes = \DB::table('f_tax_configurations AS cfg')
+                        ->leftjoin('sat_tax_regimes AS reg', 'cfg.fiscal_regime_id', '=', 'reg.id')
+                        ->leftjoin('sat_taxes AS tax', 'cfg.tax_id', '=', 'tax.id')
+                        ->select('cfg.*', 'reg.key_code AS regimen_fiscal', 'tax.key_code AS tax_key_code', 'tax.description AS tax_description')
+                        ->where(function ($query) use ($sDate) {
+                            $query->where(function ($query) use ($sDate) {
+                                $query->where('cfg.date_from', '<=', $sDate)
+                                        ->where(function ($query) use ($sDate) {
+                                            $query->where('cfg.date_to', '>=', $sDate)
+                                                ->orWhereNull('cfg.date_to');
+                                        })
+                                        ->orWhereNull('cfg.date_from');
+                            });
+                        })
+                        ->where('cfg.is_deleted', false)
+                        ->where(function ($query) use ($oCarrier) {
+                                $query->where('cfg.carrier_id', $oCarrier->id_carrier)
+                                        ->orWhereNull('cfg.carrier_id');
+                        })
+                        ->orderBy('cfg.config_type', 'DESC')
+                        ->orderBy('cfg.date_from', 'ASC')
+                        ->get();
+
         $oObjData->traslados = [];
         $oObjData->retenciones = [];
-        if (strlen($oEmisor->rfcEmisor) == self::FISICA && strlen($oReceptor->rfcReceptor) == self::MORAL) {
-            $oObjData->traslados[] = (object) [
-                                                    "impuesto" => "002",
-                                                    "tasa" => 0.16
-                                                ];
-            $oObjData->retenciones[] = (object) [
-                                                    "impuesto" => "002",
-                                                    "tasa" => 0.04
-                                                ];
-        }
-        elseif (strlen($oEmisor->rfcEmisor) == self::MORAL && strlen($oReceptor->rfcReceptor) == self::MORAL) {
-            $oObjData->traslados[] = (object) [
-                                                    "impuesto" => "002",
-                                                    "tasa" => 0.16
-                                                ];
-            $oObjData->retenciones[] = (object) [
-                                                    "impuesto" => "002",
-                                                    "tasa" => 0.04
-                                                ];
-        }
-
-        $taxDescriptions = [];
-        foreach ($oObjData->retenciones as $ret) {
-            $oTax = \DB::table('sat_taxes')
-                            ->where('key_code', $ret->impuesto)
-                            ->first();
-
-            if (array_key_exists($ret->impuesto, $taxDescriptions)) {
+        $emisor = strlen($oEmisor->rfcEmisor) == self::FISICA ? "fisica" : "moral";
+        $receptor = strlen($oReceptor->rfcReceptor) == self::FISICA ? "fisica" : "moral";
+        foreach ($lCfgTaxes as $cfgTax) {
+            $oTaxCfg = new \stdClass();
+            if (! ($cfgTax->person_type_emisor == null || ($cfgTax->person_type_emisor != null && $cfgTax->person_type_emisor == $emisor))) {
                 continue;
             }
-            else {
-                $taxDescriptions[$oTax->key_code] = $oTax->key_code." - ".$oTax->description;
-            }
-        }
-
-        foreach ($oObjData->traslados as $tra) {
-            $oTax = \DB::table('sat_taxes')
-                            ->where('key_code', $tra->impuesto)
-                            ->first();
-
-            if (array_key_exists($tra->impuesto, $taxDescriptions)) {
+            
+            if (! ($cfgTax->person_type_receptor == null || ($cfgTax->person_type_receptor != null && $cfgTax->person_type_receptor == $receptor))) {
                 continue;
             }
+
+            if (! ($cfgTax->fiscal_regime_id == null || ($cfgTax->fiscal_regime_id != null && $cfgTax->regimen_fiscal == $oReceptor->regimenFiscalReceptor))) {
+                continue;
+            }
+
+            //prov_serv_id
+            if (! ($cfgTax->concept_id == null || ($cfgTax->concept_id != null && $cfgTax->concept_id == $oCarrier->prov_serv_id))) {
+                continue;
+            }
+
+            // if (! ($cfgTax->group_id == null || ($cfgTax->group_id != null && $cfgTax->group_id == ???))) {
+            //     continue;
+            // }
+
+            $oTaxCfg->impuesto = $cfgTax->tax_key_code;
+            $oTaxCfg->tasa = $cfgTax->rate;
+            $oTaxCfg->tax_description = $cfgTax->tax_description;
+
+            if ($cfgTax->config_type == "traslado") {
+                $oObjData->traslados[] = $oTaxCfg;
+            }
             else {
-                $taxDescriptions[$oTax->key_code] = $oTax->key_code." - ".$oTax->description;
+                $oObjData->retenciones[] = $oTaxCfg;
             }
         }
         
@@ -152,8 +169,8 @@ class RequestCore {
                 $oState->rate = 1.000;
                 $oState->distance = 10.000;
             }
-        
-            if ($oLocSource->tipoUbicacion == "Origen") {
+
+            if ($iDestination == $nLocationsTemp - 1) {
                 $oConcept->valorUnitario = $oConfigurations->tarifaBase * $oState->rate;
             }
             else {
@@ -170,7 +187,7 @@ class RequestCore {
 
                 $oTraslado->base = $oConcept->importe;
                 $oTraslado->impuesto = $trasImp->impuesto;
-                $oTraslado->impuesto_name = $taxDescriptions[$trasImp->impuesto.""];
+                $oTraslado->impuesto_name = $trasImp->tax_description;
                 $oTraslado->tasa = $trasImp->tasa;
                 $oTraslado->importe = $oTraslado->base * $oTraslado->tasa;
 
@@ -182,7 +199,7 @@ class RequestCore {
                 $oRetencion = new \stdClass();
                 $oRetencion->base = $oConcept->importe;
                 $oRetencion->impuesto = $retImp->impuesto;
-                $oRetencion->impuesto_name = $taxDescriptions[$retImp->impuesto.""];
+                $oRetencion->impuesto_name = $retImp->tax_description;
                 $oRetencion->tasa = $retImp->tasa;
                 $oRetencion->importe = $oRetencion->base * $oRetencion->tasa;
 
@@ -209,7 +226,6 @@ class RequestCore {
             }
 
             $traveledDistance += $oLocDest->distanciaRecorrida;
-
             $iSource++;
             $iDestination++;
         }

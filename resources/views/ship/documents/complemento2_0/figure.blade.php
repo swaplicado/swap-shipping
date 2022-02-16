@@ -1,14 +1,8 @@
 <div class="row">
-    <div class="col-md-6">
-        <label><b>Figura transporte:</b></label>
-    </div>
-</div>
-<br>
-<div class="row">
     <div class="col-md-12">
         <div class="form-group">
             <label for="figure">Seleccione figura</label>
-            <select class="form-select" id="figure" v-model="oFigure" required>
+            <select class="form-select" id="figure" v-model="oFigure">
                 <option v-for="figure in lFigures" :value="figure">@{{ figure.fiscal_id + " - " + figure.fullname }}</option>
             </select>
         </div>

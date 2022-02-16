@@ -9,7 +9,7 @@
     </div>
     <div class="col-md-3">
         <label for="serie" class="form-label">Serie</label>
-        <select id="serie" class="form-select" v-model="oData.serie" v-on:change="changeSerie(oData.serie)" required>
+        <select id="serie" class="form-select" v-model="oData.serie" v-on:change="changeSerie(oData.serie)">
             <option v-for="serie in lCarrierSeries" :value="serie.prefix">@{{ serie.prefix }}</option>
         </select>
     </div>
@@ -21,13 +21,19 @@
 <div class="row">
     <div class="col-md-4">
         <label for="forma_pago" class="form-label">Forma Pago</label>
-        <select class="form-select" v-model="oData.formaPago" required>
+        <select class="form-select" id="forma_pago" v-model="oData.formaPago">
             <option v-for="pf in lPayForms" :value="pf.key_code">@{{ pf._description }}</option>
         </select>
     </div>
     <div class="col-md-5">
         <label for="metodo_pago" class="form-label">Método Pago</label>
-        <select class="form-select" v-model="oData.metodoPago" required>
+        <select class="form-select" id="metodo_pago" v-model="oData.metodoPago">
+            <option v-for="pm in lPayMethods" :value="pm.key_code">@{{ pm._description }}</option>
+        </select>
+    </div>
+    <div class="col-md-3">
+        <label for="uso_cfdi" class="form-label">Uso CFDI</label>
+        <select class="form-select" id="uso_cfdi" v-model="oData.metodoPago">
             <option v-for="pm in lPayMethods" :value="pm.key_code">@{{ pm._description }}</option>
         </select>
     </div>
@@ -39,13 +45,13 @@
     </div>
     <div class="col-md-3">
         <label for="currency" class="form-label">Moneda CFDI</label>        
-        <select class="form-select" v-model="oData.currency" required>
+        <select class="form-select" v-model="oData.currency">
             <option v-for="cur in lCurrencies" :value="cur.key_code">@{{ cur._description }}</option>
         </select>
     </div>
     <div class="col-md-2">
         <label for="tc" class="form-label">Tipo de cambio</label>
-        <input step="0.0001" type="number" class="form-control" id="tc" :value="oData.tipoCambio" required>
+        <input step="0.0001" type="number" class="form-control" id="tc" :value="oData.tipoCambio">
     </div>
 </div>
 <div class="row">
@@ -62,4 +68,3 @@
         <input style="text-align: right" class="form-control" type="text" :value="formatCurrency(oData.total)" readonly>
     </div>
 </div>
-<br>

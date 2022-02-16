@@ -1,9 +1,4 @@
 <div class="row">
-    <div class="col-md-6">
-        <label><b> Receptor:</b></label>
-    </div>
-</div>
-<div class="row">
     <div class="col-md-3">
         <label for="rfc_receptor" class="form-label">RFC</label>
         <input type="text" class="form-control" id="rfc_receptor" :value="oData.receptor.rfcReceptor">
