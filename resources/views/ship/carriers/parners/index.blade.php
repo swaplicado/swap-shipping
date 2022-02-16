@@ -31,7 +31,7 @@
 <h2>Asociados</h2>
 <br>
 
-@include('layouts.table_buttons', ['crear' => 'crear_parner'])
+@include('layouts.table_buttons', ['crear' => 'crear_parner', 'filterCarrier' => (auth()->user()->isAdmin() || auth()->user()->isClient())])
 
 <div class="container table-responsive">
     <table id="T_parners" class="display" style="width:100%;">
@@ -42,6 +42,7 @@
                 <th></th>
                 <th>Nombre</th>
                 <th>E-mail</th>
+                <th>Transportista</th>
             </tr>
         </thead>
         <tbody>
@@ -49,9 +50,10 @@
             <tr>
                 <td>{{$d->user()->first()->id}}</td>
                 <td>{{$d->user()->first()->is_deleted}}</td>
-                <td></td>
+                <td>{{$d->carrier->id_carrier}}</td>
                 <td>{{$d->user()->first()->full_name}}</td>
                 <td>{{$d->user()->first()->email}}</td>
+                <td>{{$d->user()->first()->Carrier->fullname}}</td>
             </tr>
             @endforeach
         </tbody>

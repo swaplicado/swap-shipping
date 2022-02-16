@@ -12,6 +12,7 @@ use stdClass;
 use App\User;
 use App\Role;
 use App\UserVsTypes;
+use App\Models\Sat\ProdServ;
 use App\Models\Sat\Tax_regimes;
 use Illuminate\Support\Facades\Hash;
 
@@ -24,11 +25,11 @@ class CarrierController extends Controller
      */
     public function index()
     {
-        // auth()->user()->authorizeRoles(['user', 'admin']);
+        auth()->user()->authorizeRoles(['user', 'admin']);
         // auth()->user()->authorizePermission(['A1','A2','A3']);
         if(auth()->user()->isCarrier()){
             $data = Carrier::where('id_carrier', auth()->user()->carrier()->first()->id_carrier)->get();
-        } else if (auth()->user()->isAdmin()){
+        } else if (auth()->user()->isAdmin() || auth()->user()->isClient()){
             $data = Carrier::get();    
         }
         
@@ -41,7 +42,10 @@ class CarrierController extends Controller
             $d->Carrier->id_carrier = $d->id_carrier;
             $d->Carrier->fullname = $d->fullname;
         }
-        return view('ship/carriers/index', ['data' => $data]);
+
+        $carriers = Carrier::where('is_deleted', 0)->select('id_carrier','fullname')->get();
+
+        return view('ship/carriers/index', ['data' => $data, 'carriers' => $carriers]);
     }
 
     /**
@@ -54,9 +58,11 @@ class CarrierController extends Controller
         // auth()->user()->authorizeRoles(['user', 'admin']);
         $data = new Carrier;
         $data->tax_regime = new Tax_regimes;
+        $data->prod_serv = new ProdServ;
         $data->users = null;
-        $tax_regimes = Tax_regimes::pluck('id', 'description');
-        return view('ship/carriers/create', ['data' => $data, 'tax_regimes' => $tax_regimes]);
+        $tax_regimes = Tax_regimes::selectRaw('CONCAT(key_code, " - ", description) AS kd, id')->pluck('id', 'kd');
+        $prod_serv = ProdServ::where('is_active', 1)->selectRaw('CONCAT(key_code, " - ", description) AS kd, id')->pluck('id', 'kd');
+        return view('ship/carriers/create', ['data' => $data, 'tax_regimes' => $tax_regimes, 'prod_serv' => $prod_serv]);
     }
 
     /**
@@ -77,7 +83,8 @@ class CarrierController extends Controller
             'fullname' => 'required',
             'RFC' => 'required',
             'contact1' => 'required',
-            'telephone1' => 'required'
+            'telephone1' => 'required',
+            'prod_serv' => 'required|not_in:0'
         ]);
 
         $validator->validate();
@@ -86,9 +93,13 @@ class CarrierController extends Controller
         $tr_name = $values->name;
         $tr_id = $values->id;
         
+        $prodServ = json_decode($request->post('prod_serv'));
+        $ps_name = $prodServ->name;
+        $ps_id = $prodServ->id;
         $user_id = (auth()->check()) ? auth()->user()->id : null;
+
         try {
-            DB::transaction(function () use ($request, $user_id, $tr_id) {
+            DB::transaction(function () use ($request, $user_id, $tr_id, $ps_id) {
                 $user = User::create([
                     'username' => $request->fullname,
                     'email' => $request->email,
@@ -98,8 +109,10 @@ class CarrierController extends Controller
                     'is_carrier' => 1
                 ]);
         
+                
                 $user->roles()->attach(Role::where('id', 3)->first());
-
+                $user->sendEmailVerificationNotification();
+                
                 $carrier = Carrier::create([
                     'fullname' => $request->fullname,
                     'fiscal_id' => $request->RFC,
@@ -108,6 +121,7 @@ class CarrierController extends Controller
                     'telephone1' => $request->telephone1,
                     'contact2' => $request->contact2,
                     'telephone2' => $request->telephone2,
+                    'prod_serv_id' => $ps_id,
                     'usr_new_id' => $user_id,
                     'usr_upd_id' => $user_id
                 ]);
@@ -122,7 +136,6 @@ class CarrierController extends Controller
         } catch (QueryException $e) {
             $success = false;
             $error = $e->errorInfo[0];
-            dd($e);
         }
 
         if ($success) {
@@ -161,9 +174,12 @@ class CarrierController extends Controller
         $data->each(function ($data) {
             $data->users;
             $data->tax_regime;
+            $data->prod_serv;
         });
-        $tax_regimes = Tax_regimes::pluck('id', 'description');
-        return view('ship/carriers/edit', ['data' => $data, 'tax_regimes' => $tax_regimes]);
+        $tax_regimes = Tax_regimes::selectRaw('CONCAT(key_code, " - ", description) AS kd, id')->pluck('id', 'kd');
+        $prod_serv = ProdServ::where('is_active', 1)->selectRaw('CONCAT(key_code, " - ", description) AS kd, id')->pluck('id', 'kd');
+        
+        return view('ship/carriers/edit', ['data' => $data, 'tax_regimes' => $tax_regimes, 'prod_serv' => $prod_serv]);
     }
 
     /**
@@ -193,19 +209,32 @@ class CarrierController extends Controller
         $values = json_decode($request->post('tax_regimes'));
         $tr_name = $values->name;
         $tr_id = $values->id;
+
+        $prodServ = json_decode($request->post('prod_serv'));
+        $ps_name = $prodServ->name;
+        $ps_id = $prodServ->id;
+
+        $user_id = (auth()->check()) ? auth()->user()->id : null;
         try {
-            DB::transaction(function () use ($request, $user_id, $id, $tr_id) {
+            DB::transaction(function () use ($request, $user_id, $id, $tr_id, $ps_id) {
                 $carrier = Carrier::findOrFail($id);
                 $user = User::findOrFail($carrier->users()->first()->id);
 
                 $carrier->fullname = $request->fullname;
                 $carrier->fiscal_id = $request->RFC;
                 $carrier->tax_regimes_id = $tr_id;
+                $carrier->prod_serv_id = $ps_id;
                 $carrier->usr_upd_id = $user_id;
 
                 $user->username = $request->fullname;
                 $user->full_name = $request->fullname;
-                $user->email = $request->email;
+                if(!is_null($request->editEmail)){
+                    if($user->email != $request->email){
+                        $user->email = $request->email;
+                        $user->email_verified_at = null;
+                        $user->sendEmailVerificationNotification();
+                    }
+                }
 
                 $carrier->update();
                 $user->update();

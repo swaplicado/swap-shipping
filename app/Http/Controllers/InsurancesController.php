@@ -21,14 +21,17 @@ class InsurancesController extends Controller
     {
         if(auth()->user()->isCarrier()){
             $data = Insurances::where('carrier_id', auth()->user()->carrier()->first()->id_carrier)->get();
-        } else if (auth()->user()->isAdmin()){
+        } else if (auth()->user()->isAdmin() || auth()->user()->isClient()){
             $data = Insurances::get();    
         }
 
         $data->each(function ($data) {
             $data->Carrier;
         });
-        return view('catalogos/insurances/index', ['data' => $data]);
+
+        $carriers = Carrier::where('is_deleted', 0)->select('id_carrier','fullname')->get();
+
+        return view('catalogos/insurances/index', ['data' => $data, 'carriers' => $carriers]);
     }
 
     /**

@@ -28,10 +28,10 @@
         })
     </script>
 @endif
-<h2>Trailers</h2>
+<h2>Remolques</h2>
 <br>
 
-@include('layouts.table_buttons', ['crear' => 'crear_trailer', 'filterCarrier' => auth()->user()->isAdmin()])
+@include('layouts.table_buttons', ['crear' => 'crear_trailer', 'filterCarrier' => (auth()->user()->isAdmin() || auth()->user()->isClient())])
 
 <div class="container table-responsive">
     <table id="T_trailer" class="display" style="width:100%;">
@@ -41,7 +41,8 @@
                 <th>is deleted</th>
                 <th>id carrier</th>
                 <th>Placas</th>
-                <th>Subtipo de trailer</th>
+                <th>Clave subtipo de remolque</th>
+                <th>Subtipo de remolque</th>
                 <th>Transportista</th>
             </tr>
         </thead>
@@ -53,6 +54,7 @@
                 <td>{{$d->carrier_id}}</td>
                 <td>{{$d->plates}}</td>
                 <td>{{$d->TrailerSubtype->key_code}}</td>
+                <td>{{$d->TrailerSubtype->description}}</td>
                 <td>{{$d->Carrier->fullname}}</td>
             </tr>
             @endforeach

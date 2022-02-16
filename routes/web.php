@@ -19,6 +19,11 @@ Route::get('/login', function () {
     return view('auth/login');
 });
 
+Route::get('/logoutFromVerify', function(){
+    Auth::logout();
+    return redirect('/login');
+});
+
 Auth::routes(['verify' => true]);
 
 Route::post('/login', 'Auth\LoginController@authenticate')->name('MyLogin');
@@ -48,7 +53,7 @@ Route::middleware(['auth', 'verified', 'menu'])->group( function () {
 
     // Rutas asociados
     Route::get('/parners', 'BussinesParnerController@index')->name('parners');
-    Route::get('/parners/create', 'BussinesParnerController@create')->name('crear_parner');
+    Route::get('/parners/create', 'BussinesParnerController@create')->name('crear_parner')->middleware('form');
     Route::post('/parners', 'BussinesParnerController@store')->name('guardar_parner');
     Route::get('/parners/{id}/edit', 'BussinesParnerController@edit')->name('editar_parner');
     Route::put('/parners/{id}', 'BussinesParnerController@update')->name('actualizar_parner');
@@ -101,7 +106,11 @@ Route::middleware(['auth', 'verified', 'menu'])->group( function () {
     Route::put('/states/{id}', 'StatesController@update')->name('actualizar_states');
     Route::delete('##', 'StatesController@destroy')->name('eliminar_states');
     Route::put('##', 'StatesController@recover')->name('recuperar_states');
-    //Aseguradoras
+        //Municipios
+    Route::get('municipalities', 'MunicipalitiesController@index')->name('municipalities');
+    Route::get('/municipalities/{id}/edit', 'MunicipalitiesController@edit')->name('editar_municipalitie');
+    Route::put('/municipalities/{id}', 'MunicipalitiesController@update')->name('actualizar_municipalitie');
+        //Aseguradoras
     Route::get('/insurances', 'InsurancesController@index')->name('insurances');
     Route::get('/insurances/create', 'InsurancesController@create')->name('crear_insurance')->middleware('form');
     Route::post('/insurances', 'InsurancesController@store')->name('guardar_insurance');
@@ -118,7 +127,7 @@ Route::middleware(['auth', 'verified', 'menu'])->group( function () {
     Route::put('/series/{id}', 'SeriesController@update')->name('actualizar_serie');
     Route::delete('/series/{id}', 'SeriesController@destroy')->name('eliminar_serie');
     Route::put('/series/recover/{id}', 'SeriesController@recover')->name('recuperar_serie');
-
+    
     // Rutas Documentos
     Route::get('documents/{id?}', 'DocumentController@index')->name('documents');
     Route::resource('documents', 'DocumentController');
@@ -136,6 +145,11 @@ Route::middleware(['auth', 'verified', 'menu'])->group( function () {
         Route::delete('taxes/{id}', 'TaxConfigurationController@destroy')->name('config.taxes.delete');
         Route::put('taxes/recover/{id}', 'TaxConfigurationController@recover')->name('config.taxes.recovery');
     });
+    
+    //Rutas Configuración
+    Route::get('/config', 'ConfigController@index')->name('config');
+    Route::get('/config/edit', 'ConfigController@edit')->name('editar_config');
+    Route::put('/config/{id}', 'ConfigController@update')->name('actualizar_config');
 });
 
 

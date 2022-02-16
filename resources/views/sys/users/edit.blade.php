@@ -35,6 +35,15 @@
         $(document).ready(function () {
             const select = document.getElementById('role_select');
             const roles = document.getElementsByClassName('input_role');
+            const check = document.getElementById('editEmail');
+            
+            check.addEventListener('change', function handleChange(event){
+                if(check.checked){
+                    document.getElementById('email').removeAttribute('readonly');
+                }else{
+                    document.getElementById('email').setAttribute('readonly', 'readonly');
+                }
+            });
             
             $('#btn_add_role').click( function () {
                 select.style = "display: block";

@@ -22,7 +22,7 @@ class TrailerController extends Controller
         auth()->user()->authorizeRoles(['user', 'admin', 'carrier']);
         if(auth()->user()->isCarrier()){
             $data = Trailer::where('carrier_id', auth()->user()->carrier()->first()->id_carrier)->get();
-        } else if(auth()->user()->isAdmin()) {
+        } else if(auth()->user()->isAdmin() || auth()->user()->isClient()) {
             $data = Trailer::get();
         }
         $data->each( function ($data) {
@@ -30,7 +30,9 @@ class TrailerController extends Controller
             $data->Carrier;
         });
 
-        return view('ship/trailers/index', ['data' => $data]);
+        $carriers = Carrier::where('is_deleted', 0)->select('id_carrier','fullname')->get();
+
+        return view('ship/trailers/index', ['data' => $data, 'carriers' => $carriers]);
     }
 
     /**
@@ -44,7 +46,7 @@ class TrailerController extends Controller
         $data = new Trailer;
         $data->TrailerSubtype = new TrailerSubtype;
         $data->Carrier = new Carrier;
-        $TrailerSubtype = TrailerSubtype::pluck('id', 'description');
+        $TrailerSubtype = TrailerSubtype::selectRaw('CONCAT(key_code, " - ", description) AS kd, id')->pluck('id', 'kd');
         $carriers = Carrier::where('is_deleted', 0)->orderBy('fullname', 'ASC')->pluck('id_carrier', 'fullname');
 
         return view('ship/trailers/create', ['data' => $data, 'TrailerSubtype' => $TrailerSubtype, 'carriers' => $carriers]);
@@ -127,7 +129,7 @@ class TrailerController extends Controller
             $data->TrailerSubtype;
             $data->Carrier;
         });
-        $TrailerSubtype = TrailerSubtype::pluck('id', 'description');
+        $TrailerSubtype = TrailerSubtype::selectRaw('CONCAT(key_code, " - ", description) AS kd, id')->pluck('id', 'kd');
 
         return view('ship/trailers/edit', ['data' => $data, 'TrailerSubtype' => $TrailerSubtype]);
     }

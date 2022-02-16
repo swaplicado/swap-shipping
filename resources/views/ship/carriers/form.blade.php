@@ -5,13 +5,24 @@
         <span class="text-danger">{{ $message }}</span>
     @enderror
 </div>
+@if(!is_null($data->users))
 <div class="form-group">
     <label for="email" class="form-label">E-mail</label>
-    <input name="email" type="text" class="form-control" value="{{ old('email', $data->users->email ?? '') }}">
+    <input id="editEmail" name="editEmail" type="checkbox">
+    <input id="email" name="email" type="text" class="form-control" value="{{ old('email', $data->users->email ?? '') }}" readonly>
     @error('email')
         <span class="text-danger">{{ $message }}</span>
     @enderror
 </div>
+@else
+<div class="form-group">
+    <label for="email" class="form-label">E-mail</label>
+    <input id="email" name="email" type="text" class="form-control" value="{{ old('email', $data->users->email ?? '') }}">
+    @error('email')
+        <span class="text-danger">{{ $message }}</span>
+    @enderror
+</div>
+@endif
 <div class="form-group">
     <label for="RFC" class="form-label">RFC</label>
     <input name="RFC" type="text" class="form-control" value="{{ old('RFC', $data->fiscal_id ?? '') }}">
@@ -32,6 +43,22 @@
         @endforeach
     </select>
     @error('tax_regimes')
+        <span class="text-danger">{{$message}}</span>
+    @enderror
+</div>
+<div class="form-group">
+    <label for="prod_serv" class="form-label">Concepto</label>
+    <select class="form-select" name="prod_serv">
+        <option value="0" selected>Concepto</option>
+        @foreach($prod_serv as $ps => $index)
+            @if($data->prod_serv->id == $index)
+                <option selected value='{"id":"{{$index}}","name":"{{$ps}}"}'>{{$ps}}</option>
+            @else
+                <option value='{"id":"{{$index}}","name":"{{$ps}}"}'>{{$ps}}</option>
+            @endif
+        @endforeach
+    </select>
+    @error('prod_serv')
         <span class="text-danger">{{$message}}</span>
     @enderror
 </div>

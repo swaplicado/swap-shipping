@@ -21,11 +21,13 @@ class SeriesController extends Controller
     {
         if(auth()->user()->isCarrier()){
             $data = Series::where('carrier_id', auth()->user()->carrier()->first()->id_carrier)->get();
-        } else if (auth()->user()->isAdmin()){
+        } else if (auth()->user()->isAdmin() || auth()->user()->isClient()){
             $data = Series::get();
         }
 
-        return view('catalogos/series/index', ['data' => $data]);
+        $carriers = Carrier::where('is_deleted', 0)->select('id_carrier','fullname')->get();
+
+        return view('catalogos/series/index', ['data' => $data, 'carriers' => $carriers]);
     }
 
     /**

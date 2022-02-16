@@ -12,13 +12,24 @@
         <span class="text-danger">{{ $message }}</span>
     @enderror
 </div>
+@if(!is_null($data))
 <div class="form-group">
     <label for="email" class="form-label">E-mail</label>
-    <input name="email" type="text" class="form-control" value="{{ old('email', $data->email ?? '') }}">
+    <input id="editEmail" name="editEmail" type="checkbox">
+    <input id="email" name="email" type="text" class="form-control" value="{{ old('email', $data->email ?? '') }}" readonly>
     @error('email')
         <span class="text-danger">{{ $message }}</span>
     @enderror
 </div>
+@else
+<div class="form-group">
+    <label for="email" class="form-label">E-mail</label>
+    <input id="email" name="email" type="text" class="form-control" value="{{ old('email', $data->email ?? '') }}">
+    @error('email')
+        <span class="text-danger">{{ $message }}</span>
+    @enderror
+</div>
+@endif
 <div class="form-group">
     <label for="roles" class="form-label">Roles</label>
     <button id="btn_add_role" type="button" class="btn btn-primary btn-sm">

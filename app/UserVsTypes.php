@@ -14,6 +14,7 @@ class UserVsTypes extends Model
 
     protected $fillable = [
         'is_deleted',
+        'is_principal',
         'trans_figure_id',
         'carrier_id',
         'user_id'

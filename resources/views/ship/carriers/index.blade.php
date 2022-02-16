@@ -31,7 +31,7 @@
 <h2>Transportistas</h2>
 <br>
 
-@include('layouts.table_buttons', ['crear' => 'crear_carrier', 'filterCarrier' => auth()->user()->isAdmin()])
+@include('layouts.table_buttons', ['crear' => 'crear_carrier', 'filterCarrier' => (auth()->user()->isAdmin() || auth()->user()->isClient())])
 
 <div class="container table-responsive">
     <table id="T_carriers" class="display" style="width:100%;">
@@ -42,11 +42,14 @@
                 <th>id carrier</th>
                 <th>Nombre</th>
                 <th>RFC</th>
+                <th>Clave de regimen fiscal</th>
                 <th>Regimen fiscal</th>
                 <th>Teléfono 1</th>
                 <th>Contacto 1</th>
                 <th>Teléfono 2</th>
                 <th>Contacto 2</th>
+                <th>Clave de concepto</th>
+                <th>Concepto</th>
             </tr>
         </thead>
         <tbody>
@@ -57,11 +60,14 @@
                 <td>{{$d->id_carrier}}</td>
                 <td>{{$d->fullname}}</td>
                 <td>{{$d->fiscal_id}}</td>
+                <td>{{$d->tax_regime->key_code}}</td>
                 <td>{{$d->tax_regime->description}}</td>
                 <td>{{$d->telephone1}}</td>
                 <td>{{$d->contact1}}</td>
                 <td>{{$d->telephone2}}</td>
                 <td>{{$d->contact2}}</td>
+                <td>{{$d->prod_serv->key_code}}</td>
+                <td>{{$d->prod_serv->description}}</td>
             </tr>
             @endforeach
         </tbody>

@@ -32,7 +32,7 @@ class DriverController extends Controller
 
         if(auth()->user()->isCarrier()){
             $data = Driver::where('carrier_id', auth()->user()->carrier()->first()->id_carrier)->get();
-        } else if (auth()->user()->isAdmin()){
+        } else if (auth()->user()->isAdmin() || auth()->user()->isClient()){
             $data = Driver::get();    
         }
 
@@ -41,7 +41,10 @@ class DriverController extends Controller
             $data->sat_FAddress;
             $data->User;
         });
-        return view('ship/drivers/index', ['data' => $data]);
+
+        $carriers = Carrier::where('is_deleted', 0)->select('id_carrier','fullname')->get();
+
+        return view('ship/drivers/index', ['data' => $data, 'carriers' => $carriers]);
     }
 
     /**
@@ -112,6 +115,7 @@ class DriverController extends Controller
                 ]);
         
                 $user->roles()->attach(Role::where('id', 4)->first());
+                $user->sendEmailVerificationNotification();
 
                 $Driver = Driver::create([
                     'fullname' => $request->fullname,
@@ -259,7 +263,13 @@ class DriverController extends Controller
 
                 $user->username = $request->fullname;
                 $user->full_name = $request->fullname;
-                $user->email = $request->email;
+                if(!is_null($request->editEmail)){
+                    if($user->email != $request->email){
+                        $user->email = $request->email;
+                        $user->email_verified_at = null;
+                        $user->sendEmailVerificationNotification();
+                    }
+                }
 
                 $Driver->update();
                 $address->update();

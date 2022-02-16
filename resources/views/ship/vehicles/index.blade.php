@@ -32,7 +32,7 @@
 <br>
 
 {{-- filterCarrier => [requerido?, id carrier es relacion?] --}}
-@include('layouts.table_buttons', ['crear' => 'crear_vehicle', 'filterCarrier' => auth()->user()->isAdmin()])
+@include('layouts.table_buttons', ['crear' => 'crear_vehicle', 'filterCarrier' => (auth()->user()->isAdmin() || auth()->user()->isClient())])
 
 <div class="container table-responsive">
     <table id="T_vehicles" class="display" style="width:100%;">
@@ -43,11 +43,13 @@
                 <th>id carrier</th>
                 <th>Placas</th>
                 <th>Modelo</th>
+                <th>Clave de permiso Sct</th>
                 <th>Permiso Sct</th>
                 <th>Núm. Permiso Sct</th>
                 <th>Reg Trib</th>
                 <th>Poliza</th>
                 <th>Aseguradora</th>
+                <th>Clave de conf. Vehícular</th>
                 <th>Conf. Vehícular</th>
                 <th>Transportista</th>
             </tr>
@@ -61,11 +63,13 @@
                 <td>{{$d->plates}}</td>
                 <td>{{$d->year_model}}</td>
                 <td>{{$d->LicenceSct->key_code}}</td>
+                <td>{{$d->LicenceSct->description}}</td>
                 <td>{{$d->license_sct_num}}</td>
                 <td>{{$d->drvr_reg_trib}}</td>
                 <td>{{$d->policy}}</td>
                 <td>{{$d->Insurance->full_name}}</td>
                 <td>{{$d->VehicleConfig->key_code}}</td>
+                <td>{{$d->VehicleConfig->description}}</td>
                 <td>{{$d->Carrier->fullname}}</td>
             </tr>
             @endforeach

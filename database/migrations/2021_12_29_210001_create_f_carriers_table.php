@@ -22,12 +22,14 @@ class CreateFCarriersTable extends Migration
             $table->string('contact1');
             $table->string('contact2')->nullable();
             $table->boolean('is_deleted')->default(0);
-            $table->bigInteger('tax_regimes_id')->unsigned();
+            $table->bigInteger('tax_regimes_id')->unsigned()->nullable();
+            $table->bigInteger('prod_serv_id')->unsigned();
             $table->bigInteger('usr_new_id')->unsigned();
             $table->bigInteger('usr_upd_id')->unsigned();
             $table->timestamps();
             
             $table->foreign('tax_regimes_id')->references('id')->on('sat_tax_regimes');
+            $table->foreign('prod_serv_id')->references('id')->on('sat_prod_serv');
             $table->foreign('usr_new_id')->references('id')->on('users');
             $table->foreign('usr_upd_id')->references('id')->on('users');
         });

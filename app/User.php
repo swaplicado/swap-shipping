@@ -143,6 +143,10 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->user_type_id == 1;
     }
 
+    public function isClient(){
+        return $this->user_type_id == 2;
+    }
+
     public function carrierAutorization($carriers){
         if(!$this->isAdmin()){
             abort_unless($this->hasAnyCarrier($carriers), 401);

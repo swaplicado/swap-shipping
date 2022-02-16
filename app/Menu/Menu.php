@@ -186,6 +186,12 @@ class Menu {
                             <a href="'.$route.'"><span class="icon bx bxs-map-alt bx-sm" aria-hidden="true"></span>Estados</a>
                         </li>
                 ';
+                $route = route('municipalities');
+                $menu = $menu.'
+                        <li>
+                            <a href="'.$route.'"><span class="icon bx bx-map-alt bx-sm" aria-hidden="true"></span>Municipios</a>
+                        </li>
+                ';
             }
             if($oUser->hasPermission('421')){
                 $route = route('insurances');
@@ -250,6 +256,16 @@ class Menu {
             $menu =  $menu.'
                     </ul>
                 </li>
+            ';
+        }
+
+        if($oUser->hasAnyPermission(['000'])){
+            $menu = $menu.'
+            <li>
+                <a href="'.route('config').'">
+                    <span class="icon bx bxs-cog bx-sm" aria-hidden="true"></span>Configuración
+                </a>
+            </li>
             ';
         }
 
