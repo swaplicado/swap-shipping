@@ -1494,7 +1494,7 @@ button.disabled:focus {
 
 input {
     border-radius: 6px;
-    background-color: #eff0f6;
+    background-color: #ffffff;
     min-height: 40px;
     border: solid transparent 2px!important
 }
@@ -1554,9 +1554,9 @@ input:focus {
     box-shadow: 0 0 0 2px rgba(134, 182, 254, .5)
 }
 
-input:enabled:read-write:-webkit-any(:focus, :hover)::-webkit-calendar-picker-indicator {
+/* input:enabled:read-write:-webkit-any(:focus, :hover)::-webkit-calendar-picker-indicator {
     display: none!important
-}
+} */
 
 .check {
     position: relative;

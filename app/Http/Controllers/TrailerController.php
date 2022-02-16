@@ -22,7 +22,7 @@ class TrailerController extends Controller
         auth()->user()->authorizeRoles(['user', 'admin', 'carrier']);
         if(auth()->user()->isCarrier()){
             $data = Trailer::where('carrier_id', auth()->user()->carrier()->first()->id_carrier)->get();
-        } else if(auth()->user()->isAdmin()) {
+        } else if(auth()->user()->isAdmin() || auth()->user()->isClient()) {
             $data = Trailer::get();
         }
         $data->each( function ($data) {

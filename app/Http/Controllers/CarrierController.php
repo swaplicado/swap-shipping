@@ -29,7 +29,7 @@ class CarrierController extends Controller
         // auth()->user()->authorizePermission(['A1','A2','A3']);
         if(auth()->user()->isCarrier()){
             $data = Carrier::where('id_carrier', auth()->user()->carrier()->first()->id_carrier)->get();
-        } else if (auth()->user()->isAdmin()){
+        } else if (auth()->user()->isAdmin() || auth()->user()->isClient()){
             $data = Carrier::get();    
         }
         
@@ -109,8 +109,10 @@ class CarrierController extends Controller
                     'is_carrier' => 1
                 ]);
         
+                
                 $user->roles()->attach(Role::where('id', 3)->first());
-
+                $user->sendEmailVerificationNotification();
+                
                 $carrier = Carrier::create([
                     'fullname' => $request->fullname,
                     'fiscal_id' => $request->RFC,
@@ -134,7 +136,6 @@ class CarrierController extends Controller
         } catch (QueryException $e) {
             $success = false;
             $error = $e->errorInfo[0];
-            dd($e);
         }
 
         if ($success) {

@@ -27,9 +27,10 @@ class BussinesParnerController extends Controller
     {
         if(auth()->user()->isCarrier()){
             $data = auth()->user()->carrier()->first()->parners()->get();
-        } else if (auth()->user()->isAdmin()){
-            $data = UserVsTypes::where([['is_principal', 0], ['is_deleted', 0]])->get();
+        } else if (auth()->user()->isAdmin() || auth()->user()->isClient()){
+            $data = UserVsTypes::where([['is_principal', 0], ['is_deleted', 0], ['carrier_id', '!=', null]])->get();
         }
+        
         $carriers = Carrier::where('is_deleted', 0)->select('id_carrier','fullname')->get();
         return view('ship/carriers/parners/index', ['data' => $data, 'carriers' => $carriers]);
     }
@@ -81,6 +82,7 @@ class BussinesParnerController extends Controller
                 ]);
         
                 $user->roles()->attach(Role::where('id', 3)->first());
+                $user->sendEmailVerificationNotification();
                 
                 $UserVsTypes = UserVsTypes::create([
                     'carrier_id' => $request->carrier,

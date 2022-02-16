@@ -41,7 +41,7 @@ class Carrier extends Model
     }
 
     public function parners(){
-        return $this->hasMany(UserVsTypes::class, 'carrier_id')->where([['is_principal', 0]]);
+        return $this->hasMany(UserVsTypes::class, 'carrier_id')->where('is_principal', 0);
     }
 
     public function prod_serv(){

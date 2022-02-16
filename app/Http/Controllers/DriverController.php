@@ -32,7 +32,7 @@ class DriverController extends Controller
 
         if(auth()->user()->isCarrier()){
             $data = Driver::where('carrier_id', auth()->user()->carrier()->first()->id_carrier)->get();
-        } else if (auth()->user()->isAdmin()){
+        } else if (auth()->user()->isAdmin() || auth()->user()->isClient()){
             $data = Driver::get();    
         }
 
@@ -115,6 +115,7 @@ class DriverController extends Controller
                 ]);
         
                 $user->roles()->attach(Role::where('id', 4)->first());
+                $user->sendEmailVerificationNotification();
 
                 $Driver = Driver::create([
                     'fullname' => $request->fullname,

@@ -21,7 +21,7 @@ class InsurancesController extends Controller
     {
         if(auth()->user()->isCarrier()){
             $data = Insurances::where('carrier_id', auth()->user()->carrier()->first()->id_carrier)->get();
-        } else if (auth()->user()->isAdmin()){
+        } else if (auth()->user()->isAdmin() || auth()->user()->isClient()){
             $data = Insurances::get();    
         }
 

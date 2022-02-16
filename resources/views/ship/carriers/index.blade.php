@@ -31,7 +31,7 @@
 <h2>Transportistas</h2>
 <br>
 
-@include('layouts.table_buttons', ['crear' => 'crear_carrier', 'filterCarrier' => auth()->user()->isAdmin()])
+@include('layouts.table_buttons', ['crear' => 'crear_carrier', 'filterCarrier' => (auth()->user()->isAdmin() || auth()->user()->isClient())])
 
 <div class="container table-responsive">
     <table id="T_carriers" class="display" style="width:100%;">

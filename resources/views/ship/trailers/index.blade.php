@@ -31,7 +31,7 @@
 <h2>Remolques</h2>
 <br>
 
-@include('layouts.table_buttons', ['crear' => 'crear_trailer', 'filterCarrier' => auth()->user()->isAdmin()])
+@include('layouts.table_buttons', ['crear' => 'crear_trailer', 'filterCarrier' => (auth()->user()->isAdmin() || auth()->user()->isClient())])
 
 <div class="container table-responsive">
     <table id="T_trailer" class="display" style="width:100%;">

@@ -25,7 +25,7 @@ class VehicleController extends Controller
         auth()->user()->authorizeRoles(['user', 'admin', 'carrier']);
         if(auth()->user()->isCarrier()){
             $data = Vehicle::where('carrier_id', auth()->user()->carrier()->first()->id_carrier)->get();
-        } else if (auth()->user()->isAdmin()){
+        } else if (auth()->user()->isAdmin() || auth()->user()->isClient()){
             $data = Vehicle::get();
         }
         
@@ -57,7 +57,7 @@ class VehicleController extends Controller
         $VehicleConfig = VehicleConfig::selectRaw('CONCAT(key_code, " - ", description) AS kd, id')->pluck('id', 'kd');
         if(auth()->user()->isCarrier()){
             $Insurances = Insurances::where('carrier_id', auth()->user()->carrier()->first()->id_carrier)->pluck('id_insurance', 'full_name');
-        } else if (auth()->user()->isAdmin()){
+        } else if (auth()->user()->isAdmin() || auth()->user()->isClient()){
             $Insurances = Insurances::pluck('id_insurance', 'full_name');
         }
         

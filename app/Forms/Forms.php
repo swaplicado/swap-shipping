@@ -16,7 +16,7 @@ class Forms {
             $option = $option.'<option value="'.$index.'">'.$c.'</option>';
         }
         $form = '';
-        if($oUser->isAdmin()){
+        if($oUser->isAdmin() || $oUser->isClient()){
             $form = '
                 <div class="form-group">
                     <label for="carrier" class="form-label">Transportista</label>
