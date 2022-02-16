@@ -17,6 +17,7 @@ class StatesController extends Controller
      */
     public function index()
     {
+        auth()->user()->authorizePermission(['411']);
         $data = States::get();
         return view('catalogos.states.index', ['data' => $data]);
     }
@@ -61,6 +62,7 @@ class StatesController extends Controller
      */
     public function edit($id)
     {
+        auth()->user()->authorizePermission(['413']);
         $data = States::findOrFail($id);
 
         return view('catalogos.states.edit', ['data' => $data]);
@@ -75,6 +77,7 @@ class StatesController extends Controller
      */
     public function update(Request $request, $id)
     {
+        auth()->user()->authorizePermission(['413']);
         $success = true;
         $error = "0";
 

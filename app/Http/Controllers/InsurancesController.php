@@ -19,6 +19,7 @@ class InsurancesController extends Controller
      */
     public function index()
     {
+        auth()->user()->authorizePermission(['421']);
         if(auth()->user()->isCarrier()){
             $data = Insurances::where('carrier_id', auth()->user()->carrier()->first()->id_carrier)->get();
         } else if (auth()->user()->isAdmin() || auth()->user()->isClient()){
@@ -41,6 +42,7 @@ class InsurancesController extends Controller
      */
     public function create()
     {
+        auth()->user()->authorizePermission(['422']);
         $data = new Insurances;
         $carriers = Carrier::where('is_deleted', 0)->orderBy('fullname', 'ASC')->pluck('id_carrier', 'fullname');
         return view('catalogos/insurances/create', ['data' => $data, 'carriers' => $carriers]);
@@ -54,6 +56,7 @@ class InsurancesController extends Controller
      */
     public function store(Request $request)
     {
+        auth()->user()->authorizePermission(['422']);
         if(auth()->user()->isCarrier()){
             $request->request->add(['carrier' => auth()->user()->carrier()->first()->id_carrier]);
         }
@@ -135,6 +138,7 @@ class InsurancesController extends Controller
      */
     public function edit($id)
     {
+        auth()->user()->authorizePermission(['423']);
         $data = Insurances::where('id_insurance', $id)->first();
         auth()->user()->carrierAutorization($data->carrier_id);
         return view('catalogos/insurances/edit', ['data' => $data]);
@@ -149,6 +153,7 @@ class InsurancesController extends Controller
      */
     public function update(Request $request, $id)
     {
+        auth()->user()->authorizePermission(['423']);
         $success = true;
         $error = "0";
         $validator = Validator::make($request->all(), [
@@ -215,6 +220,7 @@ class InsurancesController extends Controller
      */
     public function destroy($id)
     {
+        auth()->user()->authorizePermission(['424']);
         $success = true;
         $user_id = (auth()->check()) ? auth()->user()->id : null;
         try {
@@ -244,6 +250,7 @@ class InsurancesController extends Controller
 
     public function recover($id)
     {
+        auth()->user()->authorizePermission(['425']);
         $success = true;
         $user_id = (auth()->check()) ? auth()->user()->id : null;
         try {

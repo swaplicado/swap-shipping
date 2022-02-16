@@ -19,6 +19,7 @@ class RoleUserController extends Controller
      */
     public function index()
     {
+        auth()->user()->authorizePermission(['611']);
         $data = Role::get();
         $data->each(function ($data) {
             $data->RolePermissions;
@@ -34,6 +35,7 @@ class RoleUserController extends Controller
      */
     public function create()
     {
+        auth()->user()->authorizePermission(['612']);
         $data = new Role;
 
         $permissions = Permission::get();
@@ -49,6 +51,7 @@ class RoleUserController extends Controller
      */
     public function store(Request $request)
     {
+        auth()->user()->authorizePermission(['612']);
         $success = true;
         $jsonObj = json_decode($request->checkboxes);
         try{
@@ -102,6 +105,7 @@ class RoleUserController extends Controller
      */
     public function edit($id)
     {
+        auth()->user()->authorizePermission(['613']);
         $data = Role::where('id', $id)->get();
         $data->each(function ($data) {
             $data->RolePermissions;
@@ -121,6 +125,7 @@ class RoleUserController extends Controller
      */
     public function update(Request $request, $id)
     {
+        auth()->user()->authorizePermission(['613']);
         $success = true;
         $jsonObj = json_decode($request->checkboxes);
         try{
@@ -171,6 +176,7 @@ class RoleUserController extends Controller
      */
     public function destroy($id)
     {
+        auth()->user()->authorizePermission(['614']);
         $success = true;
         try{
             DB::transaction(function () use ($id) {
@@ -207,6 +213,7 @@ class RoleUserController extends Controller
     }
 
     public function recover($id){
+        auth()->user()->authorizePermission(['615']);
         $success = true;
         try{
             DB::transaction(function () use ($id) {

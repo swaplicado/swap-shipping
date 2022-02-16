@@ -29,7 +29,7 @@ class DriverController extends Controller
     public function index()
     {
         // auth()->user()->authorizeRoles(['admin']);
-
+        auth()->user()->authorizePermission(['311']);
         if(auth()->user()->isCarrier()){
             $data = Driver::where('carrier_id', auth()->user()->carrier()->first()->id_carrier)->get();
         } else if (auth()->user()->isAdmin() || auth()->user()->isClient()){
@@ -55,6 +55,7 @@ class DriverController extends Controller
     public function create()
     {
         // auth()->user()->authorizeRoles(['user', 'admin', 'carrier']);
+        auth()->user()->authorizePermission(['312']);
         $data = new Driver;
         $data->FAddress = new FAddress;
         $data->users = NULL;
@@ -77,6 +78,7 @@ class DriverController extends Controller
     public function store(Request $request)
     {
         // auth()->user()->authorizeRoles(['user', 'admin', 'carrier']);
+        auth()->user()->authorizePermission(['312']);
         if(auth()->user()->isCarrier()){
             $request->request->add(['carrier' => auth()->user()->carrier()->first()->id_carrier]);
         }
@@ -187,6 +189,7 @@ class DriverController extends Controller
     public function edit($id)
     {
         // auth()->user()->authorizeRoles(['user', 'admin', 'carrier']);
+        auth()->user()->authorizePermission(['313']);
         $data = Driver::where([['id_trans_figure', $id], ['is_deleted', 0]])->first();
         auth()->user()->carrierAutorization($data->carrier_id);
         $data->each(function ($data) {
@@ -213,6 +216,7 @@ class DriverController extends Controller
     public function update(Request $request, $id)
     {
         // auth()->user()->authorizeRoles(['user', 'admin', 'carrier']);
+        auth()->user()->authorizePermission(['313']);
         $validator = Validator::make($request->all(), [
             'fullname' => 'required',
             'email' => ['required', 'string', 'email', 'max:255'],
@@ -299,6 +303,7 @@ class DriverController extends Controller
     public function destroy(Request $request, $id)
     {
         // auth()->user()->authorizeRoles(['user', 'admin', 'carrier']);
+        auth()->user()->authorizePermission(['314']);
         $success = true;
         $user_id = (auth()->check()) ? auth()->user()->id : null;
         try {
@@ -343,6 +348,7 @@ class DriverController extends Controller
     public function recover($id)
     {
         // auth()->user()->authorizeRoles(['user', 'admin', 'carrier']);
+        auth()->user()->authorizePermission(['315']);
         $success = true;
         $user_id = (auth()->check()) ? auth()->user()->id : null;
         try {

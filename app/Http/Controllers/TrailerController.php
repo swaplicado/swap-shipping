@@ -19,7 +19,8 @@ class TrailerController extends Controller
      */
     public function index()
     {
-        auth()->user()->authorizeRoles(['user', 'admin', 'carrier']);
+        // auth()->user()->authorizeRoles(['user', 'admin', 'carrier']);
+        auth()->user()->authorizePermission(['231']);
         if(auth()->user()->isCarrier()){
             $data = Trailer::where('carrier_id', auth()->user()->carrier()->first()->id_carrier)->get();
         } else if(auth()->user()->isAdmin() || auth()->user()->isClient()) {
@@ -42,7 +43,8 @@ class TrailerController extends Controller
      */
     public function create()
     {
-        auth()->user()->authorizeRoles(['user', 'admin', 'carrier']);
+        // auth()->user()->authorizeRoles(['user', 'admin', 'carrier']);
+        auth()->user()->authorizePermission(['232']);
         $data = new Trailer;
         $data->TrailerSubtype = new TrailerSubtype;
         $data->Carrier = new Carrier;
@@ -60,7 +62,8 @@ class TrailerController extends Controller
      */
     public function store(Request $request)
     {
-        auth()->user()->authorizeRoles(['user', 'admin', 'carrier']);
+        // auth()->user()->authorizeRoles(['user', 'admin', 'carrier']);
+        auth()->user()->authorizePermission(['232']);
         if(auth()->user()->isCarrier()){
             $request->request->add(['carrier' => auth()->user()->carrier()->first()->id_carrier]);
         }
@@ -122,7 +125,8 @@ class TrailerController extends Controller
      */
     public function edit($id)
     {
-        auth()->user()->authorizeRoles(['user', 'admin', 'carrier']);
+        // auth()->user()->authorizeRoles(['user', 'admin', 'carrier']);
+        auth()->user()->authorizePermission(['233']);
         $data = Trailer::where('id_trailer', $id)->first();
         auth()->user()->carrierAutorization($data->carrier_id);
         $data->each(function ($data) {
@@ -143,7 +147,8 @@ class TrailerController extends Controller
      */
     public function update(Request $request, $id)
     {
-        auth()->user()->authorizeRoles(['user', 'admin', 'carrier']);
+        // auth()->user()->authorizeRoles(['user', 'admin', 'carrier']);
+        auth()->user()->authorizePermission(['233']);
         $success = true;
         $error = "0";
 
@@ -191,7 +196,8 @@ class TrailerController extends Controller
      */
     public function destroy($id)
     {
-        auth()->user()->authorizeRoles(['user', 'admin', 'carrier']);
+        // auth()->user()->authorizeRoles(['user', 'admin', 'carrier']);
+        auth()->user()->authorizePermission(['234']);
         $success = true;
         $user_id = (auth()->check()) ? auth()->user()->id : null;
         try {
@@ -221,7 +227,8 @@ class TrailerController extends Controller
 
     public function recover($id)
     {
-        auth()->user()->authorizeRoles(['user', 'admin', 'carrier']);
+        // auth()->user()->authorizeRoles(['user', 'admin', 'carrier']);
+        auth()->user()->authorizePermission(['234']);
         $success = true;
         $user_id = (auth()->check()) ? auth()->user()->id : null;
         try {

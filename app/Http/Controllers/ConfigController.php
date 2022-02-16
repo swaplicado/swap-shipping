@@ -21,6 +21,7 @@ class ConfigController extends Controller
      */
     public function index()
     {
+        auth()->user()->authorizePermission(['011']);
         $data = Configuration::getConfigurations();
         return view('sys/config/index', ['data' => $data]);
     }
@@ -65,6 +66,7 @@ class ConfigController extends Controller
      */
     public function edit()
     {
+        auth()->user()->authorizePermission(['013']);
         $data = Configuration::getConfigurations();
 
         $data->moneda = Currencies::where('key_code', $data->localCurrency)->selectRaw('CONCAT(key_code, " - ", description) AS kd, id')->value('kd');
@@ -97,6 +99,7 @@ class ConfigController extends Controller
      */
     public function update(Request $request, $id)
     {
+        auth()->user()->authorizePermission(['013']);
         $success = true;
         $error = "0";
 

@@ -25,8 +25,8 @@ class CarrierController extends Controller
      */
     public function index()
     {
-        auth()->user()->authorizeRoles(['user', 'admin']);
-        // auth()->user()->authorizePermission(['A1','A2','A3']);
+        // auth()->user()->authorizeRoles(['user', 'admin']);
+        auth()->user()->authorizePermission(['211']);
         if(auth()->user()->isCarrier()){
             $data = Carrier::where('id_carrier', auth()->user()->carrier()->first()->id_carrier)->get();
         } else if (auth()->user()->isAdmin() || auth()->user()->isClient()){
@@ -56,6 +56,7 @@ class CarrierController extends Controller
     public function create()
     {
         // auth()->user()->authorizeRoles(['user', 'admin']);
+        auth()->user()->authorizePermission(['212']);
         $data = new Carrier;
         $data->tax_regime = new Tax_regimes;
         $data->prod_serv = new ProdServ;
@@ -74,6 +75,7 @@ class CarrierController extends Controller
     public function store(Request $request)
     {
         // auth()->user()->authorizeRoles(['user', 'admin']);
+        auth()->user()->authorizePermission(['212']);
         $success = true;
         $error = "0";
         $validator = Validator::make($request->all(), [
@@ -169,6 +171,7 @@ class CarrierController extends Controller
     public function edit($id)
     {
         // auth()->user()->authorizeRoles(['user', 'admin']);
+        auth()->user()->authorizePermission(['213']);
         auth()->user()->carrierAutorization($id);
         $data = Carrier::where('id_carrier', $id)->first();
         $data->each(function ($data) {
@@ -192,6 +195,7 @@ class CarrierController extends Controller
     public function update(Request $request, $id)
     {
         // auth()->user()->authorizeRoles(['user', 'admin']);
+        auth()->user()->authorizePermission(['213']);
         auth()->user()->carrierAutorization($id);
         $success = true;
         $error = "0";
@@ -265,6 +269,7 @@ class CarrierController extends Controller
     public function destroy($id)
     {
         // auth()->user()->authorizeRoles(['user', 'admin']);
+        auth()->user()->authorizePermission(['214']);
         auth()->user()->carrierAutorization($id);
         $success = true;
         $user_id = (auth()->check()) ? auth()->user()->id : null;
@@ -304,6 +309,7 @@ class CarrierController extends Controller
     public function recover($id) 
     {
         // auth()->user()->authorizeRoles(['user', 'admin']);
+        auth()->user()->authorizePermission(['215']);
         auth()->user()->carrierAutorization($id);
         $success = true;
         $user_id = (auth()->check()) ? auth()->user()->id : null;
