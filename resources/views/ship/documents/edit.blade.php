@@ -7,8 +7,8 @@
 <script src="{{ asset('js/currency/currency.min.js') }}"></script>
 <style>
     .editable-input {
-        border: 1px solid 
-                #0066ff
+        padding: 10px;
+        border: 1px solid rgb(253, 7, 7);
     }
 </style>
 @endsection

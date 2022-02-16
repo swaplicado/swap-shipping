@@ -149,31 +149,11 @@ class DocumentController extends Controller
                             ->where('carrier_id', $oCarrier->id_carrier)
                             ->get();
 
-        $lUsos = [];
-        $lUsos['G01'] = 'Adquisición de mercancias';
-        $lUsos['G02'] = 'Devoluciones, descuentos o bonificaciones';
-        $lUsos['G03'] = 'Gastos en general';
-        $lUsos['I01'] = 'Construcciones';
-        $lUsos['I02'] = 'Mobilario y equipo de oficina por inversiones';
-        $lUsos['I03'] = 'Equipo de transporte';
-        $lUsos['I04'] = 'Equipo de computo y accesorios';
-        $lUsos['I05'] = 'Dados, troqueles, moldes, matrices y herramental';
-        $lUsos['I06'] = 'Comunicaciones telefónicas';
-        $lUsos['I07'] = 'Comunicaciones satelitales';
-        $lUsos['I08'] = 'Otra maquinaria y equipo';
-        $lUsos['D01'] = 'Honorarios médicos, dentales y gastos hospitalarios.';
-        $lUsos['D02'] = 'Gastos médicos por incapacidad o discapacidad';
-        $lUsos['D03'] = 'Gastos funerales.';
-        $lUsos['D04'] = 'Donativos.';
-        $lUsos['D05'] = 'Intereses reales efectivamente pagados por créditos hipotecarios (casa habitación).';
-        $lUsos['D06'] = 'Aportaciones voluntarias al SAR.';
-        $lUsos['D07'] = 'Primas por seguros de gastos médicos.';
-        $lUsos['D08'] = 'Gastos de transportación escolar obligatoria.';
-        $lUsos['D09'] = 'Depósitos en cuentas para el ahorro, primas que tengan como base planes de pensiones.';
-        $lUsos['D10'] = 'Pagos por servicios educativos (colegiaturas)';
-        $lUsos['P01'] = 'Por definir';
+        $oUsos = \DB::table('sat_uso_cfdis AS usos')
+                            ->where('key_code', $oObjData->usoCFDI)
+                            ->first();
 
-        $usoCfdi = $oObjData->usoCFDI.'-'.$lUsos[$oObjData->usoCFDI];
+        $usoCfdi = $oUsos->key_code.'-'.$oUsos->description;
 
         foreach ($lCarrierSeries as $serie) {
             $folio = MDocument::where('carrier_id', $oCarrier->id_carrier)->where('serie', $serie->prefix)->max('folio');
@@ -198,14 +178,9 @@ class DocumentController extends Controller
                     'lPayMethods' => $lPayMethods,
                     'lPayForms' => $lPayForms,
                     'lCarrierSeries' => $lCarrierSeries,
+                    'usoCfdi' => $usoCfdi,
                     'lCurrencies' => $lCurrencies
                 ]);
-    }
-
-    public function generateXml($idDocument)
-    {
-        XmlGeneration::generateCarta();
-        $originalString = XmlGeneration::createOriginalString();
     }
 
     public function update(Request $request, $idDocument)

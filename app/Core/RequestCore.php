@@ -156,7 +156,7 @@ class RequestCore {
             $oConcept->description = $oConfigurations->cfdi4_0->prodServDescripcion;
             $oConcept->claveUnidad = $oConfigurations->cfdi4_0->claveUnidad;
             $oConcept->simboloUnidad = $oConfigurations->cfdi4_0->simboloUnidad;
-            $oConcept->unidad = $oConfigurations->cfdi4_0->simboloUnidad;
+            $oConcept->unidad = $lUnits[$oConfigurations->cfdi4_0->claveUnidad];
             $oConcept->numIndentificacion = (date('YmdHis').'_'.(random_int(100, 999)));
 
             $oState = \DB::table('sat_states')
@@ -272,6 +272,7 @@ class RequestCore {
         //*********************************************************************************************
         $oObjData->oCartaPorte->mercancia = $oRequest->mercancia;
         $oUnitP = \DB::table('sat_units')->where('key_code', $oRequest->mercancia->unidadPeso)->first();
+        $dTotalPeso = 0;
         $oObjData->oCartaPorte->mercancia->unidadPesoName = $oRequest->mercancia->unidadPeso." - ".$oUnitP->description;
         $oObjData->oCartaPorte->mercancia->numTotalMercancias = count($oRequest->mercancia->mercancias);
         foreach ($oObjData->oCartaPorte->mercancia->mercancias as $merch) {
@@ -282,10 +283,13 @@ class RequestCore {
             $merch->simboloUnidad = $oUnit->symbol;
             $merch->descripcionUnidad = $oUnit->description;
 
-
             $merch->currencyName = $lCurrencies[$merch->moneda];
             $merch->unitName = $lUnits[$merch->claveUnidad];
+
+            $dTotalPeso += $merch->pesoEnKg;
         }
+
+        $oObjData->oCartaPorte->mercancia->pesoBrutoTotal = $dTotalPeso;
 
         /**
          * Ubicaciones

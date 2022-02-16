@@ -33,9 +33,7 @@
     </div>
     <div class="col-md-3">
         <label for="uso_cfdi" class="form-label">Uso CFDI</label>
-        <select class="form-select" id="uso_cfdi" v-model="oData.metodoPago">
-            <option v-for="pm in lPayMethods" :value="pm.key_code">@{{ pm._description }}</option>
-        </select>
+        <input type="text" class="form-control" title="{{ $usoCfdi }}" value="{{ $usoCfdi }}" readonly>
     </div>
 </div>
 <div class="row">
