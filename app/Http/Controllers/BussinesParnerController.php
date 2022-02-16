@@ -157,9 +157,14 @@ class BussinesParnerController extends Controller
 
                 $User->username = $request->fullname;
                 $User->full_name = $request->fullname;
-                $User->email = $request->email;
-                // $User->user_type_id = $request->user_type_id;
-
+                if(!is_null($request->editEmail)){
+                    if($user->email != $request->email){
+                        $user->email = $request->email;
+                        $user->email_verified_at = null;
+                        $user->sendEmailVerificationNotification();
+                    }
+                }
+                
                 $User->update();
                 
             });

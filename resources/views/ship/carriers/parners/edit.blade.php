@@ -29,3 +29,18 @@
     </div>
 </div>
 @endsection
+
+@section('scripts')
+    <script>
+        $(document).ready(function () {
+            const check = document.getElementById('editEmail');
+            check.addEventListener('change', function handleChange(event){
+                if(check.checked){
+                    document.getElementById('email').removeAttribute('readonly');
+                }else{
+                    document.getElementById('email').setAttribute('readonly', 'readonly');
+                }
+            });
+        });
+    </script>
+@endsection

@@ -111,7 +111,13 @@ class UserController extends Controller
 
                 $User->username = $request->username;
                 $User->full_name = $request->full_name;
-                $User->email = $request->email;
+                if(!is_null($request->editEmail)){
+                    if($user->email != $request->email){
+                        $user->email = $request->email;
+                        $user->email_verified_at = null;
+                        $user->sendEmailVerificationNotification();
+                    }
+                }
                 // $User->user_type_id = $request->user_type_id;
 
                 foreach($jsonObj as $json){

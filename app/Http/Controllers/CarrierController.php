@@ -228,7 +228,13 @@ class CarrierController extends Controller
 
                 $user->username = $request->fullname;
                 $user->full_name = $request->fullname;
-                $user->email = $request->email;
+                if(!is_null($request->editEmail)){
+                    if($user->email != $request->email){
+                        $user->email = $request->email;
+                        $user->email_verified_at = null;
+                        $user->sendEmailVerificationNotification();
+                    }
+                }
 
                 $carrier->update();
                 $user->update();
