@@ -15,6 +15,7 @@ use App\UserVsTypes;
 use App\Models\Sat\ProdServ;
 use App\Models\Sat\Tax_regimes;
 use Illuminate\Support\Facades\Hash;
+use App\Utils\messagesErros;
 
 class CarrierController extends Controller
 {
@@ -83,7 +84,7 @@ class CarrierController extends Controller
             'password' => ['required', 'string', 'min:8', 'confirmed'],
             'tax_regimes' => 'required|not_in:0',
             'fullname' => 'required',
-            'RFC' => 'required',
+            'RFC' => ['required', 'unique:f_carriers,fiscal_id'],
             'contact1' => 'required',
             'telephone1' => 'required',
             'prod_serv' => 'required|not_in:0'
@@ -137,7 +138,7 @@ class CarrierController extends Controller
             });
         } catch (QueryException $e) {
             $success = false;
-            $error = $e->errorInfo[0];
+            $error = messagesErros::sqlMessageError($e->errorInfo[2]);
         }
 
         if ($success) {
@@ -202,8 +203,8 @@ class CarrierController extends Controller
 
         $validator = Validator::make($request->all(), [
             'fullname' => 'required',
-            'email' => 'required',
-            'RFC' => 'required',
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
+            'RFC' => ['required', 'unique:f_carriers'],
             'tax_regimes' => 'required|not_in:0'
         ]);
         $validator->validate();
@@ -245,7 +246,7 @@ class CarrierController extends Controller
             });
         } catch (QueryException $e) {
             $success = false;
-            $error = $e->errorInfo[0];
+            $error = messagesErros::sqlMessageError($e->errorInfo[2]);
         }
 
         if ($success) {
@@ -292,7 +293,7 @@ class CarrierController extends Controller
             });
         } catch (QueryException $e) {
             $success = false;
-            $error = $e->errorInfo[0];
+            $error = messagesErros::sqlMessageError($e->errorInfo[2]);
         }
 
         if ($success) {
@@ -332,7 +333,7 @@ class CarrierController extends Controller
             });
         } catch (QueryException $e) {
             $success = false;
-            $error = $e->errorInfo[0];
+            $error = messagesErros::sqlMessageError($e->errorInfo[2]);
         }
 
         if ($success) {
@@ -344,5 +345,74 @@ class CarrierController extends Controller
         }
 
         return redirect('carriers')->with(['mesage' => $msg, 'icon' => $icon]);
+    }
+
+    public function editFiscalData($id){
+        auth()->user()->authorizePermission(['213']);
+        auth()->user()->carrierAutorization($id);
+        $data = Carrier::where('id_carrier', $id)->first();
+        $data->each(function ($data) {
+            $data->users;
+            $data->tax_regime;
+            $data->prod_serv;
+        });
+        $tax_regimes = Tax_regimes::selectRaw('CONCAT(key_code, " - ", description) AS kd, id')->pluck('id', 'kd');
+        $prod_serv = ProdServ::where('is_active', 1)->selectRaw('CONCAT(key_code, " - ", description) AS kd, id')->pluck('id', 'kd');
+        
+        return view('ship/carriers/fiscalData', ['data' => $data, 'tax_regimes' => $tax_regimes, 'prod_serv' => $prod_serv]);
+    }
+
+    public function updateFiscalData(Request $request, $id)
+    {
+        // auth()->user()->authorizeRoles(['user', 'admin']);
+        auth()->user()->authorizePermission(['213']);
+        auth()->user()->carrierAutorization($id);
+        $success = true;
+        $error = "0";
+
+        $validator = Validator::make($request->all(), [
+            'RFC' => ['required', 'unique:f_carriers'],
+            'tax_regimes' => 'required|not_in:0',
+            'prod_serv' => 'required|not_in:0'
+        ]);
+        $validator->validate();
+        
+        $user_id = (auth()->check()) ? auth()->user()->id : null;
+
+        $values = json_decode($request->post('tax_regimes'));
+        $tr_name = $values->name;
+        $tr_id = $values->id;
+
+        $prodServ = json_decode($request->post('prod_serv'));
+        $ps_name = $prodServ->name;
+        $ps_id = $prodServ->id;
+
+        $user_id = (auth()->check()) ? auth()->user()->id : null;
+        try {
+            DB::transaction(function () use ($request, $user_id, $id, $tr_id, $ps_id) {
+                $carrier = Carrier::findOrFail($id);
+                
+                $carrier->fiscal_id = $request->RFC;
+                $carrier->tax_regimes_id = $tr_id;
+                $carrier->prod_serv_id = $ps_id;
+                $carrier->usr_upd_id = $user_id;
+
+                $carrier->update();
+            });
+        } catch (QueryException $e) {
+            $success = false;
+            $error = messagesErros::sqlMessageError($e->errorInfo[2]);
+        }
+
+        if ($success) {
+            $msg = "Se actualizó el registro con éxito";
+            $icon = "success";
+        } else {
+            $msg = "Error al actualizar el registro. Error: " . $error;
+            $icon = "error";
+        }
+
+        return redirect(route('editar_carrierFiscalData', ['id' => $id]))->with(['mesage' => $msg, 'icon' => $icon]);
+
     }
 }

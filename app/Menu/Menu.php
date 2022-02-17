@@ -64,7 +64,7 @@ class Menu {
             if($oUser->isCarrier()){
                 $menu = $menu.'
                     <li>
-                        <a href="'.route('editar_carrier', $oUser->carrier()->first()->id_carrier).'">
+                        <a href="'.route('editar_carrierFiscalData', $oUser->carrier()->first()->id_carrier).'">
                             <span class="icon bx bxs-user-rectangle bx-sm" aria-hidden="true"></span>Mis datos fiscales
                         </a>
                     </li>

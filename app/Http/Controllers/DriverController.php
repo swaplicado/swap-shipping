@@ -17,6 +17,7 @@ use App\Role;
 use App\UserVsTypes;
 use Auth;
 use Illuminate\Support\Facades\Hash;
+use App\Utils\messagesErros;
 
 class DriverController extends Controller
 {
@@ -155,7 +156,7 @@ class DriverController extends Controller
             });
         } catch (QueryException $e) {
             $success = false;
-            $error = $e->errorInfo[0];
+            $error = messagesErros::sqlMessageError($e->errorInfo[2]);
         }
 
         if ($success) {
@@ -219,7 +220,7 @@ class DriverController extends Controller
         auth()->user()->authorizePermission(['313']);
         $validator = Validator::make($request->all(), [
             'fullname' => 'required',
-            'email' => ['required', 'string', 'email', 'max:255'],
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'RFC' => 'required',
             'licence' => 'required',
             'tp_figure' => 'required|not_in:0',
@@ -281,7 +282,7 @@ class DriverController extends Controller
             });
         } catch (QueryException $e) {
             $success = false;
-            $error = $e->errorInfo[0];
+            $error = messagesErros::sqlMessageError($e->errorInfo[2]);
         }
 
         if ($success) {
@@ -331,7 +332,7 @@ class DriverController extends Controller
             });
         } catch (QueryException $e) {
             $success = false;
-            $error = $e->errorInfo[0];
+            $error = messagesErros::sqlMessageError($e->errorInfo[2]);
         }
 
         if ($success) {
@@ -376,7 +377,7 @@ class DriverController extends Controller
             });
         } catch (QueryException $e) {
             $success = false;
-            $error = $e->errorInfo[0];
+            $error = messagesErros::sqlMessageError($e->errorInfo[2]);
         }
 
         if ($success) {

@@ -11,12 +11,12 @@
                 <span class="icon menu-toggle--gray" aria-hidden="true"></span>
             </button>
 
-            <button class="theme-switcher gray-circle-btn" type="button"
+            {{-- <button class="theme-switcher gray-circle-btn" type="button"
                 title="Switch theme">
                 <span class="sr-only">Switch theme</span>
                 <i class="sun-icon" data-feather="sun" aria-hidden="true"></i>
                 <i class="moon-icon" data-feather="moon" aria-hidden="true"></i>
-            </button>
+            </button> --}}
 
             <div>{{ Auth::user()->username }}</div>
 
@@ -35,7 +35,7 @@
                 </button>
                 <ul class="users-item-dropdown nav-user-dropdown dropdown">
                     <li>
-                        <a href="##">
+                        <a href="{{ route('profile') }}">
                             <i data-feather="user" aria-hidden="true"></i>
                             <span>Profile</span>
                         </a>

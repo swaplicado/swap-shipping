@@ -10,6 +10,7 @@ use App\Role;
 use App\RoleUser;
 use App\Models\Carrier;
 use App\Models\TpFigure;
+use App\Utils\messagesErros;
 use Validator;
 
 class UserController extends Controller
@@ -99,7 +100,7 @@ class UserController extends Controller
         $validator = Validator::make($request->all(), [
             'username' => 'required',
             'full_name' => 'required',
-            'email' => 'required'
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:users']
         ]);
 
         $validator->validate();
@@ -151,7 +152,7 @@ class UserController extends Controller
             });
         } catch (QueryException $e) {
             $success = false;
-            $error = $e->errorInfo[0];
+            $error = messagesErros::sqlMessageError($e->errorInfo[2]);
         }
 
         if ($success) {
@@ -192,7 +193,7 @@ class UserController extends Controller
             });
         } catch (QueryException $e) {
             $success = false;
-            $error = $e->errorInfo[0];
+            $error = messagesErros::sqlMessageError($e->errorInfo[2]);
         }
 
         if ($success) {
@@ -227,7 +228,7 @@ class UserController extends Controller
             });
         } catch (QueryException $e) {
             $success = false;
-            $error = $e->errorInfo[0];
+            $error = messagesErros::sqlMessageError($e->errorInfo[2]);
         }
 
         if ($success) {

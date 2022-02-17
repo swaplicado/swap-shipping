@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Models\Sat\Municipalities;
 use Validator;
+use App\Utils\messagesErros;
 
 class MunicipalitiesController extends Controller
 {
@@ -97,7 +98,7 @@ class MunicipalitiesController extends Controller
             });
         } catch (QueryException $e) {
             $success = false;
-            $error = $e->errorInfo[0];
+            $error = messagesErros::sqlMessageError($e->errorInfo[2]);
         }
 
         if ($success) {
