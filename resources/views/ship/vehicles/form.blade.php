@@ -42,18 +42,12 @@
         <span class="text-danger">{{ $message }}</span>
     @enderror
 </div>
+{!! $data->id_vehicle == null ? (session()->has('form') ? session('form') : "") : "" !!}
 <div class="form-group">
     <label for="insurance" class="form-label">Aseguradora</label>
-    <select class="form-select" name="insurance">
-        <option value="0" selected>Select Aseguradora</option>
-        @foreach($insurances as $i => $index)
-            @if($data->insurance_id == $index)
-                <option selected value='{{$index}}'>{{$i}}</option>
-            @else
-                <option value='{{$index}}'>{{$i}}</option>
-            @endif
-        @endforeach
-    </select>
+    <div id="sel_insurances">
+        
+    </div>
     @error('insurance')
         <span class="text-danger">{{$message}}</span>
     @enderror
@@ -81,6 +75,5 @@
         <span class="text-danger">{{$message}}</span>
     @enderror
 </div>
-{!! $data->id_vehicle == null ? (session()->has('form') ? session('form') : "") : "" !!}
 <br>
 <button type="submit" class="btn btn-primary">Guardar</button>

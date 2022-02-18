@@ -22,7 +22,7 @@ class Forms {
             $form = '
                 <div class="form-group">
                     <label for="carrier" class="form-label">Transportista</label>
-                    <select class="form-select" name="carrier">
+                    <select id="select_carrier" class="form-select" name="carrier">
                         <option value="0" selected>Transportista</option>'.$option.'
                     </select>
                 </div>

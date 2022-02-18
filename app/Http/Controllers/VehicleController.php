@@ -66,6 +66,8 @@ class VehicleController extends Controller
         
         $carriers = Carrier::where('is_deleted', 0)->orderBy('fullname', 'ASC')->pluck('id_carrier', 'fullname');
 
+        $Insurances = Insurances::get();
+
         return view('ship/vehicles/create', ['data' => $data, 'LicenceSct' => $LicenceSct, 
             'VehicleConfig' => $VehicleConfig, 'insurances' => $Insurances, 'carriers' => $carriers]);
     }
@@ -89,13 +91,14 @@ class VehicleController extends Controller
         $validator = Validator::make($request->all(), [
             'plates' => 'required',
             'license_sct_num' => 'required',
-            'license_sct_id' => 'required',
-            'veh_cfg_id' => 'required',
+            'license_sct_id' => 'required|not_in:0',
+            'veh_cfg_id' => 'required|not_in:0',
             'carrier' => 'required|not_in:0',
-            'insurance' => 'required'
+            'insurance' => 'required|not_in:0'
         ]);
 
         $validator->validate();
+        
         $user_id = (auth()->check()) ? auth()->user()->id : null;
         try {
             DB::transaction(function () use ($request, $user_id) {
