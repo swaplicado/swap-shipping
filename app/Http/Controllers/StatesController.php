@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use Illuminate\Database\QueryException;
 use App\Models\sat\States;
+use App\Utils\messagesErros;
 use Validator;
 
 class StatesController extends Controller
@@ -101,7 +102,7 @@ class StatesController extends Controller
             });
         } catch (QueryException $e) {
             $success = false;
-            $error = $e->errorInfo[0];
+            $error = messagesErros::sqlMessageError($e->errorInfo[2]);
         }
 
         if ($success) {

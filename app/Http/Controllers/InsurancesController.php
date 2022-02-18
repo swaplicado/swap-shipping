@@ -9,6 +9,7 @@ use App\Models\Insurances;
 use App\Models\Carrier;
 use Validator;
 use Auth;
+use App\Utils\messagesErros;
 
 class InsurancesController extends Controller
 {
@@ -105,7 +106,7 @@ class InsurancesController extends Controller
             });
         } catch (QueryException $e) {
             $success = false;
-            $error = $e->errorInfo[0];
+            $error = messagesErros::sqlMessageError($e->errorInfo[2]);
         }
 
         if ($success) {
@@ -198,7 +199,7 @@ class InsurancesController extends Controller
             });
         } catch (QueryException $e) {
             $success = false;
-            $error = $e->errorInfo[0];
+            $error = messagesErros::sqlMessageError($e->errorInfo[2]);
         }
 
         if ($success) {
@@ -234,7 +235,7 @@ class InsurancesController extends Controller
             });
         } catch (QueryException $e) {
             $success = false;
-            $error = $e->errorInfo[0];
+            $error = messagesErros::sqlMessageError($e->errorInfo[2]);
         }
 
         if ($success) {
@@ -264,7 +265,7 @@ class InsurancesController extends Controller
             });
         } catch (QueryException $e) {
             $success = false;
-            $error = $e->errorInfo[0];
+            $error = messagesErros::sqlMessageError($e->errorInfo[2]);
         }
 
         if ($success) {

@@ -9,6 +9,7 @@ use App\RoleUser;
 use App\Permission;
 use App\RolePermission;
 use Illuminate\Database\QueryException;
+use App\Utils\messagesErros;
 
 class RoleUserController extends Controller
 {
@@ -73,7 +74,7 @@ class RoleUserController extends Controller
             });
         } catch (QueryException $e) {
             $success = false;
-            $error = $e->errorInfo[0];
+            $error = messagesErros::sqlMessageError($e->errorInfo[2]);
         }
 
         if ($success) {
@@ -155,7 +156,7 @@ class RoleUserController extends Controller
             });
         } catch (QueryException $e) {
             $success = false;
-            $error = $e->errorInfo[0];
+            $error = messagesErros::sqlMessageError($e->errorInfo[2]);
         }
 
         if ($success) {
@@ -199,7 +200,7 @@ class RoleUserController extends Controller
             });
         } catch (QueryException $e) {
             $success = false;
-            $error = $e->errorInfo[0];
+            $error = messagesErros::sqlMessageError($e->errorInfo[2]);
         }
 
         if ($success) {
@@ -236,7 +237,7 @@ class RoleUserController extends Controller
             });
         } catch (QueryException $e) {
             $success = false;
-            $error = $e->errorInfo[0];
+            $error = messagesErros::sqlMessageError($e->errorInfo[2]);
         }
 
         if ($success) {

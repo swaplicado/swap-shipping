@@ -8,6 +8,7 @@ use Illuminate\Database\QueryException;
 use App\Models\Trailer;
 use App\Models\Sat\TrailerSubtype;
 use App\Models\Carrier;
+use App\Utils\messagesErros;
 use Validator;
 
 class TrailerController extends Controller
@@ -92,7 +93,7 @@ class TrailerController extends Controller
             });
         } catch (QueryException $e) {
             $success = false;
-            $error = $e->errorInfo[0];
+            $error = messagesErros::sqlMessageError($e->errorInfo[2]);
         }
 
         if ($success) {
@@ -174,7 +175,7 @@ class TrailerController extends Controller
             });
         } catch (QueryException $e) {
             $success = false;
-            $error = $e->errorInfo[0];
+            $error = messagesErros::sqlMessageError($e->errorInfo[2]);
         }
 
         if ($success) {
@@ -211,7 +212,7 @@ class TrailerController extends Controller
             });
         } catch (QueryException $e) {
             $success = false;
-            $error = $e->errorInfo[0];
+            $error = messagesErros::sqlMessageError($e->errorInfo[2]);
         }
 
         if ($success) {
@@ -242,7 +243,7 @@ class TrailerController extends Controller
             });
         } catch (QueryException $e) {
             $success = false;
-            $error = $e->errorInfo[0];
+            $error = messagesErros::sqlMessageError($e->errorInfo[2]);
         }
 
         if ($success) {

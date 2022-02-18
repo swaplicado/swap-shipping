@@ -18,6 +18,12 @@ class FormsMiddleware
     {
         $form = Forms::createForm(\Auth::user());
         session(['form' => $form]);
+        
+        $myProfile = Forms::myProfile(\Auth::user());
+        session(['myProfile' => $myProfile]);
+
+        $route = Forms::profileRoute(\Auth::user());
+        session(['route' => $route]);
 
         return $next($request);
     }

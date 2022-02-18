@@ -11,6 +11,7 @@ use App\User;
 use App\Role;
 use App\RoleUser;
 use App\UserVsTypes;
+use App\Utils\messagesErros;
 use App\Models\Sat\Tax_regimes;
 use Illuminate\Support\Facades\Hash;
 use Validator;
@@ -96,7 +97,7 @@ class BussinesParnerController extends Controller
             });
         } catch (QueryException $e) {
             $success = false;
-            $error = $e->errorInfo[0];
+            $error = messagesErros::sqlMessageError($e->errorInfo[2]);
         }
 
         if ($success) {
@@ -153,7 +154,7 @@ class BussinesParnerController extends Controller
         
         $validator = Validator::make($request->all(), [
             'fullname' => 'required',
-            'email' => 'required'
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:users']
         ]);
 
         $validator->validate();
@@ -179,7 +180,7 @@ class BussinesParnerController extends Controller
             });
         } catch (QueryException $e) {
             $success = false;
-            $error = $e->errorInfo[0];
+            $error = messagesErros::sqlMessageError($e->errorInfo[2]);
         }
 
         if ($success) {
@@ -227,7 +228,7 @@ class BussinesParnerController extends Controller
             });
         } catch (QueryException $e) {
             $success = false;
-            $error = $e->errorInfo[0];
+            $error = messagesErros::sqlMessageError($e->errorInfo[2]);
         }
 
         if ($success) {
@@ -269,7 +270,7 @@ class BussinesParnerController extends Controller
             });
         } catch (QueryException $e) {
             $success = false;
-            $error = $e->errorInfo[0];
+            $error = messagesErros::sqlMessageError($e->errorInfo[2]);
         }
 
         if ($success) {

@@ -50,6 +50,8 @@ Route::middleware(['auth', 'verified', 'menu'])->group( function () {
     Route::put('/carriers/{id}', 'CarrierController@update')->name('actualizar_carrier');
     Route::delete('/carriers/{id}', 'CarrierController@destroy')->name('eliminar_carrier');
     Route::put('/carriers/recover/{id}', 'CarrierController@recover')->name('recuperar_carrier');
+    Route::get('/carriersFiscalData/{id}', 'CarrierController@editFiscalData')->name('editar_carrierFiscalData');
+    Route::put('/carriersFiscalData/{id}', 'CarrierController@updateFiscalData')->name('actualizar_carrierFiscalData');
 
     // Rutas asociados
     Route::get('/parners', 'BussinesParnerController@index')->name('parners');
@@ -150,6 +152,13 @@ Route::middleware(['auth', 'verified', 'menu'])->group( function () {
     Route::get('/config', 'ConfigController@index')->name('config');
     Route::get('/config/edit', 'ConfigController@edit')->name('editar_config');
     Route::put('/config/{id}', 'ConfigController@update')->name('actualizar_config');
+
+    //Rutas mi perfil
+    Route::get('/profile', 'ProfileController@index')->name('profile')->middleware('form');
+    Route::put('/profileAdmin/{id}', 'ProfileController@updateAdmin')->name('actualizar_profileAdmin');
+    Route::put('/profileClient/{id}', 'ProfileController@updateClient')->name('actualizar_profileClient');
+    Route::put('/profileCarrier/{id}', 'ProfileController@updateCarrier')->name('actualizar_profileCarrier');
+    Route::put('/profileDriver/{id}', 'ProfileController@updateDriver')->name('actualizar_profileDriver');
 });
 
 

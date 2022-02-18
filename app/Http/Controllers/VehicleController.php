@@ -10,6 +10,7 @@ use App\Models\Sat\VehicleConfig;
 use App\Models\Carrier;
 use Illuminate\Http\Request;
 use Illuminate\Database\QueryException;
+use App\Utils\messagesErros;
 use Validator;
 use Auth;
 
@@ -114,7 +115,7 @@ class VehicleController extends Controller
             });
         } catch (QueryException $e) {
             $success = false;
-            $error = $e->errorInfo[0];
+            $error = messagesErros::sqlMessageError($e->errorInfo[2]);
         }
 
         if ($success) {
@@ -207,7 +208,7 @@ class VehicleController extends Controller
             });
         } catch (QueryException $e) {
             $success = false;
-            $error = $e->errorInfo[0];
+            $error = messagesErros::sqlMessageError($e->errorInfo[2]);
         }
 
         if ($success) {
@@ -245,7 +246,7 @@ class VehicleController extends Controller
             });
         } catch (QueryException $e) {
             $success = false;
-            $error = $e->errorInfo[0];
+            $error = messagesErros::sqlMessageError($e->errorInfo[2]);
         }
 
         if ($success) {
@@ -276,7 +277,7 @@ class VehicleController extends Controller
             });
         } catch (QueryException $e) {
             $success = false;
-            $error = $e->errorInfo[0];
+            $error = messagesErros::sqlMessageError($e->errorInfo[2]);
         }
 
         if ($success) {

@@ -9,6 +9,7 @@ use App\Models\Carrier;
 use Illuminate\Database\QueryException;
 use Validator;
 use Auth;
+use App\Utils\messagesErros;
 
 class SeriesController extends Controller
 {
@@ -84,7 +85,7 @@ class SeriesController extends Controller
             });
         } catch (QueryException $e) {
             $success = false;
-            $error = $e->errorInfo[0];
+            $error = messagesErros::sqlMessageError($e->errorInfo[2]);
         }
 
         if ($success) {
@@ -163,7 +164,7 @@ class SeriesController extends Controller
             });
         } catch (QueryException $e) {
             $success = false;
-            $error = $e->errorInfo[0];
+            $error = messagesErros::sqlMessageError($e->errorInfo[2]);
         }
 
         if ($success) {
@@ -199,7 +200,7 @@ class SeriesController extends Controller
             });
         } catch (QueryException $e) {
             $success = false;
-            $error = $e->errorInfo[0];
+            $error = messagesErros::sqlMessageError($e->errorInfo[2]);
         }
 
         if ($success) {
@@ -229,7 +230,7 @@ class SeriesController extends Controller
             });
         } catch (QueryException $e) {
             $success = false;
-            $error = $e->errorInfo[0];
+            $error = messagesErros::sqlMessageError($e->errorInfo[2]);
         }
 
         if ($success) {
