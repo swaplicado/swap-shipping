@@ -69,14 +69,14 @@
 </div>
 <div class="form-group">
     <label for="rfc" class="form-label">RFC</label>
-    <input name="rfc" type="text" class="form-control" value="{{ old('rfc', $data->cfdi4_0->rfc ?? '') }}">
+    <input name="rfc" type="text" class="form-control uppercase" value="{{ old('rfc', $data->cfdi4_0->rfc ?? '') }}">
     @error('rfc')
         <span class="text-danger">{{ $message }}</span>
     @enderror
 </div>
 <div class="form-group">
     <label for="nombreReceptor" class="form-label">Nombre del receptor</label>
-    <input name="nombreReceptor" type="text" class="form-control" value="{{ old('nombreReceptor', $data->cfdi4_0->nombreReceptor ?? '') }}">
+    <input name="nombreReceptor" type="text" class="form-control uppercase" value="{{ old('nombreReceptor', $data->cfdi4_0->nombreReceptor ?? '') }}">
     @error('nombreReceptor')
         <span class="text-danger">{{ $message }}</span>
     @enderror

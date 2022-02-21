@@ -74,8 +74,8 @@ class SeriesController extends Controller
         try {
             DB::transaction(function () use ($request, $user_id) {
                 $serie = Series::create([
-                    'serie_name' => $request->serie_name,
-                    'prefix' => $request->prefix,
+                    'serie_name' => strtoupper($request->serie_name),
+                    'prefix' => strtoupper($request->prefix),
                     'initial_number' => $request->initial_number,
                     'description' => $request->description,
                     'carrier_id' => $request->carrier,
@@ -154,8 +154,8 @@ class SeriesController extends Controller
             DB::transaction(function () use ($request, $user_id, $id) {
                 $Serie = Series::findOrFail($id);
                 auth()->user()->carrierAutorization($Serie->carrier_id);
-                $Serie->serie_name = $request->serie_name;
-                $Serie->prefix = $request->prefix;
+                $Serie->serie_name = strtoupper($request->serie_name);
+                $Serie->prefix = strtoupper($request->prefix);
                 $Serie->initial_number = $request->initial_number;
                 $Serie->description = $request->description;
                 $Serie->usr_upd_id = $user_id;

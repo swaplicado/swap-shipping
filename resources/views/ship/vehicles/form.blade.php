@@ -1,13 +1,13 @@
 <div class="form-group">
     <label for="plates" class="form-label">Placas</label>
-    <input name="plates" type="text" class="form-control" value="{{ old('plates', $data->plates ?? '') }}">
+    <input name="plates" type="text" class="form-control uppercase" value="{{ old('plates', $data->plates ?? '') }}" required>
     @error('plates')
         <span class="text-danger">{{ $message }}</span>
     @enderror
 </div>
 <div class="form-group">
     <label for="year_model" class="form-label">Modelo</label>
-    <input name="year_model" type="text" class="form-control" value="{{ old('year_model', $data->year_model ?? '') }}">
+    <input name="year_model" type="text" class="form-control uppercase" value="{{ old('year_model', $data->year_model ?? '') }}" required>
     @error('year_model')
         <span class="text-danger">{{ $message }}</span>
     @enderror
@@ -30,14 +30,14 @@
 </div>
 <div class="form-group">
     <label for="license_sct_num" class="form-label">Número de permiso SCT</label>
-    <input name="license_sct_num" type="text" class="form-control" value="{{ old('license_sct_num', $data->license_sct_num ?? '') }}">
+    <input name="license_sct_num" type="text" class="form-control uppercase" value="{{ old('license_sct_num', $data->license_sct_num ?? '') }}" required>
     @error('license_sct_num')
         <span class="text-danger">{{ $message }}</span>
     @enderror
 </div>
 <div class="form-group">
     <label for="drvr_reg_trib" class="form-label">Reg trib</label>
-    <input name="drvr_reg_trib" type="text" class="form-control" value="{{ old('drvr_reg_trib', $data->drvr_reg_trib ?? '') }}">
+    <input name="drvr_reg_trib" type="text" class="form-control uppercase" value="{{ old('drvr_reg_trib', $data->drvr_reg_trib ?? '') }}" required>
     @error('drvr_reg_trib')
         <span class="text-danger">{{ $message }}</span>
     @enderror
@@ -54,7 +54,7 @@
 </div>
 <div class="form-group">
     <label for="policy" class="form-label">Poliza</label>
-    <input name="policy" type="text" class="form-control" value="{{ old('policy', $data->policy ?? '') }}">
+    <input name="policy" type="text" class="form-control uppercase" value="{{ old('policy', $data->policy ?? '') }}" required>
     @error('policy')
         <span class="text-danger">{{ $message }}</span>
     @enderror

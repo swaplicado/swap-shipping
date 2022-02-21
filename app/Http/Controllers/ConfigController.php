@@ -78,7 +78,7 @@ class ConfigController extends Controller
 
         $currencies = Currencies::where('is_active', 1)->selectRaw('CONCAT(key_code, " - ", description) AS kd, id')->pluck('id', 'kd');
         $prod_serv = ProdServ::where('is_active', 1)->selectRaw('CONCAT(key_code, " - ", description) AS kd, id')->pluck('id', 'kd');
-        $units = Units::selectRaw('CONCAT(key_code, " - ", description) AS kd, id')->pluck('id', 'kd');
+        $units = Units::where('is_active', 1)->selectRaw('CONCAT(key_code, " - ", description) AS kd, id')->pluck('id', 'kd');
         $tax_regimes = Tax_regimes::selectRaw('CONCAT(key_code, " - ", description) AS kd, id')->pluck('id', 'kd');
         $usoCFDI = UsoCFDI::selectRaw('CONCAT(key_code, " - ", description) AS kd, id')->pluck('id', 'kd');
         $taxes = Taxes::selectRaw('CONCAT(key_code, " - ", description) AS kd, id')->pluck('id', 'kd');
@@ -121,8 +121,8 @@ class ConfigController extends Controller
             $json["prodServDescripcion"] = ProdServ::where('id', $request->prod_serv)->value('description');
             $json["claveUnidad"] = Units::where('id', $request->units)->value('key_code');
             $json["simboloUnidad"] = Units::where('id', $request->units)->value('symbol');
-            $json["rfc"] = $request->rfc;
-            $json["nombreReceptor"] = $request->nombreReceptor;
+            $json["rfc"] = strtoupper($request->rfc);
+            $json["nombreReceptor"] = strtoupper($request->nombreReceptor);
             $json["domicilioFiscalReceptor"] = $request->domicilioFiscalReceptor;
             $json["regimenFiscalReceptor"] = Tax_regimes::where('id', $request->tax_regimes)->value('key_code');
             $json["usoCFDI"] = usoCFDI::where('id', $request->usoCFDI)->value('key_code');

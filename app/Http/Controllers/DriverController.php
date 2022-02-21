@@ -109,10 +109,10 @@ class DriverController extends Controller
         try {
             DB::transaction(function () use ($sta_id, $sta_name, $user_id, $request) {
                 $user = User::create([
-                    'username' => $request->fullname,
+                    'username' => strtoupper($request->fullname),
                     'email' => $request->email,
                     'password' => Hash::make($request->password),
-                    'full_name' => $request->fullname,
+                    'full_name' => strtoupper($request->fullname),
                     'user_type_id' => 4,
                     'is_driver' => 1
                 ]);
@@ -121,10 +121,10 @@ class DriverController extends Controller
                 $user->sendEmailVerificationNotification();
 
                 $Driver = Driver::create([
-                    'fullname' => $request->fullname,
-                    'fiscal_id' => $request->RFC,
-                    'fiscal_fgr_id' => $request->RFC_ex,
-                    'driver_lic' => $request->licence,
+                    'fullname' => strtoupper($request->fullname),
+                    'fiscal_id' => strtoupper($request->RFC),
+                    'fiscal_fgr_id' => strtoupper($request->RFC_ex),
+                    'driver_lic' => strtoupper($request->licence),
                     'tp_figure_id' => $request->tp_figure,
                     'fis_address_id' => $request->country,
                     'carrier_id' => $request->carrier,
@@ -134,10 +134,10 @@ class DriverController extends Controller
 
                 $address = FAddress::create([
                     'telephone' => $request->telephone,
-                    'street' => $request->street,
+                    'street' => strtoupper($request->street),
                     'street_num_ext' => $request->street_num_ext,
                     'street_num_int' => $request->street_num_int,
-                    'neighborhood' => $request->neighborhood,
+                    'neighborhood' => strtoupper($request->neighborhood),
                     'reference' => $request->reference,
                     'locality' => $request->locality,
                     'state' => $sta_name,
@@ -243,19 +243,19 @@ class DriverController extends Controller
                 auth()->user()->carrierAutorization($Driver->carrier_id);
                 $address = FAddress::where('trans_figure_id', $id)->firstOrFail();
 
-                $Driver->fullname = $request->fullname;
-                $Driver->fiscal_id = $request->RFC;
-                $Driver->fiscal_fgr_id = $request->RFC_ex;
-                $Driver->driver_lic = $request->licence;
+                $Driver->fullname = strtoupper($request->fullname);
+                $Driver->fiscal_id = strtoupper($request->RFC);
+                $Driver->fiscal_fgr_id = strtoupper($request->RFC_ex);
+                $Driver->driver_lic = strtoupper($request->licence);
                 $Driver->tp_figure_id = $request->tp_figure;
                 $Driver->fis_address_id = $request->country;
                 $Driver->usr_upd_id = $user_id;
 
                 $address->telephone = $request->telephone;
-                $address->street = $request->street;
+                $address->street = strtoupper($request->street);
                 $address->street_num_ext = $request->street_num_ext;
                 $address->street_num_int = $request->street_num_int;
-                $address->neighborhood = $request->neighborhood;
+                $address->neighborhood = strtoupper($request->neighborhood);
                 $address->reference = $request->reference;
                 $address->locality = $request->locality;
                 $address->state = $sta_name;
@@ -266,8 +266,8 @@ class DriverController extends Controller
 
                 $user = User::findOrFail($Driver->users()->first()->id);
 
-                $user->username = $request->fullname;
-                $user->full_name = $request->fullname;
+                $user->username = strtoupper($request->fullname);
+                $user->full_name = strtoupper($request->fullname);
                 if(!is_null($request->editEmail)){
                     if($user->email != $request->email){
                         $user->email = $request->email;

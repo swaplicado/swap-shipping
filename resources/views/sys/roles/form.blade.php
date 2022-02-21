@@ -1,6 +1,6 @@
 <div class="form-group">
     <label for="name" class="form-label">Nombre del rol</label>
-    <input name="name" type="text" class="form-control" value="{{ old('name', $data->name ?? '') }}">
+    <input name="name" type="text" class="form-control uppercase" value="{{ old('name', $data->name ?? '') }}">
     @error('name')
         <span class="text-danger">{{ $message }}</span>
     @enderror

@@ -104,10 +104,10 @@ class CarrierController extends Controller
         try {
             DB::transaction(function () use ($request, $user_id, $tr_id, $ps_id) {
                 $user = User::create([
-                    'username' => $request->fullname,
+                    'username' => strtoupper($request->fullname),
                     'email' => $request->email,
                     'password' => Hash::make($request->password),
-                    'full_name' => $request->fullname,
+                    'full_name' => strtoupper($request->fullname),
                     'user_type_id' => 3,
                     'is_carrier' => 1
                 ]);
@@ -117,12 +117,12 @@ class CarrierController extends Controller
                 $user->sendEmailVerificationNotification();
                 
                 $carrier = Carrier::create([
-                    'fullname' => $request->fullname,
+                    'fullname' => strtoupper($request->fullname),
                     'fiscal_id' => $request->RFC,
                     'tax_regimes_id' => $tr_id,
-                    'contact1' => $request->contact1,
+                    'contact1' => strtoupper($request->contact1),
                     'telephone1' => $request->telephone1,
-                    'contact2' => $request->contact2,
+                    'contact2' => strtoupper($request->contact2),
                     'telephone2' => $request->telephone2,
                     'prod_serv_id' => $ps_id,
                     'usr_new_id' => $user_id,
@@ -225,14 +225,14 @@ class CarrierController extends Controller
                 $carrier = Carrier::findOrFail($id);
                 $user = User::findOrFail($carrier->users()->first()->id);
 
-                $carrier->fullname = $request->fullname;
-                $carrier->fiscal_id = $request->RFC;
+                $carrier->fullname = strtoupper($request->fullname);
+                $carrier->fiscal_id = strtoupper($request->RFC);
                 $carrier->tax_regimes_id = $tr_id;
                 $carrier->prod_serv_id = $ps_id;
                 $carrier->usr_upd_id = $user_id;
 
-                $user->username = $request->fullname;
-                $user->full_name = $request->fullname;
+                $user->username = strtoupper($request->fullname);
+                $user->full_name = strtoupper($request->fullname);
                 if(!is_null($request->editEmail)){
                     if($user->email != $request->email){
                         $user->email = $request->email;

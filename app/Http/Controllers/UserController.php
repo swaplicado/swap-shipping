@@ -98,7 +98,7 @@ class UserController extends Controller
         $error = "0";
         
         $validator = Validator::make($request->all(), [
-            'username' => 'required',
+            // 'username' => 'required',
             'full_name' => 'required',
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users']
         ]);
@@ -113,7 +113,7 @@ class UserController extends Controller
             DB::transaction(function () use ($request, $user_id, $id, $jsonObj) {
                 $User = User::findOrFail($id);
 
-                $User->username = $request->username;
+                $User->username = $request->full_name;
                 $User->full_name = $request->full_name;
                 if(!is_null($request->editEmail)){
                     if($user->email != $request->email){

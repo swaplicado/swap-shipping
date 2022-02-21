@@ -14,7 +14,7 @@
         <div class="col-lg-8">
             <div class="card">
                 <div class="card-header">
-                    <span>Nuevo trailer</span>
+                    <span>Editar remolque</span>
                 </div>
                 <div class="card-body">
                     <form action="{{ route('actualizar_trailer', ['id' => $data->id_trailer]) }}" method="POST">

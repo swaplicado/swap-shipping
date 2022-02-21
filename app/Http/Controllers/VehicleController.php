@@ -103,11 +103,11 @@ class VehicleController extends Controller
         try {
             DB::transaction(function () use ($request, $user_id) {
                 $vehicle = Vehicle::create([
-                    'plates' => $request->plates,
+                    'plates' => strtoupper($request->plates),
                     'year_model' => $request->year_model,
-                    'license_sct_num' => $request->license_sct_num,
-                    'drvr_reg_trib' => $request->drvr_reg_trib,
-                    'policy' => $request->policy,
+                    'license_sct_num' => strtoupper($request->license_sct_num),
+                    'drvr_reg_trib' => strtoupper($request->drvr_reg_trib),
+                    'policy' => strtoupper($request->policy),
                     'license_sct_id' => $request->license_sct_id,
                     'veh_cfg_id' => $request->veh_cfg_id,
                     'carrier_id' => $request->carrier,
@@ -198,11 +198,11 @@ class VehicleController extends Controller
             DB::transaction(function () use ($request, $user_id, $id) {
                 $Vehicle = Vehicle::findOrFail($id);
                 auth()->user()->carrierAutorization($Vehicle->carrier_id);
-                $Vehicle->plates = $request->plates;
+                $Vehicle->plates = strtoupper($request->plates);
                 $Vehicle->year_model = $request->year_model;
-                $Vehicle->license_sct_num = $request->license_sct_num;
-                $Vehicle->drvr_reg_trib = $request->drvr_reg_trib;
-                $Vehicle->policy = $request->policy;
+                $Vehicle->license_sct_num = strtoupper($request->license_sct_num);
+                $Vehicle->drvr_reg_trib = strtoupper($request->drvr_reg_trib);
+                $Vehicle->policy = strtoupper($request->policy);
                 $Vehicle->license_sct_id = $request->license_sct_id;
                 $Vehicle->veh_cfg_id = $request->veh_cfg_id;
                 $Vehicle->usr_upd_id = $user_id;
