@@ -1,4 +1,11 @@
 <div class="form-group">
+    <label for="alias" class="form-label">Alias (nombre identificador)</label>
+    <input name="alias" type="text" class="form-control" value="{{ old('alias', $data->alias ?? '') }}">
+    @error('alias')
+        <span class="text-danger">{{ $message }}</span>
+    @enderror
+</div>
+<div class="form-group">
     <label for="plates" class="form-label">Placas</label>
     <input name="plates" type="text" class="form-control" value="{{ old('plates', $data->plates ?? '') }}">
     @error('plates')
@@ -6,8 +13,8 @@
     @enderror
 </div>
 <div class="form-group">
-    <label for="year_model" class="form-label">Modelo</label>
-    <input name="year_model" type="text" class="form-control" value="{{ old('year_model', $data->year_model ?? '') }}">
+    <label for="year_model" class="form-label">Modelo (año)</label>
+    <input name="year_model" type="number" class="form-control" value="{{ old('year_model', $data->year_model ?? '') }}">
     @error('year_model')
         <span class="text-danger">{{ $message }}</span>
     @enderror

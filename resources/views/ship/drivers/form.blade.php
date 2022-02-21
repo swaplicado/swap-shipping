@@ -1,3 +1,9 @@
+<div class="form-check">
+    <input class="form-check-input" type="checkbox" name="is_with_user" id="is_with_user" checked>
+    <label class="form-check-label" for="is_with_user">
+      Crear usuario para el chofer
+    </label>
+</div>
 <div class="form-group">
     <label for="fullname" class="form-label">Nombre</label>
     <input name="fullname" type="text" class="form-control" value="{{ old('fullname', $data->fullname ?? '') }}">
@@ -31,7 +37,7 @@
     @enderror
 </div>
 <div class="form-group">
-    <label for="RFC_ex" class="form-label">RFC extrangero</label>
+    <label for="RFC_ex" class="form-label">RFC extranjero</label>
     <input name="RFC_ex" type="text" class="form-control" value="{{ old('RFC_ex', $data->fiscal_fgr_id ?? '') }}">
     @error('RFC_ex')
         <span class="text-danger">{{ $message }}</span>

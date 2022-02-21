@@ -25,7 +25,7 @@ class Menu {
                 $route = route('documents', 1);
                 $menu = $menu.'
                         <li>
-                            <a href="'.$route.'"><span class="icon bx bx-file-blank bx-sm" aria-hidden="true"></span>Pendientes</a>
+                            <a href="'.$route.'"><span class="icon bx bx-file-blank bx-sm" aria-hidden="true"></span>Por procesar</a>
                         </li>
                 ';
             }
@@ -46,7 +46,7 @@ class Menu {
                 ';
             }
             if($oUser->hasPermission('141')){
-                $route = route('documents', 3);
+                $route = route('documents', 0);
                 $menu = $menu.'
                         <li>
                             <a href="'.$route.'"><span class="icon bx bx-archive bx-sm" aria-hidden="true"></span>Todas</a>

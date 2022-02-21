@@ -1,5 +1,6 @@
 <?php namespace App\Core;
 
+use Illuminate\Support\Facades\Storage;
 use SoapClient;
 
 class FinkokCore {
@@ -38,6 +39,47 @@ class FinkokCore {
 
                 return [$error];
             }
+        }
+
+        return null;
+    }
+
+    public static function regCertificates($pcFile, $pvFile, $pwDecrypted, $fiscalId)
+    {
+        $cerFile = Storage::disk('local')->path($pcFile);
+        $keyFile = Storage::disk('local')->path($pvFile);
+
+        $contenidoCer = file_get_contents($cerFile);
+        $contenidoKey = file_get_contents($keyFile);
+        $typeUser= "O";
+        $passKey = $pwDecrypted;
+
+        $username = env('FINKOK_USERNAME'); # Usuario de Finkok
+        $password = env('FINKOK_PASSWORD'); # Contraseña de Finkok
+        
+        $params = array(
+            "reseller_username" => $username,
+            "reseller_password" => $password,
+            "taxpayer_id" => $fiscalId,
+            "type_user" => 'O',
+            "cer"=> $contenidoCer,
+            "key" => $contenidoKey,
+            "passphrase" => $passKey
+        );
+                 
+        $client = new SoapClient('http://demo-facturacion.finkok.com/servicios/soap/registration.wsdl', array('trace' => 1));
+        try {
+            $result = $client->__soapCall("add", array($params));
+        }
+        catch (\Throwable $th) {
+            return ['success' => false, 'message' => $th->getMessage()];
+        }
+
+        $request = $client->__getLastRequest();
+        $response = $client->__getLastResponse();
+
+        if (isset($result->addResult)) {
+            return ['success' => $result->addResult->success, 'message' => $result->addResult->message];
         }
 
         return null;

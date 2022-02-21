@@ -35,6 +35,7 @@ class XmlGeneration {
         // $root->setAttribute("NoCertificado", "");
         $root->setAttribute("Certificado", "");
         $root->setAttribute("SubTotal", SFormats::formatNumber($oMongoDocument->subTotal));
+        $root->setAttribute("Descuento", SFormats::formatNumber($oMongoDocument->discounts));
         $root->setAttribute("Moneda", $oMongoDocument->currency);
         $root->setAttribute("TipoCambio", $oMongoDocument->currency == $oConfigurations->localCurrency ? "1" : SFormats::formatNumber($oMongoDocument->tipoCambio, 4));
         $root->setAttribute("Total", SFormats::formatNumber($oMongoDocument->total));
@@ -46,9 +47,9 @@ class XmlGeneration {
 
         // Emisor
         $nodeEmisor = $dom->createElement('cfdi:Emisor');
-        $nodeEmisor->setAttribute('Rfc', $oCarrier->fiscal_id);
-        $nodeEmisor->setAttribute('Nombre', $oCarrier->fullname);
-        $nodeEmisor->setAttribute('RegimenFiscal', '601');
+        $nodeEmisor->setAttribute('Rfc', $oMongoDocument->emisor->rfcEmisor);
+        $nodeEmisor->setAttribute('Nombre', $oMongoDocument->emisor->nombreEmisor);
+        $nodeEmisor->setAttribute('RegimenFiscal', $oMongoDocument->emisor->regimenFiscal);
         $root->appendChild($nodeEmisor);
 
         // Receptor
@@ -75,6 +76,7 @@ class XmlGeneration {
             $nodeConcepto->setAttribute('Unidad', 'No aplica');
             $nodeConcepto->setAttribute('Descripcion', $aConcept["description"]);
             $nodeConcepto->setAttribute('ValorUnitario', SFormats::formatNumber($aConcept["valorUnitario"]));
+            $nodeConcepto->setAttribute('Descuento', SFormats::formatNumber($aConcept["discount"]));
             $nodeConcepto->setAttribute('Importe', SFormats::formatNumber($base));
             $nodeConcepto->setAttribute('ObjetoImp', '02');
             $nodeConceptos->appendChild($nodeConcepto);

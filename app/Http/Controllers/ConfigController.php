@@ -2,8 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Http\File;
 use Illuminate\Http\Request;
 use App\Utils\Configuration;
+use App\Utils\CfdUtils;
+use App\Utils\Encryption;
+use App\Core\FinkokCore;
 use Validator;
 use App\Models\Sat\ProdServ;
 use App\Models\Sat\Currencies;
@@ -11,9 +16,86 @@ use App\Models\Sat\Units;
 use App\Models\Sat\Tax_regimes;
 use App\Models\Sat\UsoCFDI;
 use App\Models\Sat\Taxes;
+use App\Models\Certificate;
+use App\Models\Carrier;
 
 class ConfigController extends Controller
 {
+
+    public function myCertificates()
+    {
+        return view('ship.configurations.certificates.certs');
+    }
+
+    /**
+     * Registra al cliente en la plataforma de Finkok, 
+     * después guarda el log y elimina los certificados
+     * 
+     * @param  Request $request
+     * @return Response
+     */
+    public function storeCertificate(Request $request)    
+    {
+        $filePc = $request->file('pc');
+        $fileNamePc = $filePc->getClientOriginalName();
+        $fileExtensionPc = $filePc->getClientOriginalExtension();
+        $filePathPc = $filePc->getRealPath();
+        $destinationPath = 'contents/files';
+
+        $urlPc = Storage::putFileAs($destinationPath, new File($filePathPc), $fileNamePc);
+
+        $certificate = CfdUtils::getCerData($urlPc);
+
+        $oCarrier = Carrier::where('fiscal_id', $certificate->fiscalId)->first();
+
+        if ($oCarrier == null) {
+            return response()->json(['error' => 'El RFC del emisor en el certificado no existe en la base de datos'], 400);
+        }
+
+        if (auth()->user()->isCarrier()) {
+            if (auth()->user()->carrier->fiscal_id != $oCarrier->fiscal_id) {
+                return response()->json(['error' => 'El RFC del emisor en el certificado no corresponde al RFC del emisor del usuario'], 400);
+            }
+        }
+        else if (auth()->user()->isDriver()) {
+            if (auth()->user()->driver->Carrier->fiscal_id != $oCarrier->fiscal_id) {
+                return response()->json(['error' => 'El RFC del emisor en el certificado no corresponde al RFC del emisor del usuario'], 400);
+            }
+        }
+
+        $filePv = $request->file('pv');
+    
+        $fileNamePv = $filePv->getClientOriginalName();
+        $fileExtensionPv = $filePv->getClientOriginalExtension();
+        $filePathPv = $filePv->getRealPath();
+
+        $urlPv = Storage::putFileAs($destinationPath, new File($filePathPv), $fileNamePv);
+
+        $response = FinkokCore::regCertificates($urlPc, $urlPv, $request->pw, $oCarrier->fiscal_id);
+
+        if (! $response['success']) {
+            return redirect()->route('config.certificates')->with(['message' => $response['message'], 'icon' => 'error']);
+        }
+
+        $message = 'El certificado fue registrado correctamente';
+        if ($response['message'] == "Account Created successfully") {
+            $oCertificate = new Certificate();
+            $oCertificate->dt_valid_from = $certificate->fromDate;
+            $oCertificate->dt_valid_to = $certificate->expDate;
+            $oCertificate->cert_number = $certificate->certificateNumber;
+            $oCertificate->carrier_id = $oCarrier->id_carrier;
+            $oCertificate->usr_new_id = auth()->user()->id;
+            $oCertificate->usr_upd_id = auth()->user()->id;
+    
+            $oCertificate->save();
+        }
+
+        Storage::delete($urlPc);
+        Storage::delete($urlPv);
+
+        return redirect()->route('config.certificates')->with(['message' => $response['message'], 'icon' => 'success']);
+    }
+
     /**
      * Display a listing of the resource.
      *

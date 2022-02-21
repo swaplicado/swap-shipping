@@ -88,7 +88,7 @@ class DriverController extends Controller
 
         $validator = Validator::make($request->all(), [
             'fullname' => 'required',
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
+            'email' => ['required', 'string', 'email', 'max:255', $request->is_with_user == 'on' ? 'unique:users' : ''],
             'RFC' => 'required',
             'licence' => 'required',
             'tp_figure' => 'required|not_in:0',
@@ -108,17 +108,19 @@ class DriverController extends Controller
 
         try {
             DB::transaction(function () use ($sta_id, $sta_name, $user_id, $request) {
-                $user = User::create([
-                    'username' => $request->fullname,
-                    'email' => $request->email,
-                    'password' => Hash::make($request->password),
-                    'full_name' => $request->fullname,
-                    'user_type_id' => 4,
-                    'is_driver' => 1
-                ]);
-        
-                $user->roles()->attach(Role::where('id', 4)->first());
-                $user->sendEmailVerificationNotification();
+                if ($request->is_with_user == 'on') {
+                    $user = User::create([
+                        'username' => $request->fullname,
+                        'email' => $request->email,
+                        'password' => Hash::make($request->password),
+                        'full_name' => $request->fullname,
+                        'user_type_id' => 4,
+                        'is_driver' => 1
+                    ]);
+
+                    $user->roles()->attach(Role::where('id', 4)->first());
+                    $user->sendEmailVerificationNotification();
+                }
 
                 $Driver = Driver::create([
                     'fullname' => $request->fullname,
@@ -128,8 +130,8 @@ class DriverController extends Controller
                     'tp_figure_id' => $request->tp_figure,
                     'fis_address_id' => $request->country,
                     'carrier_id' => $request->carrier,
-                    'usr_new_id' => $user_id,
-                    'usr_upd_id' => $user_id
+                    'usr_new_id' => auth()->user()->id,
+                    'usr_upd_id' => auth()->user()->id
                 ]);
 
                 $address = FAddress::create([
@@ -145,14 +147,16 @@ class DriverController extends Controller
                     'trans_figure_id' => $Driver->id_trans_figure,
                     'country_id' => $request->country,
                     'state_id' => $sta_id,
-                    'usr_new_id' => $user_id,
-                    'usr_upd_id' => $user_id
+                    'usr_new_id' => auth()->user()->id,
+                    'usr_upd_id' => auth()->user()->id
                 ]);
 
-                $UserVsTypes = UserVsTypes::create([
-                    'trans_figure_id' => $Driver->id_trans_figure,
-                    'user_id' => $user->id
-                ]);
+                if ($request->is_with_user == 'on') {
+                    $UserVsTypes = UserVsTypes::create([
+                        'trans_figure_id' => $Driver->id_trans_figure,
+                        'user_id' => $user->id
+                    ]);
+                }
             });
         } catch (QueryException $e) {
             $success = false;

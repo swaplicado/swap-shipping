@@ -100,6 +100,7 @@ class VehicleController extends Controller
         try {
             DB::transaction(function () use ($request, $user_id) {
                 $vehicle = Vehicle::create([
+                    'alias' => $request->alias,
                     'plates' => $request->plates,
                     'year_model' => $request->year_model,
                     'license_sct_num' => $request->license_sct_num,

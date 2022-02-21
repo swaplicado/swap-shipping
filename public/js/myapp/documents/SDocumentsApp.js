@@ -13,6 +13,7 @@ Vue.component('my-currency-input', {
                     // Cursor is inside the input field. unformat display value for user
                     return this.value.toString()
                 } else {
+                    this.value = parseFloat(this.value);
                     // User is not modifying now. Format display value for user interface
                     return "$ " + this.value.toFixed(2).replace(/(\d)(?=(\d{3})+(?:\.\d+)?$)/g, "$1,")
                 }
@@ -74,6 +75,11 @@ var app = new Vue({
             this.onChangeAmount();
         },
         removeConcept(iIndex) {
+            if (this.oData.conceptos.length == 0) {
+                SGui.showError("No puede eliminar el último concepto");
+                return;
+            }
+
             this.oData.conceptos.splice(iIndex, 1);
             this.onChangeAmount();
         },
