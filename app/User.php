@@ -11,6 +11,8 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Contracts\Auth\CanResetPassword;
+use App\Notifications\VerifyEmail;
+use App\Notifications\PasswordReset;
 
 class User extends Authenticatable implements MustVerifyEmail
 {
@@ -171,5 +173,15 @@ class User extends Authenticatable implements MustVerifyEmail
     
     public function hasCarrier($carrier) {
         return $this->carrier()->first()->id_carrier == $carrier;
+    }
+
+    public function sendEmailVerificationNotification()
+    {
+        $this->notify(new VerifyEmail); // my notification
+    }
+
+    public function sendPasswordResetNotification($token)
+    {
+        $this->notify(new PasswordReset($token));
     }
 }
