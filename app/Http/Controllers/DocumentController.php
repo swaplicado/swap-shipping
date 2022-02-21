@@ -16,6 +16,9 @@ use App\Core\FinkokCore;
 use App\Utils\CfdiUtils;
 use App\Utils\SFormats;
 
+use Illuminate\Support\Facades\Mail;
+use App\Mail\SendXmlPdf;
+
 class DocumentController extends Controller
 {
     public function index(Request $request, $viewType = 0)
@@ -396,7 +399,7 @@ class DocumentController extends Controller
 
         //Generamos el pdf
         $pdf = CfdiUtils::updatePdf($oMongoDocument->_id, $sXml);
-        
+
         return redirect("documents");
     }
 
@@ -455,6 +458,8 @@ class DocumentController extends Controller
         // generar pdf
         $pdf = CfdiUtils::updatePdf($oMongoDocument->_id, $oMongoDocument->xml_cfdi);
         // enviar correo
+
+        Mail::to('adrianalex053@gmail.com')->send(new SendXmlPdf($oMongoDocument->xml_cfdi, $pdf));
 
         return redirect("documents")->with(['mesage' => "El documento ha sido timbrado exitosamente", 'icon' => "success"]);
     }

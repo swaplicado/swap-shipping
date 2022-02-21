@@ -38,7 +38,7 @@
 </div>
 <div class="form-group">
     <label for="RFC_ex" class="form-label">RFC extranjero</label>
-    <input name="RFC_ex" type="text" class="form-control uppercase" value="{{ old('RFC_ex', $data->fiscal_fgr_id ?? '') }}" required>
+    <input name="RFC_ex" type="text" class="form-control uppercase" value="{{ old('RFC_ex', $data->fiscal_fgr_id ?? '') }}">
     @error('RFC_ex')
         <span class="text-danger">{{ $message }}</span>
     @enderror
