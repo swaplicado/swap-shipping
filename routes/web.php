@@ -146,6 +146,10 @@ Route::middleware(['auth', 'verified', 'menu'])->group( function () {
         Route::put('taxes/update/{id}', 'TaxConfigurationController@update')->name('config.taxes.update');
         Route::delete('taxes/{id}', 'TaxConfigurationController@destroy')->name('config.taxes.delete');
         Route::put('taxes/recover/{id}', 'TaxConfigurationController@recover')->name('config.taxes.recovery');
+
+        // Rutas de configuración de certificados
+        Route::get('certificates', 'ConfigController@myCertificates')->name('config.certificates');
+        Route::post('certificates/store', 'ConfigController@storeCertificate')->name('config.certificates.store');
     });
     
     //Rutas Configuración

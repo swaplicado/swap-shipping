@@ -11,6 +11,7 @@ use App\Models\Sat\Units;
 use App\Models\Sat\Items;
 use App\Models\Sat\FiscalAddress;
 use App\Models\Sat\PostalCodes;
+use App\Models\Sat\States;
 
 class verifyDocument
 {
@@ -42,7 +43,7 @@ class verifyDocument
             );
 
             $domicilio = array(
-                "estado" =>  PostalCodes::where([['postal_code', $u->domicilio->codigoPostal],['State', $u->domicilio->estado]])->value('State'),
+                "estado" =>  States::where('key_code', $u->domicilio->estado)->value('key_code'),
                 "pais" => FiscalAddress::where('key_code', $u->domicilio->pais)->value('key_code'),
                 "codigoPostal" => PostalCodes::where('postal_code', $u->domicilio->codigoPostal)->value('postal_code')
             );

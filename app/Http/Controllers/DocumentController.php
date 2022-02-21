@@ -14,6 +14,7 @@ use App\SXml\XmlGeneration;
 use App\Core\RequestCore;
 use App\Core\FinkokCore;
 use App\Utils\CfdiUtils;
+use App\Utils\SFormats;
 
 class DocumentController extends Controller
 {
@@ -31,22 +32,32 @@ class DocumentController extends Controller
                 $title = "todas";
                 break;
 
-            // Pendientes
+            // Por procesar
             case "1":
+                $lDocuments = $lDocuments->where('is_processed', false)
+                                            ->get();
+                $title = "por procesar";
+                break;
+
+            // Por timbrar
+            case "2":
                 $lDocuments = $lDocuments->where('is_processed', true)
+                                            ->where('is_signed', false)
                                             ->get();
                 $title = "por timbrar";
                 break;
 
             // Timbrados
-            case "2":
-                $lDocuments = $lDocuments->where('is_signed', true)
+            case "3":
+                $lDocuments = $lDocuments->where('is_processed', true)
+                                            ->where('is_signed', true)
                                             ->get();
                 $title = "timbradas";
                 break;
             
             default:
-                # code...
+                $lDocuments = $lDocuments->get();
+                $title = "todas";
                 break;
         }
 
@@ -61,6 +72,20 @@ class DocumentController extends Controller
     {
         $oDocument = Document::find($idDocument);
         $oMongoDocument = MDocument::find($oDocument->mongo_document_id);
+
+        if ($oDocument->is_signed) {
+            return redirect("documents")->with(['icon' => "error", 'mesage' => "El documento ya ha sido timbrado, no se puede modificar"]);
+        }
+        if ($oDocument->is_canceled) {
+            return redirect("documents")->with(['icon' => "error", 'mesage' => "El documento está cancelado, no se puede modificar"]);
+        }
+
+        // Validación de entorno de transportista
+        $resValidation = $this->isValidCarrierSpace($oDocument->carrier_id);
+
+        if (! $resValidation['isValid']) {
+            return redirect()->back()->with(['icon' => "error", 'mesage' => $resValidation['message']]);
+        }
 
         $lCurrenciesQuery = \DB::table('sat_currencies AS cur')
                             ->where('cur.is_active', true);
@@ -150,14 +175,19 @@ class DocumentController extends Controller
                             ->get();
 
         $oUsos = \DB::table('sat_uso_cfdis AS usos')
-                            ->where('key_code', $oObjData->usoCFDI)
+                            ->where('key_code', $oObjData->usoCfdi)
                             ->first();
 
         $usoCfdi = $oUsos->key_code.'-'.$oUsos->description;
 
         foreach ($lCarrierSeries as $serie) {
             $folio = MDocument::where('carrier_id', $oCarrier->id_carrier)->where('serie', $serie->prefix)->max('folio');
-            $serie->folio = $folio + 1;
+            if ($serie->initial_number > $folio) {
+                $serie->folio = $serie->initial_number;
+            }
+            else {
+                $serie->folio = $folio + 1;
+            }
         }
 
         $lCurrencies = clone $lCurrenciesQuery;
@@ -183,6 +213,41 @@ class DocumentController extends Controller
                 ]);
     }
 
+    public function isValidCarrierSpace($idCarrier)
+    {
+        // Series de folios
+        $lCarrierSeries = \DB::table('f_document_series AS ds')
+                                        ->where('is_deleted', false)
+                                        ->where('carrier_id', $idCarrier)
+                                        ->get();
+
+        if (count($lCarrierSeries) == 0) {
+            return ['isValid' => false, 'message' => 'No existen series de folios configurados para el transportista, favor de configurarlas.'];
+        }
+
+        // Vehiculos
+        $lVehicles = \DB::table('f_vehicles AS v')
+                            ->where('v.carrier_id', $idCarrier)
+                            ->where('v.is_deleted', false)
+                            ->get();
+
+        if (count($lVehicles) == 0) {
+            return ['isValid' => false, 'message' => 'No existen vehículos configurados para el transportista, favor de configurarlos.'];
+        }
+
+        // Figuras
+        $lFigures = \DB::table('f_trans_figures AS tf')
+                            ->where('tf.carrier_id', $idCarrier)
+                            ->where('tf.is_deleted', false)
+                            ->get();
+
+        if (count($lFigures) == 0) {
+            return ['isValid' => false, 'message' => 'No existen choferes configurados para el transportista, favor de configurarlos.'];
+        }
+
+        return ['isValid' => true, 'message' => ''];
+    }
+
     public function update(Request $request, $idDocument)
     {
         $oCfdiData = json_decode($request->the_cfdi_data);
@@ -190,6 +255,13 @@ class DocumentController extends Controller
         $oDocument = Document::find($idDocument);
         $oMongoDocument = MDocument::find($oDocument->mongo_document_id);
         $oCarrier = Carrier::find($oDocument->carrier_id);
+
+        if ($oDocument->is_signed) {
+            return redirect("documents")->with(['icon' => "error", 'mesage' => "El documento ya ha sido timbrado, no se puede modificar"]);
+        }
+        if ($oDocument->is_canceled) {
+            return redirect("documents")->with(['icon' => "error", 'mesage' => "El documento está cancelado, no se puede modificar"]);
+        }
 
         /**
          * Procesamiento de modificaciones en el documento
@@ -211,6 +283,10 @@ class DocumentController extends Controller
         $oMongoDocument->metodoPago = $oCfdiData->oData->metodoPago;
         $oMongoDocument->currency = $oCfdiData->oData->currency;
         $oMongoDocument->tipoCambio = $oCfdiData->oData->tipoCambio;
+        $oMongoDocument->usoCfdi = $oCfdiData->oData->usoCfdi;
+        $oEmisor = $oCfdiData->oData->emisor;
+        $oEmisor->regimenFiscal = $oCarrier->tax_regime->key_code;
+        $oMongoDocument->emisor = $oEmisor;
         
         // Conceptos
         $dSubTotal = 0;
@@ -219,11 +295,12 @@ class DocumentController extends Controller
         $aTraslados = [];
         $dRetention = 0;
         $indexConcept = 0;
+        $lConcepts = [];
         foreach ($oMongoDocument->conceptos as $aConcept) {
             $oClientConcept = $oCfdiData->oData->conceptos[$indexConcept];
-            $aConcept["valorUnitario"] = $oClientConcept->valorUnitario;
-            $aConcept["importe"] = $aConcept["valorUnitario"] * $aConcept["quantity"];
-            $aConcept["discount"] = $oClientConcept->discount;
+            $aConcept["valorUnitario"] = round($oClientConcept->valorUnitario, 2);
+            $aConcept["importe"] = round($aConcept["valorUnitario"] * $aConcept["quantity"], 2);
+            $aConcept["discount"] = round($oClientConcept->discount, 2);
             $aConcept["description"] = $oClientConcept->description;
             $aConcept["unidad"] = $oClientConcept->unidad;
             $aConcept["numIdentificacion"] = $oClientConcept->numIndentificacion;
@@ -231,7 +308,7 @@ class DocumentController extends Controller
             foreach ($aConcept["oImpuestos"]["lTraslados"] as $aTraslado) {
                 $aTraslado["tasa"] = round($aTraslado["tasa"], 4);
                 $aTraslado["base"] = $aConcept["importe"];
-                $aTraslado["importe"] = $aTraslado["base"] * $aTraslado["tasa"];
+                $aTraslado["importe"] = round($aTraslado["base"] * $aTraslado["tasa"], 2);
 
                 if (array_key_exists(($aTraslado["tasa"].""), $aTraslados)) {
                     $aTraslados[($aTraslado["tasa"]."")] = [
@@ -252,19 +329,28 @@ class DocumentController extends Controller
             foreach ($aConcept["oImpuestos"]["lRetenciones"] as $aRetecion) {
                 $aRetecion["tasa"] = round($aRetecion["tasa"], 4);
                 $aRetecion["base"] = $aConcept["importe"];
-                $aRetecion["importe"] = $aRetecion["base"] * $aRetecion["tasa"];
+                $aRetecion["importe"] = round($aRetecion["base"] * $aRetecion["tasa"], 2);
 
                 $dRetention += $aRetecion["importe"];
             }
 
             $dSubTotal += $aConcept["importe"];
             $dDiscount += $aConcept["discount"];
+
+            $lConcepts[] = $aConcept;
+            $indexConcept++;
         }
+
+        $oMongoDocument->conceptos = $lConcepts;
 
         // Impuestos
         $oImpuestos = new \stdClass();
         $oImpuestos->totalImpuestosTrasladados = $dTraslados;
         $oImpuestos->totalImpuestosRetenidos = $dRetention;
+
+        $oMongoDocument->subTotal = round($dSubTotal, 2);
+        $oMongoDocument->total = round($dSubTotal - $dDiscount + $dTraslados - $dRetention, 2);
+        $oMongoDocument->discounts = round($dDiscount, 2);
 
         $oImpuestos->lTraslados = [];
         foreach ($aTraslados as $key => $value) {
@@ -367,7 +453,7 @@ class DocumentController extends Controller
         $log->save();
 
         // generar pdf
-        $pdf = CfdiUtils::updatePdf($oMongoDocument->_id, $sXml);
+        $pdf = CfdiUtils::updatePdf($oMongoDocument->_id, $oMongoDocument->xml_cfdi);
         // enviar correo
 
         return redirect("documents")->with(['mesage' => "El documento ha sido timbrado exitosamente", 'icon' => "success"]);

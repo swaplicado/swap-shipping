@@ -34,7 +34,7 @@ class RequestCore {
         $oObjData->folio = 0;
         $oObjData->lugarExpedicion = $oConfigurations->cfdi4_0->lugarExpedicion;
         $oObjData->objetoImp = $oConfigurations->cfdi4_0->objetoImp;
-        $oObjData->usoCFDI = $oConfigurations->cfdi4_0->usoCFDI;
+        $oObjData->usoCfdi = $oConfigurations->cfdi4_0->usoCFDI;
         $oObjData->formaPago = $oRequest->formaPago;
         $oObjData->metodoPago = $oRequest->metodoPago;
         $oObjData->currency = $oRequest->moneda;
@@ -153,7 +153,6 @@ class RequestCore {
             $oConcept->quantity = 1;
             $oConcept->discount = 0;
             $oConcept->claveProdServ = $oConfigurations->cfdi4_0->claveServicio;
-            $oConcept->description = $oConfigurations->cfdi4_0->prodServDescripcion;
             $oConcept->claveUnidad = $oConfigurations->cfdi4_0->claveUnidad;
             $oConcept->simboloUnidad = $oConfigurations->cfdi4_0->simboloUnidad;
             $oConcept->unidad = $lUnits[$oConfigurations->cfdi4_0->claveUnidad];
@@ -170,12 +169,19 @@ class RequestCore {
                 $oState->distance = 10.000;
             }
 
+            $freightType = "";
             if ($iDestination == $nLocationsTemp - 1) {
                 $oConcept->valorUnitario = $oConfigurations->tarifaBase * $oState->rate;
+                $freightType = "Flete";
             }
             else {
                 $oConcept->valorUnitario = $oConfigurations->tarifaBaseEscala * $oState->rate;
+                $freightType = "Escala";
             }
+
+            $oConcept->description = $oConfigurations->cfdi4_0->prodServDescripcion." - ".$freightType.
+                                            " [".$oLocSource->domicilio->municipio."(".$oLocSource->domicilio->estado.") - ".
+                                            $oLocDest->domicilio->municipio."(".$oLocDest->domicilio->estado.")]";
 
             $oConcept->importe = $oConcept->valorUnitario * $oConcept->quantity;
 

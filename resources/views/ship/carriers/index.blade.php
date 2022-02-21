@@ -31,7 +31,6 @@
                 <th>id carrier</th>
                 <th>Nombre</th>
                 <th>RFC</th>
-                <th>Clave de regimen fiscal</th>
                 <th>Regimen fiscal</th>
                 <th>Teléfono 1</th>
                 <th>Contacto 1</th>
@@ -49,14 +48,13 @@
                 <td>{{$d->id_carrier}}</td>
                 <td>{{$d->fullname}}</td>
                 <td>{{$d->fiscal_id}}</td>
-                <td>{{$d->tax_regime->key_code}}</td>
-                <td>{{$d->tax_regime->description}}</td>
+                <td>{{$d->tax_regime->key_code.'-'.$d->tax_regime->description }}</td>
                 <td>{{$d->telephone1}}</td>
                 <td>{{$d->contact1}}</td>
                 <td>{{$d->telephone2}}</td>
                 <td>{{$d->contact2}}</td>
-                <td>{{$d->prod_serv->key_code}}</td>
-                <td>{{$d->prod_serv->description}}</td>
+                <td>{{ isset($d->prod_serv) ? $d->prod_serv->key_code : "-" }}</td>
+                <td>{{ isset($d->prod_serv) ? $d->prod_serv->description : "-" }}</td>
             </tr>
             @endforeach
         </tbody>

@@ -41,7 +41,7 @@
                         </a>
                     </li>
                     <li>
-                        <a class="danger" href="/logout">
+                        <a class="danger" href="{{ route('logout') }}">
                             <i data-feather="log-out" aria-hidden="true"></i>
                             <span>Log out</span>
                         </a>
