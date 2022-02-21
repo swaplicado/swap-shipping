@@ -9,6 +9,8 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Foundation\Auth\RegistersUsers;
+use Illuminate\Database\QueryException;
+use Illuminate\Support\Facades\DB;
 
 class RegisterController extends Controller
 {
@@ -30,7 +32,7 @@ class RegisterController extends Controller
      *
      * @var string
      */
-    protected $redirectTo = '/home';
+    // protected $redirectTo = '/home';
 
     /**
      * Create a new controller instance.
@@ -66,16 +68,35 @@ class RegisterController extends Controller
      */
     protected function create(array $data)
     {
-        $user = User::create([
-            'username' => $data['full_name'],
-            'email' => $data['email'],
-            'password' => Hash::make($data['password']),
-            'full_name' => $data['full_name'],
-            'user_type_id' => $data['user_type_id']
-        ]);
+        $success = true;
+        $error = "0";
+        try {
+            DB::transaction(function () use ($data) {
+                $user = User::create([
+                    'username' => $data['full_name'],
+                    'email' => $data['email'],
+                    'password' => Hash::make($data['password']),
+                    'full_name' => $data['full_name'],
+                    'user_type_id' => $data['user_type_id']
+                ]);
+        
+                $user->roles()->attach(Role::where('id', $data['user_type_id'])->first());
+            });                
+        } catch (QueryException $e) {
+            $success = false;
+            $error = messagesErros::sqlMessageError($e->errorInfo[2]);
+        }
 
-        $user->roles()->attach(Role::where('id', $data['user_type_id'])->first());
+        if ($success) {
+            $msg = "Se guardó el registro con éxito";
+            $icon = "success";
+        } else {
+            $msg = "Error al guardar el registro Error: " . $error;
+            $icon = "error";
+        }
 
-        return $user;
+        return redirect('users')->with(['mesage' => $msg, 'icon' => $icon]);
+
+        // return $user;
     }
 }
