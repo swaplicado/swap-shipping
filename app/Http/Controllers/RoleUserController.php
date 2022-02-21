@@ -58,7 +58,7 @@ class RoleUserController extends Controller
         try{
             DB::transaction(function () use ($request, $jsonObj) {
                 $Role = Role::create([
-                    'name' => $request->name,
+                    'name' => strtoupper($request->name),
                     'description' => $request->description
                 ]);
                 foreach($jsonObj as $json){

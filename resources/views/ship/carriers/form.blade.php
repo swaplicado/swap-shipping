@@ -1,6 +1,6 @@
 <div class="form-group">
     <label for="fullname" class="form-label">Nombre completo</label>
-    <input name="fullname" type="text" class="form-control" value="{{ old('fullname', $data->fullname ?? '') }}">
+    <input name="fullname" type="text" class="form-control uppercase" value="{{ old('fullname', $data->fullname ?? '') }}" required>
     @error('fullname')
         <span class="text-danger">{{ $message }}</span>
     @enderror
@@ -9,7 +9,7 @@
 <div class="form-group">
     <label for="email" class="form-label">E-mail</label>
     <input id="editEmail" name="editEmail" type="checkbox">
-    <input id="email" name="email" type="text" class="form-control" value="{{ old('email', $data->users->email ?? '') }}" readonly>
+    <input id="email" name="email" type="text" class="form-control" value="{{ old('email', $data->users->email ?? '') }}" readonly required>
     @error('email')
         <span class="text-danger">{{ $message }}</span>
     @enderror
@@ -17,7 +17,7 @@
 @else
 <div class="form-group">
     <label for="email" class="form-label">E-mail</label>
-    <input id="email" name="email" type="text" class="form-control" value="{{ old('email', $data->users->email ?? '') }}">
+    <input id="email" name="email" type="text" class="form-control" value="{{ old('email', $data->users->email ?? '') }}" required>
     @error('email')
         <span class="text-danger">{{ $message }}</span>
     @enderror
@@ -25,7 +25,7 @@
 @endif
 <div class="form-group">
     <label for="RFC" class="form-label">RFC</label>
-    <input name="RFC" type="text" class="form-control" value="{{ old('RFC', $data->fiscal_id ?? '') }}">
+    <input name="RFC" type="text" class="form-control uppercase" value="{{ old('RFC', $data->fiscal_id ?? '') }}" required>
     @error('RFC')
         <span class="text-danger">{{ $message }}</span>
     @enderror
@@ -63,29 +63,29 @@
     @enderror
 </div>
 <div class="form-group">
-    <label for="contact1" class="form-label">Contacto 1</label>
-    <input name="contact1" type="text" class="form-control" value="{{ old('contact1', $data->contact1 ?? '') }}">
+    <label for="contact1" class="form-label">Nombre de contacto 1</label>
+    <input name="contact1" type="text" class="form-control uppercase" value="{{ old('contact1', $data->contact1 ?? '') }}" required>
     @error('contact1')
         <span class="text-danger">{{ $message }}</span>
     @enderror
 </div>
 <div class="form-group">
-    <label for="telephone1" class="form-label">Teléfono 1</label>
-    <input name="telephone1" type="text" class="form-control" value="{{ old('telephone1', $data->telephone1 ?? '') }}">
+    <label for="telephone1" class="form-label">Teléfono de contacto 1</label>
+    <input name="telephone1" type="text" class="form-control uppercase" value="{{ old('telephone1', $data->telephone1 ?? '') }}" required>
     @error('telephone1')
         <span class="text-danger">{{ $message }}</span>
     @enderror
 </div>
 <div class="form-group">
-    <label for="contact2" class="form-label">Contacto 2</label>
-    <input name="contact2" type="text" class="form-control" value="{{ old('contact2', $data->contact2 ?? '') }}">
+    <label for="contact2" class="form-label">Nombre de contacto 2</label>
+    <input name="contact2" type="text" class="form-control uppercase" value="{{ old('contact2', $data->contact2 ?? '') }}" required>
     @error('contact2')
         <span class="text-danger">{{ $message }}</span>
     @enderror
 </div>
 <div class="form-group">
-    <label for="telephone2" class="form-label">Teléfono 2</label>
-    <input name="telephone2" type="text" class="form-control" value="{{ old('telephone2', $data->telephone2 ?? '') }}">
+    <label for="telephone2" class="form-label">Teléfono de contacto 2</label>
+    <input name="telephone2" type="text" class="form-control uppercase" value="{{ old('telephone2', $data->telephone2 ?? '') }}" required>
     @error('telephone2')
         <span class="text-danger">{{ $message }}</span>
     @enderror

@@ -50,8 +50,8 @@ class ProfileController extends Controller
             DB::transaction(function () use ($request){
                 $user = User::findOrFail(auth()->user()->id);
 
-                $user->username = $request->fullname;
-                $user->full_name = $request->fullname;
+                $user->username = strtoupper($request->fullname);
+                $user->full_name = strtoupper($request->fullname);
                 if(!is_null($request->editEmail)){
                     if($user->email != $request->email){
                         $user->email = $request->email;
@@ -113,8 +113,8 @@ class ProfileController extends Controller
             DB::transaction(function () use ($request){
                 $user = User::findOrFail(auth()->user()->id);
 
-                $user->username = $request->fullname;
-                $user->full_name = $request->fullname;
+                $user->username = strtoupper($request->fullname);
+                $user->full_name = strtoupper($request->fullname);
                 if(!is_null($request->editEmail)){
                     if($user->email != $request->email){
                         $user->email = $request->email;
@@ -178,8 +178,8 @@ class ProfileController extends Controller
                 $user = User::findOrFail(auth()->user()->id);
                 $carrier = Carrier::findOrFail(auth()->user()->carrier()->first()->id_carrier);
 
-                $user->username = $request->fullname;
-                $user->full_name = $request->fullname;
+                $user->username = strtoupper($request->fullname);
+                $user->full_name = strtoupper($request->fullname);
                 if(!is_null($request->editEmail)){
                     if($user->email != $request->email){
                         $user->email = $request->email;
@@ -190,10 +190,10 @@ class ProfileController extends Controller
                     $user->password = \Hash::make($request->new_password);
                 }
 
-                $carrier->fullname = $request->fullname;
-                $carrier->contact1 = $request->contact1;
+                $carrier->fullname = strtoupper($request->fullname);
+                $carrier->contact1 = strtoupper($request->contact1);
                 $carrier->telephone1 = $request->telephone1;
-                $carrier->contact2 = $request->contact2;
+                $carrier->contact2 = strtoupper($request->contact2);
                 $carrier->telephone2 = $request->telephone2;
                 
                 $carrier->update();
@@ -262,8 +262,8 @@ class ProfileController extends Controller
                 $driver = Driver::findOrFail(auth()->user()->driver()->first()->id_trans_figure);
                 $address = FAddress::where('trans_figure_id', $driver->id_trans_figure)->firstOrFail();
 
-                $user->username = $request->fullname;
-                $user->full_name = $request->fullname;
+                $user->username = strtoupper($request->fullname);
+                $user->full_name = strtoupper($request->fullname);
                 if(!is_null($request->editEmail)){
                     if($user->email != $request->email){
                         $user->email = $request->email;
@@ -274,17 +274,17 @@ class ProfileController extends Controller
                     $user->password = \Hash::make($request->new_password);
                 }
                 
-                $driver->fullname = $request->fullname;
-                $driver->fiscal_id = $request->RFC;
-                $driver->fiscal_fgr_id = $request->RFC_ex;
-                $driver->driver_lic = $request->licence;
+                $driver->fullname = strtoupper($request->fullname);
+                $driver->fiscal_id = strtoupper($request->RFC);
+                $driver->fiscal_fgr_id = strtoupper($request->RFC_ex);
+                $driver->driver_lic = strtoupper($request->licence);
                 $driver->fis_address_id = $request->country;
 
                 $address->telephone = $request->telephone;
-                $address->street = $request->street;
+                $address->street = strtoupper($request->street);
                 $address->street_num_ext = $request->street_num_ext;
                 $address->street_num_int = $request->street_num_int;
-                $address->neighborhood = $request->neighborhood;
+                $address->neighborhood = strtoupper($request->neighborhood);
                 $address->reference = $request->reference;
                 $address->locality = $request->locality;
                 $address->state = $sta_name;

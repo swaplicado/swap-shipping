@@ -3743,5 +3743,9 @@ label {
     }
 }
 
-
 /*# sourceMappingURL=style.min.css.map */
+
+/*My styles*/
+.uppercase {
+    text-transform: uppercase;
+}

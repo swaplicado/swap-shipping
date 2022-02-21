@@ -95,7 +95,7 @@ class InsurancesController extends Controller
         try {
             DB::transaction(function () use ($request, $user_id, $resp_civ, $ambiental, $carga) {
                 $Insurance = Insurances::create([
-                    'full_name' => $request->fullname,
+                    'full_name' => strtoupper($request->fullname),
                     'is_civ_resp' => $resp_civ,
                     'is_ambiental' => $ambiental,
                     'is_cargo' => $carga,
@@ -189,7 +189,7 @@ class InsurancesController extends Controller
             DB::transaction(function () use ($request, $user_id, $resp_civ, $ambiental, $carga, $id) {
                 $Insurance = Insurances::findOrFail($id);
                 auth()->user()->carrierAutorization($Insurance->carrier_id);
-                $Insurance->full_name = $request->fullname;
+                $Insurance->full_name = strtoupper($request->fullname);
                 $Insurance->is_civ_resp = $resp_civ;
                 $Insurance->is_ambiental = $ambiental;
                 $Insurance->is_cargo = $carga;

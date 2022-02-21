@@ -1,6 +1,6 @@
 <div class="form-group">
     <label for="plates" class="form-label">Placas</label>
-    <input name="plates" type="text" class="form-control" value="{{ old('plates', $data->plates ?? '') }}">
+    <input name="plates" type="text" class="form-control uppercase" value="{{ old('plates', $data->plates ?? '') }}" required>
     @error('plates')
         <span class="text-danger">{{ $message }}</span>
     @enderror
