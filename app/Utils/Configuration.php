@@ -34,6 +34,7 @@ class Configuration {
         $jsonString = file_get_contents(base_path('shipconfig.json'));
         $data = json_decode($jsonString, true);
         // Update Key
+        $data['email'] = $jsonRequest['email'];
         $data['localCurrency'] = $jsonRequest['localCurrency'];
         $data['tarifaBase'] = $jsonRequest['tarifaBase'];
         $data['tarifaBaseEscala'] = $jsonRequest['tarifaBaseEscala'];

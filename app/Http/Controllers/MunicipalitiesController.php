@@ -109,7 +109,7 @@ class MunicipalitiesController extends Controller
             $icon = "error";
         }
 
-        return redirect('municipalities')->with(['mesage' => $msg, 'icon' => $icon]);
+        return redirect('municipalities')->with(['message' => $msg, 'icon' => $icon]);
     }
 
     /**

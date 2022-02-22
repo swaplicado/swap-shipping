@@ -117,7 +117,7 @@ class InsurancesController extends Controller
             $icon = "error";
         }
 
-        return redirect('insurances')->with(['mesage' => $msg, 'icon' => $icon]);
+        return redirect('insurances')->with(['message' => $msg, 'icon' => $icon]);
     }
 
     /**
@@ -210,7 +210,7 @@ class InsurancesController extends Controller
             $icon = "error";
         }
 
-        return redirect('insurances')->with(['mesage' => $msg, 'icon' => $icon]);
+        return redirect('insurances')->with(['message' => $msg, 'icon' => $icon]);
     }
 
     /**
@@ -246,7 +246,7 @@ class InsurancesController extends Controller
             $icon = "error";
         }
 
-        return redirect('insurances')->with(['mesage' => $msg, 'icon' => $icon]);
+        return redirect('insurances')->with(['message' => $msg, 'icon' => $icon]);
     }
 
     public function recover($id)
@@ -276,6 +276,6 @@ class InsurancesController extends Controller
             $icon = "error";
         }
 
-        return redirect('insurances')->with(['mesage' => $msg, 'icon' => $icon]);
+        return redirect('insurances')->with(['message' => $msg, 'icon' => $icon]);
     }
 }

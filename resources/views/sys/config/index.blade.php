@@ -33,6 +33,7 @@
                 <th></th>
                 <th></th>
                 <th></th>
+                <th>Email</th>
                 <th>Moneda local</th>
                 <th>Tarifa base</th>
                 <th>tarifa base escala</th>
@@ -56,6 +57,7 @@
                 <td>1</td>
                 <td>0</td>
                 <td></td>
+                <td>{{$data->email}}</td>
                 <td>{{$data->localCurrency}}</td>
                 <td>{{$data->tarifaBase}}</td>
                 <td>{{$data->tarifaBaseEscala}}</td>

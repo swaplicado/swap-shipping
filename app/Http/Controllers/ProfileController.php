@@ -29,22 +29,29 @@ class ProfileController extends Controller
     {
         $success = true;
         $error = "0";
-        
+
+        $validator = Validator::make($request->all(), [
+            'fullname' => 'required'
+        ]);
+
+        $validator->validate();
+
         if(!is_null($request->newPassword)){
             $validator = Validator::make($request->all(), [
-                'fullname' => 'required',
-                'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
                 'new_password' => 'required|min:8',
                 'password_confirm' => 'required|same:new_password'
             ]);
-        } else {
-            $validator = Validator::make($request->all(), [
-                'fullname' => 'required',
-                'email' => ['required', 'string', 'email', 'max:255', 'unique:users']
-            ]);
+
+            $validator->validate();
         }
 
-        $validator->validate();
+        if(!is_null($request->editEmail)){
+            $validator = Validator::make($request->all(), [
+                'email' => ['required', 'string', 'email', 'max:255', 'unique:users']
+            ]);
+            
+            $validator->validate();
+        }
 
         try {
             DB::transaction(function () use ($request){
@@ -85,7 +92,7 @@ class ProfileController extends Controller
             $icon = "error";
         }
 
-        return redirect('profile')->with(['mesage' => $msg, 'icon' => $icon]);
+        return redirect('profile')->with(['message' => $msg, 'icon' => $icon]);
     }
 
     public function updateClient(Request $request, $id)
@@ -93,21 +100,28 @@ class ProfileController extends Controller
         $success = true;
         $error = "0";
         
+        $validator = Validator::make($request->all(), [
+            'fullname' => 'required'
+        ]);
+
+        $validator->validate();
+
         if(!is_null($request->newPassword)){
             $validator = Validator::make($request->all(), [
-                'fullname' => 'required',
-                'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
                 'new_password' => 'required|min:8',
                 'password_confirm' => 'required|same:new_password'
             ]);
-        } else {
-            $validator = Validator::make($request->all(), [
-                'fullname' => 'required',
-                'email' => ['required', 'string', 'email', 'max:255', 'unique:users']
-            ]);
+
+            $validator->validate();
         }
 
-        $validator->validate();
+        if(!is_null($request->editEmail)){
+            $validator = Validator::make($request->all(), [
+                'email' => ['required', 'string', 'email', 'max:255', 'unique:users']
+            ]);
+            
+            $validator->validate();
+        }
 
         try {
             DB::transaction(function () use ($request){
@@ -145,7 +159,7 @@ class ProfileController extends Controller
             $icon = "error";
         }
 
-        return redirect('profile')->with(['mesage' => $msg, 'icon' => $icon]);
+        return redirect('profile')->with(['message' => $msg, 'icon' => $icon]);
     }
 
     public function updateCarrier(Request $request, $id)
@@ -153,25 +167,33 @@ class ProfileController extends Controller
         $success = true;
         $error = "0";
 
-        if(!is_null($request->newPassword)){
-            $validator = Validator::make($request->all(), [
-                'fullname' => 'required',
-                'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
-                'new_password' => 'required|min:8',
-                'password_confirm' => 'required|same:new_password',
-                'contact1' => 'required',
-                'telephone1' => 'required'
-            ]);
-        } else {
-            $validator = Validator::make($request->all(), [
-                'fullname' => 'required',
-                'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
-                'contact1' => 'required',
-                'telephone1' => 'required'
-            ]);
-        }
+        $validator = Validator::make($request->all(), [
+            'fullname' => 'required',
+            'contact1' => 'required',
+            'telephone1' => 'required'
+        ]);
 
         $validator->validate();
+
+        if(!is_null($request->newPassword)){
+            $validator = Validator::make($request->all(), [
+                'new_password' => 'required|min:8',
+                'password_confirm' => 'required|same:new_password'
+            ]);
+
+            $validator->validate();
+        }
+
+        if(!is_null($request->editEmail)){
+            $validator = Validator::make($request->all(), [
+                'fullname' => 'required',
+                'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
+                'contact1' => 'required',
+                'telephone1' => 'required'
+            ]);
+            
+            $validator->validate();
+        }
 
         try {
             DB::transaction(function () use ($request){
@@ -191,6 +213,7 @@ class ProfileController extends Controller
                 }
 
                 $carrier->fullname = strtoupper($request->fullname);
+                $carrier->comercial_name = strtoupper($request->comercial_name);
                 $carrier->contact1 = strtoupper($request->contact1);
                 $carrier->telephone1 = $request->telephone1;
                 $carrier->contact2 = strtoupper($request->contact2);
@@ -217,7 +240,7 @@ class ProfileController extends Controller
             $icon = "error";
         }
 
-        return redirect('profile')->with(['mesage' => $msg, 'icon' => $icon]);
+        return redirect('profile')->with(['message' => $msg, 'icon' => $icon]);
 
     }
 
@@ -226,31 +249,33 @@ class ProfileController extends Controller
         $success = true;
         $error = "0";
 
-        if(!is_null($request->newPassword)){
-            $validator = Validator::make($request->all(), [
-                'fullname' => 'required',
-                'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
-                'new_password' => 'required|min:8',
-                'password_confirm' => 'required|same:new_password',
-                'RFC' => 'required',
-                'licence' => 'required',
-                'country' => 'required|not_in:0',
-                'zip_code' => 'required',
-                'state' => 'required|not_in:0'
-            ]);
-        } else {
-            $validator = Validator::make($request->all(), [
-                'fullname' => 'required',
-                'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
-                'RFC' => 'required',
-                'licence' => 'required',
-                'country' => 'required|not_in:0',
-                'zip_code' => 'required',
-                'state' => 'required|not_in:0'
-            ]);
-        }
+        $validator = Validator::make($request->all(), [
+            'fullname' => 'required',
+            'RFC' => 'required',
+            'licence' => 'required',
+            'country' => 'required|not_in:0',
+            'zip_code' => 'required',
+            'state' => 'required|not_in:0'
+        ]);
 
         $validator->validate();
+
+        if(!is_null($request->newPassword)){
+            $validator = Validator::make($request->all(), [
+                'new_password' => 'required|min:8',
+                'password_confirm' => 'required|same:new_password'
+            ]);
+
+            $validator->validate();
+        }
+
+        if(!is_null($request->editEmail)){
+            $validator = Validator::make($request->all(), [
+                'email' => ['required', 'string', 'email', 'max:255', 'unique:users']
+            ]);
+            
+            $validator->validate();
+        }
 
         $values = json_decode($request->post('state'));
         $sta_name = $values->name;
@@ -314,7 +339,7 @@ class ProfileController extends Controller
             $icon = "error";
         }
 
-        return redirect('profile')->with(['mesage' => $msg, 'icon' => $icon]);
+        return redirect('profile')->with(['message' => $msg, 'icon' => $icon]);
     }
 
     /**

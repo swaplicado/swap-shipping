@@ -91,7 +91,7 @@ class TaxConfigurationController extends Controller
 
         return redirect()->route('config.taxes')
                             ->with(
-                                ['mesage' => "La configuración se ha guardado con éxito.", 'icon' => "success"]
+                                ['message' => "La configuración se ha guardado con éxito.", 'icon' => "success"]
                             );
     }
 
@@ -144,7 +144,7 @@ class TaxConfigurationController extends Controller
 
         return redirect()->route('config.taxes')
                             ->with(
-                                ['mesage' => "La configuración se ha modificado con éxito.", 
+                                ['message' => "La configuración se ha modificado con éxito.", 
                                     'icon' => "success"]
                             );
     }
@@ -164,7 +164,7 @@ class TaxConfigurationController extends Controller
 
         return redirect()->route('config.taxes')
                             ->with(
-                                ['mesage' => "La configuración se ha eliminado con éxito.",
+                                ['message' => "La configuración se ha eliminado con éxito.",
                                     'icon' => "success"]
                             );
 

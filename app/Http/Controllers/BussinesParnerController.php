@@ -108,7 +108,7 @@ class BussinesParnerController extends Controller
             $icon = "error";
         }
 
-        return redirect('parners')->with(['mesage' => $msg, 'icon' => $icon]);
+        return redirect('parners')->with(['message' => $msg, 'icon' => $icon]);
     }
 
     /**
@@ -153,11 +153,18 @@ class BussinesParnerController extends Controller
         $error = "0";
         
         $validator = Validator::make($request->all(), [
-            'fullname' => 'required',
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:users']
+            'fullname' => 'required'
         ]);
 
         $validator->validate();
+
+        if(!is_null($request->editEmail)){
+            $validator = Validator::make($request->all(), [
+                'email' => ['required', 'string', 'email', 'max:255', 'unique:users']
+            ]);
+            
+            $validator->validate();
+        }
         
         $user_id = (auth()->check()) ? auth()->user()->id : null;
 
@@ -191,7 +198,7 @@ class BussinesParnerController extends Controller
             $icon = "error";
         }
 
-        return redirect('parners')->with(['mesage' => $msg, 'icon' => $icon]);
+        return redirect('parners')->with(['message' => $msg, 'icon' => $icon]);
     }
 
     /**
@@ -239,7 +246,7 @@ class BussinesParnerController extends Controller
             $icon = "error";
         }
 
-        return redirect('parners')->with(['mesage' => $msg, 'icon' => $icon]);
+        return redirect('parners')->with(['message' => $msg, 'icon' => $icon]);
     }
 
     public function recover($id)
@@ -281,6 +288,6 @@ class BussinesParnerController extends Controller
             $icon = "error";
         }
 
-        return redirect('parners')->with(['mesage' => $msg, 'icon' => $icon]);
+        return redirect('parners')->with(['message' => $msg, 'icon' => $icon]);
     }
 }

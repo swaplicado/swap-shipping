@@ -30,6 +30,7 @@
                 <th>is deleted</th>
                 <th>id carrier</th>
                 <th>Nombre</th>
+                <th>Nombre comercial</th>
                 <th>RFC</th>
                 <th>Regimen fiscal</th>
                 <th>Teléfono 1</th>
@@ -47,6 +48,7 @@
                 <td>{{$d->is_deleted}}</td>
                 <td>{{$d->id_carrier}}</td>
                 <td>{{$d->fullname}}</td>
+                <td>{{$d->comercial_name}}</td>
                 <td>{{$d->fiscal_id}}</td>
                 <td>{{$d->tax_regime->key_code.'-'.$d->tax_regime->description }}</td>
                 <td>{{$d->telephone1}}</td>

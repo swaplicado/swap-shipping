@@ -130,7 +130,7 @@ class VehicleController extends Controller
             $icon = "error";
         }
 
-        return redirect('vehicles')->with(['mesage' => $msg, 'icon' => $icon]);
+        return redirect('vehicles')->with(['message' => $msg, 'icon' => $icon]);
     }
 
     /**
@@ -223,7 +223,7 @@ class VehicleController extends Controller
             $icon = "error";
         }
 
-        return redirect('vehicles')->with(['mesage' => $msg, 'icon' => $icon]);
+        return redirect('vehicles')->with(['message' => $msg, 'icon' => $icon]);
 
     }
 
@@ -261,7 +261,7 @@ class VehicleController extends Controller
             $icon = "error";
         }
 
-        return redirect('vehicles')->with(['mesage' => $msg, 'icon' => $icon]);
+        return redirect('vehicles')->with(['message' => $msg, 'icon' => $icon]);
     }
 
     public function recover($id)
@@ -292,6 +292,6 @@ class VehicleController extends Controller
             $icon = "error";
         }
 
-        return redirect('vehicles')->with(['mesage' => $msg, 'icon' => $icon]);
+        return redirect('vehicles')->with(['message' => $msg, 'icon' => $icon]);
     }
 }

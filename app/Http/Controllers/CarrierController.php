@@ -123,6 +123,7 @@ class CarrierController extends Controller
                 
                 $carrier = Carrier::create([
                     'fullname' => strtoupper($request->fullname),
+                    'comercial_name' => strtoupper($request->comercial_name),
                     'fiscal_id' => $request->RFC,
                     'tax_regimes_id' => $tr_id,
                     'contact1' => strtoupper($request->contact1),
@@ -154,7 +155,7 @@ class CarrierController extends Controller
             $icon = "error";
         }
 
-        return redirect('carriers')->with(['mesage' => $msg, 'icon' => $icon]);
+        return redirect('carriers')->with(['message' => $msg, 'icon' => $icon]);
     }
 
     /**
@@ -208,11 +209,20 @@ class CarrierController extends Controller
 
         $validator = Validator::make($request->all(), [
             'fullname' => 'required',
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'RFC' => ['required', 'unique:f_carriers'],
-            'tax_regimes' => 'required|not_in:0'
+            'tax_regimes' => 'required|not_in:0',
+            'prod_serv' => 'required|not_in:0'
         ]);
+
         $validator->validate();
+
+        if(!is_null($request->editEmail)){
+            $validator = Validator::make($request->all(), [
+                'email' => ['required', 'string', 'email', 'max:255', 'unique:users']
+            ]);
+            
+            $validator->validate();
+        }
         
         $user_id = (auth()->check()) ? auth()->user()->id : null;
 
@@ -231,6 +241,7 @@ class CarrierController extends Controller
                 $user = User::findOrFail($carrier->users()->first()->id);
 
                 $carrier->fullname = strtoupper($request->fullname);
+                $carrier->comercial_name = strtoupper($request->comercial_name);
                 $carrier->fiscal_id = strtoupper($request->RFC);
                 $carrier->tax_regimes_id = $tr_id;
                 $carrier->prod_serv_id = $ps_id;
@@ -262,7 +273,7 @@ class CarrierController extends Controller
             $icon = "error";
         }
 
-        return redirect('carriers')->with(['mesage' => $msg, 'icon' => $icon]);
+        return redirect('carriers')->with(['message' => $msg, 'icon' => $icon]);
 
     }
 
@@ -309,7 +320,7 @@ class CarrierController extends Controller
             $icon = "error";
         }
 
-        return redirect('carriers')->with(['mesage' => $msg, 'icon' => $icon]);
+        return redirect('carriers')->with(['message' => $msg, 'icon' => $icon]);
     }
 
     public function recover($id) 
@@ -349,7 +360,7 @@ class CarrierController extends Controller
             $icon = "error";
         }
 
-        return redirect('carriers')->with(['mesage' => $msg, 'icon' => $icon]);
+        return redirect('carriers')->with(['message' => $msg, 'icon' => $icon]);
     }
 
     public function editFiscalData(Request $request, $id){

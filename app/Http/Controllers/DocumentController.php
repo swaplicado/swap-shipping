@@ -18,6 +18,7 @@ use App\Utils\SFormats;
 
 use Illuminate\Support\Facades\Mail;
 use App\Mail\SendXmlPdf;
+use App\Utils\MailUtils;
 
 class DocumentController extends Controller
 {
@@ -77,17 +78,17 @@ class DocumentController extends Controller
         $oMongoDocument = MDocument::find($oDocument->mongo_document_id);
 
         if ($oDocument->is_signed) {
-            return redirect("documents")->with(['icon' => "error", 'mesage' => "El documento ya ha sido timbrado, no se puede modificar"]);
+            return redirect("documents")->with(['icon' => "error", 'message' => "El documento ya ha sido timbrado, no se puede modificar"]);
         }
         if ($oDocument->is_canceled) {
-            return redirect("documents")->with(['icon' => "error", 'mesage' => "El documento está cancelado, no se puede modificar"]);
+            return redirect("documents")->with(['icon' => "error", 'message' => "El documento está cancelado, no se puede modificar"]);
         }
 
         // Validación de entorno de transportista
         $resValidation = $this->isValidCarrierSpace($oDocument->carrier_id);
 
         if (! $resValidation['isValid']) {
-            return redirect()->back()->with(['icon' => "error", 'mesage' => $resValidation['message']]);
+            return redirect()->back()->with(['icon' => "error", 'message' => $resValidation['message']]);
         }
 
         $lCurrenciesQuery = \DB::table('sat_currencies AS cur')
@@ -260,10 +261,10 @@ class DocumentController extends Controller
         $oCarrier = Carrier::find($oDocument->carrier_id);
 
         if ($oDocument->is_signed) {
-            return redirect("documents")->with(['icon' => "error", 'mesage' => "El documento ya ha sido timbrado, no se puede modificar"]);
+            return redirect("documents")->with(['icon' => "error", 'message' => "El documento ya ha sido timbrado, no se puede modificar"]);
         }
         if ($oDocument->is_canceled) {
-            return redirect("documents")->with(['icon' => "error", 'mesage' => "El documento está cancelado, no se puede modificar"]);
+            return redirect("documents")->with(['icon' => "error", 'message' => "El documento está cancelado, no se puede modificar"]);
         }
 
         /**
@@ -409,11 +410,11 @@ class DocumentController extends Controller
         $oMongoDocument = MDocument::find($oDocument->mongo_document_id);
 
         if (! $oDocument->is_processed) {
-            return redirect("documents")->with(['icon' => "error", 'mesage' => "El documento no ha sido procesado"]);
+            return redirect("documents")->with(['icon' => "error", 'message' => "El documento no ha sido procesado"]);
         }
 
         if ($oDocument->is_signed) {
-            return redirect("documents")->with(['icon' => "error", 'mesage' => "El documento ya ha sido timbrado"]);
+            return redirect("documents")->with(['icon' => "error", 'message' => "El documento ya ha sido timbrado"]);
         }
 
         // timbrar cfdi
@@ -429,7 +430,7 @@ class DocumentController extends Controller
                 $log->idUser = \Auth::user()->id;
                 $log->save();
     
-                return redirect()->back()->with(['icon' => "error", 'mesage' => $log->idError."-".$log->message]);
+                return redirect()->back()->with(['icon' => "error", 'message' => $log->idError."-".$log->message]);
             }
         }
 
@@ -458,9 +459,12 @@ class DocumentController extends Controller
         // generar pdf
         $pdf = CfdiUtils::updatePdf($oMongoDocument->_id, $oMongoDocument->xml_cfdi);
         // enviar correo
+        $mails = MailUtils::getMails();
+        $comercial_name = MailUtils::getComercialName();
+        foreach($mails as $m){
+            Mail::to($m)->send(new SendXmlPdf($oMongoDocument->xml_cfdi, $pdf, $comercial_name, $oMongoDocument->folio, $oMongoDocument->serie));
+        }
 
-        Mail::to('adrianalex053@gmail.com')->send(new SendXmlPdf($oMongoDocument->xml_cfdi, $pdf));
-
-        return redirect("documents")->with(['mesage' => "El documento ha sido timbrado exitosamente", 'icon' => "success"]);
+        return redirect("documents")->with(['message' => "El documento ha sido timbrado exitosamente", 'icon' => "success"]);
     }
 }
