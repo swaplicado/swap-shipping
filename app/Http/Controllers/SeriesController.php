@@ -96,7 +96,7 @@ class SeriesController extends Controller
             $icon = "error";
         }
 
-        return redirect('series')->with(['mesage' => $msg, 'icon' => $icon]);
+        return redirect('series')->with(['message' => $msg, 'icon' => $icon]);
     }
 
     /**
@@ -175,7 +175,7 @@ class SeriesController extends Controller
             $icon = "error";
         }
 
-        return redirect('series')->with(['mesage' => $msg, 'icon' => $icon]);
+        return redirect('series')->with(['message' => $msg, 'icon' => $icon]);
     }
 
     /**
@@ -211,7 +211,7 @@ class SeriesController extends Controller
             $icon = "error";
         }
 
-        return redirect('series')->with(['mesage' => $msg, 'icon' => $icon]);
+        return redirect('series')->with(['message' => $msg, 'icon' => $icon]);
     }
 
     public function recover($id)
@@ -241,6 +241,6 @@ class SeriesController extends Controller
             $icon = "error";
         }
 
-        return redirect('series')->with(['mesage' => $msg, 'icon' => $icon]);
+        return redirect('series')->with(['message' => $msg, 'icon' => $icon]);
     }
 }

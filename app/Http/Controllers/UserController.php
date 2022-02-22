@@ -98,12 +98,18 @@ class UserController extends Controller
         $error = "0";
         
         $validator = Validator::make($request->all(), [
-            // 'username' => 'required',
-            'full_name' => 'required',
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:users']
+            'full_name' => 'required'
         ]);
 
         $validator->validate();
+
+        if(!is_null($request->editEmail)){
+            $validator = Validator::make($request->all(), [
+                'email' => ['required', 'string', 'email', 'max:255', 'unique:users']
+            ]);
+            
+            $validator->validate();
+        }
         
         $user_id = (auth()->check()) ? auth()->user()->id : null;
 
@@ -163,7 +169,7 @@ class UserController extends Controller
             $icon = "error";
         }
 
-        return redirect('users')->with(['mesage' => $msg, 'icon' => $icon]);
+        return redirect('users')->with(['message' => $msg, 'icon' => $icon]);
     }
 
     /**
@@ -204,7 +210,7 @@ class UserController extends Controller
             $icon = "error";
         }
 
-        return redirect('users')->with(['mesage' => $msg, 'icon' => $icon]);
+        return redirect('users')->with(['message' => $msg, 'icon' => $icon]);
     }
 
     public function recover($id)
@@ -239,6 +245,6 @@ class UserController extends Controller
             $icon = "error";
         }
 
-        return redirect('users')->with(['mesage' => $msg, 'icon' => $icon]);
+        return redirect('users')->with(['message' => $msg, 'icon' => $icon]);
     }
 }

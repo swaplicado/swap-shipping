@@ -195,6 +195,7 @@ class ConfigController extends Controller
         
         $json = [];
         try {
+            $json["email"] = $request->email;
             $json["localCurrency"] = Currencies::where('id', $request->localCurrency)->value('key_code');
             $json["tarifaBase"] = $request->tarifaBase;
             $json["tarifaBaseEscala"] = $request->tarifaBaseEscala;
@@ -224,7 +225,7 @@ class ConfigController extends Controller
             $icon = "error";
         }
 
-        return redirect('config')->with(['mesage' => $msg, 'icon' => $icon]);
+        return redirect('config')->with(['message' => $msg, 'icon' => $icon]);
     }
 
     /**

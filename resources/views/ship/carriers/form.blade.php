@@ -5,6 +5,13 @@
         <span class="text-danger">{{ $message }}</span>
     @enderror
 </div>
+<div class="form-group">
+    <label for="comercial_name" class="form-label">Nombre comercial</label>
+    <input name="comercial_name" type="text" class="form-control uppercase" value="{{ old('comercial_name', $data->comercial_name ?? '') }}">
+    @error('comercial_name')
+        <span class="text-danger">{{ $message }}</span>
+    @enderror
+</div>
 @if(!is_null($data->users))
 <div class="form-group">
     <label for="email" class="form-label">E-mail</label>

@@ -171,7 +171,7 @@ class DriverController extends Controller
             $icon = "error";
         }
 
-        return redirect('drivers')->with(['mesage' => $msg, 'icon' => $icon]);
+        return redirect('drivers')->with(['message' => $msg, 'icon' => $icon]);
     }
 
     /**
@@ -222,9 +222,9 @@ class DriverController extends Controller
     {
         // auth()->user()->authorizeRoles(['user', 'admin', 'carrier']);
         auth()->user()->authorizePermission(['313']);
+
         $validator = Validator::make($request->all(), [
             'fullname' => 'required',
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'RFC' => 'required',
             'licence' => 'required',
             'tp_figure' => 'required|not_in:0',
@@ -232,7 +232,16 @@ class DriverController extends Controller
             'zip_code' => 'required',
             'state' => 'required|not_in:0'
         ]);
+
         $validator->validate();
+
+        if(!is_null($request->editEmail)){
+            $validator = Validator::make($request->all(), [
+                'email' => ['required', 'string', 'email', 'max:255', 'unique:users']
+            ]);
+            
+            $validator->validate();
+        }
 
         $success = true;
         $error = "0";
@@ -296,7 +305,7 @@ class DriverController extends Controller
             $msg = "Error al actualizar el registro. Error: " . $error;
             $icon = "error";
         }
-        return redirect('drivers')->with(['mesage' => $msg, 'icon' => $icon]);
+        return redirect('drivers')->with(['message' => $msg, 'icon' => $icon]);
     }
 
     /**
@@ -347,7 +356,7 @@ class DriverController extends Controller
             $icon = "error";
         }
 
-        return redirect('drivers')->with(['mesage' => $msg, 'icon' => $icon]);
+        return redirect('drivers')->with(['message' => $msg, 'icon' => $icon]);
     }
 
     public function recover($id)
@@ -392,6 +401,6 @@ class DriverController extends Controller
             $icon = "error";
         }
 
-        return redirect('drivers')->with(['mesage' => $msg, 'icon' => $icon]);
+        return redirect('drivers')->with(['message' => $msg, 'icon' => $icon]);
     }
 }

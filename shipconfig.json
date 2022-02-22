@@ -1,4 +1,5 @@
 {
+    "email": "adrianalex053@gmail.com",
     "localCurrency": "MXN",
     "tarifaBase": "10000",
     "tarifaBaseEscala": "1000",
@@ -16,7 +17,7 @@
         "domicilioFiscalReceptor": "80290",
         "regimenFiscalReceptor": "601",
         "usoCFDI": "G03",
-        "lugarExpedicion": "54256",
+        "lugarExpedicion": "80290",
         "objetoImp": "002"
     }
 }

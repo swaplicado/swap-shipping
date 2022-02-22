@@ -84,7 +84,7 @@ class RoleUserController extends Controller
             $msg = "Error al guardar el registro. Error: " . $error;
             $icon = "error";
         }
-        return redirect('role')->with(['mesage' => $msg, 'icon' => $icon]);
+        return redirect('role')->with(['message' => $msg, 'icon' => $icon]);
     }
 
     /**
@@ -166,7 +166,7 @@ class RoleUserController extends Controller
             $msg = "Error al actualizar el registro. Error: " . $error;
             $icon = "error";
         }
-        return redirect('role')->with(['mesage' => $msg, 'icon' => $icon]);
+        return redirect('role')->with(['message' => $msg, 'icon' => $icon]);
     }
 
     /**
@@ -210,7 +210,7 @@ class RoleUserController extends Controller
             $msg = "Error al eliminar el registro. Error: " . $error;
             $icon = "error";
         }
-        return redirect('role')->with(['mesage' => $msg, 'icon' => $icon]);
+        return redirect('role')->with(['message' => $msg, 'icon' => $icon]);
     }
 
     public function recover($id){
@@ -247,6 +247,6 @@ class RoleUserController extends Controller
             $msg = "Error al recuperar el registro. Error: " . $error;
             $icon = "error";
         }
-        return redirect('role')->with(['mesage' => $msg, 'icon' => $icon]);
+        return redirect('role')->with(['message' => $msg, 'icon' => $icon]);
     }
 }

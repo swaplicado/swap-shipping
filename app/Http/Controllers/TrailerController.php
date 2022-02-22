@@ -104,7 +104,7 @@ class TrailerController extends Controller
             $icon = "error";
         }
 
-        return redirect('trailers')->with(['mesage' => $msg, 'icon' => $icon]);
+        return redirect('trailers')->with(['message' => $msg, 'icon' => $icon]);
     }
 
     /**
@@ -186,7 +186,7 @@ class TrailerController extends Controller
             $icon = "error";
         }
 
-        return redirect('trailers')->with(['mesage' => $msg, 'icon' => $icon]);
+        return redirect('trailers')->with(['message' => $msg, 'icon' => $icon]);
     }
 
     /**
@@ -223,7 +223,7 @@ class TrailerController extends Controller
             $icon = "error";
         }
 
-        return redirect('trailers')->with(['mesage' => $msg, 'icon' => $icon]);
+        return redirect('trailers')->with(['message' => $msg, 'icon' => $icon]);
     }
 
     public function recover($id)
@@ -254,6 +254,6 @@ class TrailerController extends Controller
             $icon = "error";
         }
 
-        return redirect('trailers')->with(['mesage' => $msg, 'icon' => $icon]);
+        return redirect('trailers')->with(['message' => $msg, 'icon' => $icon]);
     }
 }

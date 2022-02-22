@@ -1,9 +1,11 @@
+@if(!$data->users)
 <div class="form-check">
     <input class="form-check-input" type="checkbox" name="is_with_user" id="is_with_user" checked>
     <label class="form-check-label" for="is_with_user">
       Crear usuario para el chofer
     </label>
 </div>
+@endif
 <div class="form-group">
     <label for="fullname" class="form-label">Nombre</label>
     <input name="fullname" type="text" class="form-control uppercase" value="{{ old('fullname', $data->fullname ?? '') }}" required>

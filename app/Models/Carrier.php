@@ -22,7 +22,8 @@ class Carrier extends Model
         'tax_regimes_id',
         'prod_serv_id',
         'usr_new_id',
-        'usr_upd_id'
+        'usr_upd_id',
+        'comercial_name'
     ];
 
     public function UserVsTypes() {

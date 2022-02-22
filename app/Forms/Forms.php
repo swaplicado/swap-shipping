@@ -38,6 +38,10 @@ class Forms {
             $carrier = $oUser->carrier()->first();
             $form = '
             <div class="form-group">
+                <label for="comercial_name" class="form-label">Nombre comercial</label>
+                <input name="comercial_name" type="text" class="form-control uppercase" value='.$carrier->comercial_name.'>
+            </div>
+            <div class="form-group">
                 <label for="contact1" class="form-label">Contacto 1</label>
                 <input name="contact1" type="text" class="form-control" value='.$carrier->contact1.' required>
             </div>

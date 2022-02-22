@@ -1,4 +1,12 @@
 <div class="form-group">
+    <label for="email" class="form-label">E-mail</label>
+    <input id="editEmail" name="editEmail" type="checkbox">
+    <input id="email" name="email" type="text" class="form-control" value="{{ old('email', $data->email ?? '') }}" readonly required>
+    @error('email')
+        <span class="text-danger">{{ $message }}</span>
+    @enderror
+</div>
+<div class="form-group">
     <label for="localCurrency" class="form-label">Moneda local</label>
     <select class="form-select" name="localCurrency">
         <option value="0" selected>Select Moneda</option>

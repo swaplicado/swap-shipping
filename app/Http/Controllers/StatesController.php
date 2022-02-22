@@ -113,7 +113,7 @@ class StatesController extends Controller
             $icon = "error";
         }
 
-        return redirect('states')->with(['mesage' => $msg, 'icon' => $icon]);
+        return redirect('states')->with(['message' => $msg, 'icon' => $icon]);
 
     }
 
