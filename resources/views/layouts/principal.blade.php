@@ -36,9 +36,9 @@
             <!-- ! Main -->
             <main class="main users chart-page" id="skip-target">
                 <div class="container">
-                    @if(session('mesage'))
+                    @if(session('message'))
                         <script>
-                            msg = "<?php echo session('mesage'); ?>";
+                            msg = "<?php echo session('message'); ?>";
                             myIcon = "<?php echo session('icon'); ?>"
 
                             Swal.fire({

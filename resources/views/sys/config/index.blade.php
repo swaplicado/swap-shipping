@@ -50,6 +50,7 @@
                 <th>Uso CFDI</th>
                 <th>Lugar expedición</th>
                 <th>objeto impuesto</th>
+                <th>Logo para impresión</th>
             </tr>
         </thead>
         <tbody>
@@ -74,6 +75,7 @@
                 <td>{{$data->cfdi4_0->usoCFDI}}</td>
                 <td>{{$data->cfdi4_0->lugarExpedicion}}</td>
                 <td>{{$data->cfdi4_0->objetoImp}}</td>
+                <td><img src="./logo/{{$data->logo}}" style="width: 2cm;"></td>
             </tr>
         </tbody>
     </table>

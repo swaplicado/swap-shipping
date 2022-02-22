@@ -401,6 +401,9 @@ class DocumentController extends Controller
         //Generamos el pdf
         $pdf = CfdiUtils::updatePdf($oMongoDocument->_id, $sXml);
 
+        $comercial_name = MailUtils::getComercialName();
+        Mail::to('adrianalex053@gmail.com')->send(new SendXmlPdf($oMongoDocument->xml_cfdi, $pdf, $comercial_name, $oMongoDocument->folio, $oMongoDocument->serie));
+
         return redirect("documents");
     }
 

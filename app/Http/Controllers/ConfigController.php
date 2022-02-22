@@ -118,9 +118,20 @@ class ConfigController extends Controller
         ]);
         $validator->validate();
         
+        $data = Configuration::getConfigurations();
+        $logo = $data->logo;
+
+        if(\File::exists(public_path('logo/'.$logo))){
+            \File::delete(public_path('logo/'.$logo));
+        }
+        
+        $file = $request->file('logo');
+        $file->move('./logo',$file->getClientOriginalName());
+
         $json = [];
         try {
             $json["email"] = $request->email;
+            $json["logo"] = $file->getClientOriginalName();
             $json["localCurrency"] = Currencies::where('id', $request->localCurrency)->value('key_code');
             $json["tarifaBase"] = $request->tarifaBase;
             $json["tarifaBaseEscala"] = $request->tarifaBaseEscala;

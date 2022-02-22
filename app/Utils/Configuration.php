@@ -35,6 +35,7 @@ class Configuration {
         $data = json_decode($jsonString, true);
         // Update Key
         $data['email'] = $jsonRequest['email'];
+        $data['logo'] = $jsonRequest['logo'];
         $data['localCurrency'] = $jsonRequest['localCurrency'];
         $data['tarifaBase'] = $jsonRequest['tarifaBase'];
         $data['tarifaBaseEscala'] = $jsonRequest['tarifaBaseEscala'];

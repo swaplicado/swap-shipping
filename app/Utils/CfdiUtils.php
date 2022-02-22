@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\DB;
 use App\Models\Pdf;
 use App\Models\Document;
 use App\Models\M\MDocument;
+use App\Utils\Configuration;
 
 class CfdiUtils
 {
@@ -100,6 +101,10 @@ class CfdiUtils
 
     public static function generatePDF($xml){
         // $filepath = file_get_contents("./doc/prueba.xml");
+        $formatterES = new \NumberFormatter("es", \NumberFormatter::SPELLOUT);
+        $data = Configuration::getConfigurations();
+        
+        $logo = $data->logo;
 
         $cfdi = \CfdiUtils\Cfdi::newFromString($xml);
         $cfdi->getVersion();
@@ -188,6 +193,7 @@ class CfdiUtils
             $Nombre_R = $Receptor['Nombre'];
             $RegimenFiscal_R = $Receptor['RegimenFiscalReceptor'].CfdiUtils::claveDescription($Receptor['RegimenFiscal'], 'RegimenFiscal');;
             $DomicilioFiscalReceptor = $Receptor['DomicilioFiscalReceptor'];
+            $UsoCFDI = $Receptor['UsoCFDI'];
         } else {
             $Rfc_R = null;
             $Nombre_R = null;
@@ -506,7 +512,7 @@ class CfdiUtils
                 <tbody>
                     <tr>
                         <td class = "border" style = "width: 15%;">
-                            <img src="./img/svg/orange.svg" style="width: 2cm;">
+                            <img src="./logo/'.$logo.'" style="width: 2cm;">
                         </td>
                         <td class = "border" style = "width: 54%;">
                             <b style = "font-size: 3.5mm;">'.$Nombre_E.'</b>
@@ -516,10 +522,10 @@ class CfdiUtils
                             </p>
                         </td>
                         <td class = "border text-c" style = "width: 30%;">
+                        <b style = "font-size: 3mm;">Serie:</b>
+                        <p style = "font-size: 3mm; margin:0px; outline:none;">'.$serie.'</p>
                             <b style = "font-size: 3mm">Folio fiscal:</b>
                             <p style = "font-size: 3mm; margin:0px; outline:none;">'.$Folio.'</p>
-                            <b style = "font-size: 3mm;">Serie:</b>
-                            <p style = "font-size: 3mm; margin:0px; outline:none;">'.$serie.'</p>
                         </td>
                     </tr>
                     <tr>
@@ -532,40 +538,14 @@ class CfdiUtils
                             </p>
                         </td>
                         <td class = "border text-c" style = "width: 23%;">
-                            <b>FACTURA</b>
+                            <b>Moneda</b>
+                            <p>'.$Moneda.'</p>
+                            <b>Tipo de cambio</b>
+                            <p>'.$TipoCambio.'</p>
                             <p style="margin-top: 0; font-size: 3mm">
-                                8040<br>
-                                <b>Lugar y fecha de expedición:</b><br>
-                                '.$LugarExpedicion.'<br>'.$Fecha.'<br>
+                                <b>fecha de expedición:</b>
+                                '.$Fecha.'
                             </p>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td colspan = "3" class = "border">
-                            <table class = "container">
-                                <tbody>
-                                    <tr>
-                                        <td class = "th3">Embarque</td>
-                                        <td class = "th3">Contrato</td>
-                                        <td class = "th3">Pedido</td>
-                                        <td class = "th3">Cliente</td>
-                                        <td class = "th3">Sucursal</td>
-                                        <td class = "th3">Agente</td>
-                                        <td class = "th3">Moneda</td>
-                                        <td class = "th3">Tipo de cambio</td>
-                                    </tr>
-                                    <tr>
-                                        <td class = "text-c"></td>
-                                        <td class = "text-c"></td>
-                                        <td class = "text-c"></td>
-                                        <td class = "text-c"></td>
-                                        <td class = "text-c"></td>
-                                        <td class = "text-c"></td>
-                                        <td class = "text-c">'.$Moneda.'</td>
-                                        <td class = "text-r">'.$TipoCambio.'</td>
-                                    </tr>
-                                </tbody>
-                            </table>
                         </td>
                     </tr>
                 </tbody>
@@ -664,8 +644,8 @@ class CfdiUtils
                         </td>
                     </tr>
                     <tr>
-                        <td style = "width: 40%;">Importe letra</td>
-                        <td style = "width: 20%;">uso cfdi</td>
+                        <td style = "width: 40%;">'.$formatterES->format($Total).'</td>
+                        <td style = "width: 20%;">'.$UsoCFDI.'</td>
                     </tr>
                     <tr>
                         <td style = "width: 40%;"><b>Forma pago:</b></td>
@@ -687,10 +667,6 @@ class CfdiUtils
                     Sello digital del SAT:
                 </div>
                 <div style = "font-size: 2mm; font-family: sans-serif;">'.$SelloSAT.'</div>
-                <div style = "font-size: 2.5mm; font-family: sans-serif; font-weight: bold;">
-                    Comprobante original del complemento de certificación digital del SAT:
-                </div>
-                <div style = "font-size: 2mm; font-family: sans-serif;">cadena original</div>
             </div>
             
             <br>
@@ -728,15 +704,10 @@ class CfdiUtils
                     </tr>
                     <tr>
                         <td colspan = "4" style = "font-size: 2.5mm">
-                            LUGAR DE EXPEDICIÓN: Morelia Michoácan a ##.<bR>
-                            POR ESTE PAGARÉ DEBO(EMOS) Y PAGARÉ(EMOS) INCONDICIONALMENTE A LA ORDEN DE ##
-                            EL DIA ## , LA CANTIDAD DE '.$Total.' '.$Moneda.', EN ESTA CIUDAD DE ## O DONDE EXIJA EL TENEDOR,
-                            IMPORTE DE LA MERCANCIA ARRIBA DESCRITA A MI(NUESTRA) ENTERA CONFORMIDAD. EN CASO DE MORA SE 
-                            CONOVIENE EN PACTAR UN INTERÉS MORATORIO DEL ## MENSUAL DESDE SU VENCIMIENTO HASTA SU TOTAL LIQUIDACIÓN.
                          </td>
                     </tr>
                     <tr>
-                        <td colspan = "4" class = "text-r" style = "font-size: 2.5mm">____________________<br>ACEPTO(AMOS)</td>
+                        <td colspan = "4" class = "text-r" style = "font-size: 2.5mm"></td>
                     </tr>
                 </tbody>
             </table>
@@ -759,7 +730,6 @@ class CfdiUtils
                         <td class="th2">Total distancia recorrida</td>
                         <td class="th2">Peso total mercancía</td>
                         <td class="th2">No. Total Mercancias</td>
-                        <td class="th2">Clave transporte</td>
                     </tr>
                     <tr>
                         <td class="td1 text-c">'.$Version.'</td>
@@ -767,7 +737,6 @@ class CfdiUtils
                         <td class="td1 text-c">'.$TotalDistRec.'</td>
                         <td class="td1 text-c">'.$PesoBrutoTotal.'</td>
                         <td class="td1 text-c">'.$NumTotalMercancias.'</td>
-                        <td class="td1">01-Autotransporte federal</td>
                     </tr>    
                 </tbody>
             </table>
@@ -907,7 +876,7 @@ class CfdiUtils
             'mode' => 'c',
             'margin_left' => 10,
             'margin_right' => 10,
-            'margin_top' => 65,
+            'margin_top' => 55,
             'margin_bottom' => 30,
             'margin_header' => 10,
             'margin_footer' => 10
