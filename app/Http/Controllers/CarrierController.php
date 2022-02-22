@@ -3,6 +3,9 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Http\File;
+use App\Core\FinkokCore;
 use App\Models\Carrier;
 use Illuminate\Http\Request;
 use Illuminate\Database\QueryException;
@@ -16,6 +19,8 @@ use App\Models\Sat\ProdServ;
 use App\Models\Sat\Tax_regimes;
 use Illuminate\Support\Facades\Hash;
 use App\Utils\messagesErros;
+use App\Utils\CfdUtils;
+use App\Models\Certificate;
 
 class CarrierController extends Controller
 {
@@ -347,19 +352,32 @@ class CarrierController extends Controller
         return redirect('carriers')->with(['mesage' => $msg, 'icon' => $icon]);
     }
 
-    public function editFiscalData($id){
+    public function editFiscalData(Request $request, $id){
         auth()->user()->authorizePermission(['213']);
         auth()->user()->carrierAutorization($id);
         $data = Carrier::where('id_carrier', $id)->first();
-        $data->each(function ($data) {
-            $data->users;
-            $data->tax_regime;
-            $data->prod_serv;
-        });
+        $data->users;
+        $data->tax_regime;
+        $data->prod_serv;
+
+        $certificates = \DB::table('f_certificates AS c')
+                                ->join('users AS unew', 'unew.id', '=', 'c.usr_new_id')
+                                ->join('users AS uupd', 'uupd.id', '=', 'c.usr_upd_id')
+                                ->select('c.*', 'unew.username as unew_username', 'uupd.username as uupd_username')
+                                ->where('c.carrier_id', $id)
+                                ->orderBy('c.dt_valid_to', 'DESC')
+                                ->orderBy('c.dt_valid_from', 'DESC')
+                                ->get();
+
         $tax_regimes = Tax_regimes::selectRaw('CONCAT(key_code, " - ", description) AS kd, id')->pluck('id', 'kd');
         $prod_serv = ProdServ::where('is_active', 1)->selectRaw('CONCAT(key_code, " - ", description) AS kd, id')->pluck('id', 'kd');
         
-        return view('ship/carriers/fiscalData', ['data' => $data, 'tax_regimes' => $tax_regimes, 'prod_serv' => $prod_serv]);
+        return view('ship/carriers/fiscalData', [
+                                                    'data' => $data, 
+                                                    'tax_regimes' => $tax_regimes, 
+                                                    'prod_serv' => $prod_serv,
+                                                    'certificates' => $certificates
+                                                ]);
     }
 
     public function updateFiscalData(Request $request, $id)
@@ -412,7 +430,76 @@ class CarrierController extends Controller
             $icon = "error";
         }
 
-        return redirect(route('editar_carrierFiscalData', ['id' => $id]))->with(['mesage' => $msg, 'icon' => $icon]);
+        return redirect(route('editar_carrierFiscalData', ['id' => $id]))->with(['message' => $msg, 'icon' => $icon]);
 
+    }
+
+    /**
+     * Registra al cliente en la plataforma de Finkok, 
+     * después guarda el log y elimina los certificados
+     * 
+     * @param  Request $request
+     * @return Response
+     */
+    public function storeCertificate(Request $request)    
+    {
+        $filePc = $request->file('pc');
+        $fileNamePc = $filePc->getClientOriginalName();
+        $fileExtensionPc = $filePc->getClientOriginalExtension();
+        $filePathPc = $filePc->getRealPath();
+        $destinationPath = 'contents/files';
+
+        $urlPc = Storage::putFileAs($destinationPath, new File($filePathPc), $fileNamePc);
+
+        $certificate = CfdUtils::getCerData($urlPc);
+
+        $oCarrier = Carrier::where('fiscal_id', $certificate->fiscalId)->first();
+
+        if ($oCarrier == null) {
+            return response()->json(['error' => 'El RFC del emisor en el certificado no existe en la base de datos'], 400);
+        }
+
+        if (auth()->user()->isCarrier()) {
+            if (auth()->user()->carrier->fiscal_id != $oCarrier->fiscal_id) {
+                return response()->json(['error' => 'El RFC del emisor en el certificado no corresponde al RFC del emisor del usuario'], 400);
+            }
+        }
+        else if (auth()->user()->isDriver()) {
+            if (auth()->user()->driver->Carrier->fiscal_id != $oCarrier->fiscal_id) {
+                return response()->json(['error' => 'El RFC del emisor en el certificado no corresponde al RFC del emisor del usuario'], 400);
+            }
+        }
+
+        $filePv = $request->file('pv');
+    
+        $fileNamePv = $filePv->getClientOriginalName();
+        $fileExtensionPv = $filePv->getClientOriginalExtension();
+        $filePathPv = $filePv->getRealPath();
+
+        $urlPv = Storage::putFileAs($destinationPath, new File($filePathPv), $fileNamePv);
+
+        $response = FinkokCore::regCertificates($urlPc, $urlPv, $request->pw, $oCarrier->fiscal_id);
+
+        if (! $response['success']) {
+            return redirect(route('editar_carrierFiscalData', ['id' => $oCarrier->id_carrier]))->with(['message' => $response['message'], 'icon' => 'error']);
+        }
+
+        $message = 'El certificado fue registrado correctamente';
+        if ($response['message'] == "Account Created successfully") {
+            $oCertificate = new Certificate();
+            $oCertificate->dt_valid_from = $certificate->fromDate;
+            $oCertificate->dt_valid_to = $certificate->expDate;
+            $oCertificate->cert_number = $certificate->certificateNumber;
+            $oCertificate->carrier_id = $oCarrier->id_carrier;
+            $oCertificate->usr_new_id = auth()->user()->id;
+            $oCertificate->usr_upd_id = auth()->user()->id;
+    
+            $oCertificate->save();
+        }
+
+        Storage::delete($urlPc);
+        Storage::delete($urlPv);
+
+        return redirect(route('editar_carrierFiscalData', ['id' => $oCarrier->id_carrier]))->with(['message' => $response['message'], 'icon' => 'success']);
     }
 }
