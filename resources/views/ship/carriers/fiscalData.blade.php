@@ -103,6 +103,7 @@
                                     <label for="pw">Contraseña</label>
                                     <input type="password" id="pw" name="pw" class="form-control" placeholder="Contraseña de certificados" required/>
                                 </div>
+                                <input type="hidden" name="carrier" value="{{ $data->id_carrier }}">
                                 <br>
                                 <div class="row">
                                     <div class="col-10"></div>

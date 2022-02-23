@@ -7,7 +7,7 @@
         </div>
         <div class="col-md-3">
             <label>Distancia recorrida (KM)</label>
-            <input style="text-align: right" type="text" class="form-control" :value="oLocation.distanciaRecorrida" readonly>
+            <input style="text-align: right" type="text" class="form-control" :value="formatNumber(oLocation.distanciaRecorrida, 4)" readonly>
         </div>
         <div class="col-md-3">
             <label>Fecha-Hora</label>

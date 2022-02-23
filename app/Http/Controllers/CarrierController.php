@@ -458,25 +458,30 @@ class CarrierController extends Controller
         $fileNamePc = $filePc->getClientOriginalName();
         $fileExtensionPc = $filePc->getClientOriginalExtension();
         $filePathPc = $filePc->getRealPath();
-        $destinationPath = 'contents/files';
+        $destinationPath = env('DEST_PATH');
 
-        $urlPc = Storage::putFileAs($destinationPath, new File($filePathPc), $fileNamePc);
+        $carrier = Carrier::findOrFail($request->carrier);
+
+        $urlPc = Storage::putFileAs($destinationPath, new File($filePathPc), $carrier->fiscal_id.'_.cer');
 
         $certificate = CfdUtils::getCerData($urlPc);
 
         $oCarrier = Carrier::where('fiscal_id', $certificate->fiscalId)->first();
 
         if ($oCarrier == null) {
+            Storage::delete($urlPc);
             return response()->json(['error' => 'El RFC del emisor en el certificado no existe en la base de datos'], 400);
         }
 
         if (auth()->user()->isCarrier()) {
             if (auth()->user()->carrier->fiscal_id != $oCarrier->fiscal_id) {
+                Storage::delete($urlPc);
                 return response()->json(['error' => 'El RFC del emisor en el certificado no corresponde al RFC del emisor del usuario'], 400);
             }
         }
         else if (auth()->user()->isDriver()) {
             if (auth()->user()->driver->Carrier->fiscal_id != $oCarrier->fiscal_id) {
+                Storage::delete($urlPc);
                 return response()->json(['error' => 'El RFC del emisor en el certificado no corresponde al RFC del emisor del usuario'], 400);
             }
         }
@@ -487,7 +492,7 @@ class CarrierController extends Controller
         $fileExtensionPv = $filePv->getClientOriginalExtension();
         $filePathPv = $filePv->getRealPath();
 
-        $urlPv = Storage::putFileAs($destinationPath, new File($filePathPv), $fileNamePv);
+        $urlPv = Storage::putFileAs($destinationPath, new File($filePathPv), $oCarrier->fiscal_id.'_.key');
 
         $response = FinkokCore::regCertificates($urlPc, $urlPv, $request->pw, $oCarrier->fiscal_id);
 
@@ -501,6 +506,7 @@ class CarrierController extends Controller
             $oCertificate->dt_valid_from = $certificate->fromDate;
             $oCertificate->dt_valid_to = $certificate->expDate;
             $oCertificate->cert_number = $certificate->certificateNumber;
+            $oCertificate->pswrd = CfdUtils::encryptPass($request->pw);
             $oCertificate->carrier_id = $oCarrier->id_carrier;
             $oCertificate->usr_new_id = auth()->user()->id;
             $oCertificate->usr_upd_id = auth()->user()->id;
@@ -508,8 +514,8 @@ class CarrierController extends Controller
             $oCertificate->save();
         }
 
-        Storage::delete($urlPc);
-        Storage::delete($urlPv);
+        // Storage::delete($urlPc);
+        // Storage::delete($urlPv);
 
         return redirect(route('editar_carrierFiscalData', ['id' => $oCarrier->id_carrier]))->with(['message' => $response['message'], 'icon' => 'success']);
     }

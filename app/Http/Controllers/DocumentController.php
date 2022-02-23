@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Carbon\Carbon;
 use App\Models\Document;
+use App\Models\DocumentStamp;
 use App\Models\M\MDocument;
 use App\Models\M\MSignLog;
 use App\Models\Carrier;
@@ -15,7 +16,6 @@ use App\Core\RequestCore;
 use App\Core\FinkokCore;
 use App\Utils\CfdiUtils;
 use App\Utils\SFormats;
-
 use Illuminate\Support\Facades\Mail;
 use App\Mail\SendXmlPdf;
 use App\Utils\MailUtils;
@@ -401,9 +401,6 @@ class DocumentController extends Controller
         //Generamos el pdf
         $pdf = CfdiUtils::updatePdf($oMongoDocument->_id, $sXml);
 
-        $comercial_name = MailUtils::getComercialName();
-        Mail::to('adrianalex053@gmail.com')->send(new SendXmlPdf($oMongoDocument->xml_cfdi, $pdf, $comercial_name, $oMongoDocument->folio, $oMongoDocument->serie));
-
         return redirect("documents");
     }
 
@@ -449,6 +446,15 @@ class DocumentController extends Controller
         $oDocument->usr_sign_id = \Auth::user()->id;
         $oDocument->save();
 
+        // Guardar registro de timbre en la base de datos
+        $oDocStamp = new DocumentStamp();
+        $oDocStamp->dt_stamp = date('Y-m-d H:i:s');
+        $oDocStamp->stamp_type = "timbre";
+        $oDocStamp->document_id = $oDocument->id_document;
+        $oDocStamp->usr_new_id = \Auth::user()->id;
+        $oDocStamp->save();
+
+        // Guardar log de evento de timbrado en MongoDB
         $log = new MSignLog();
         $log->message = $cfdiResponse->CodEstatus;
         $log->satSeal = $cfdiResponse->SatSeal;
@@ -469,5 +475,25 @@ class DocumentController extends Controller
         }
 
         return redirect("documents")->with(['message' => "El documento ha sido timbrado exitosamente", 'icon' => "success"]);
+    }
+
+    public function cancel(Request $request)
+    {
+        $id = $request->id;
+        $oDocument = Document::find($id);
+        $oMongoDocument = MDocument::find($oDocument->mongo_document_id);
+
+        if (! $oDocument->is_processed) {
+            return redirect("documents")->with(['icon' => "error", 'message' => "El documento no ha sido procesado"]);
+        }
+
+        if (! $oDocument->is_signed) {
+            return redirect("documents")->with(['icon' => "error", 'message' => "El documento no ha sido timbrado"]);
+        }
+
+        $oCarrier = Carrier::find($oDocument->carrier_id);
+
+        // cancelar cfdi
+        $cfdiResponse = FinkokCore::cancelCfdi($oMongoDocument->uuid);
     }
 }

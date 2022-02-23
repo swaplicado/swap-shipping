@@ -9,17 +9,6 @@
 @endsection
 
 @section('content')
-@if(session('mesage'))
-    <script>
-        msg = "<?php echo session('mesage'); ?>";
-        myIcon = "<?php echo session('icon'); ?>"
-
-        Swal.fire({
-            icon: myIcon,
-            title: msg
-        })
-    </script>
-@endif
 <div class="container">
     <div class="row justify-content-md-center">
         <div class="col-lg-8">

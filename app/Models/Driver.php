@@ -10,6 +10,7 @@ class Driver extends Model
     protected $table = 'f_trans_figures';
     protected $primaryKey = 'id_trans_figure';
     protected $fillable = [
+        'alias',
         'fullname', 
         'fiscal_id', 
         'fiscal_fgr_id', 

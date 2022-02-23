@@ -40,4 +40,45 @@ class CfdUtils
 
         return $response;
     }
+
+    public static function encryptPass($sPassword)
+    {
+        // Store the cipher method
+        $ciphering = "AES-128-CTR";
+        
+        // Use OpenSSl Encryption method
+        $iv_length = openssl_cipher_iv_length($ciphering);
+        $options = 0;
+        
+        // Non-NULL Initialization Vector for encryption
+        $encryption_iv = env('ENC_VECTOR');
+        
+        // Store the encryption key
+        $encryption_key = env('ENC_PKEY');
+        
+        // Use openssl_encrypt() function to encrypt the data
+        $encryption = openssl_encrypt($sPassword, $ciphering,
+                    $encryption_key, $options, $encryption_iv);
+
+        return $encryption;
+    }
+
+    public static function decryptPass($sPassword)
+    {
+        // Non-NULL Initialization Vector for decryption
+        $decryption_iv = env('ENC_VECTOR');
+        
+        // Store the decryption key
+        $decryption_key = env('ENC_PKEY');
+
+        // Store the cipher method
+        $ciphering = "AES-128-CTR";
+        $options = 0;
+        
+        // Use openssl_decrypt() function to decrypt the data
+        $decryption = openssl_decrypt($sPassword, $ciphering, 
+                $decryption_key, $options, $decryption_iv);
+
+        return $decryption;
+    }
 }

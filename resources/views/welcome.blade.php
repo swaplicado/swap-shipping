@@ -6,7 +6,7 @@
     <meta name="description" content="">
     <meta name="author" content="Mark Otto, Jacob Thornton, and Bootstrap contributors">
     <meta name="generator" content="Hugo 0.88.1">
-    <title>Carousel Template · Bootstrap v5.1</title>
+    <title>{{ env('APP_NAME', "SWAP-Shipping") }}</title>
 
     <!-- Bootstrap core CSS -->
     <link rel="stylesheet" href="{{ asset('css/Bootstrap/bootstrap.css') }}">
@@ -63,7 +63,7 @@
           </div>
 
           <div class="col-12 col-md-auto text-end">
-            <a type="button" class="btn btn-outline-light me-2">+52 1 55 5122 2600</a>
+            <a type="button" href="https://wa.me/524432270353" class="btn btn-outline-light me-2">+52 1 55 5122 2600</a>
           </div>
 
           <div class="col-12 col-md-auto text-end">

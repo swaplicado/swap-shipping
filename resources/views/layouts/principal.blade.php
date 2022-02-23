@@ -14,6 +14,7 @@
     <!-- Custom styles -->
     <link rel="stylesheet" href="{{ asset('css/Bootstrap/bootstrap.css') }}">
     <link rel="stylesheet" href="{{ asset('css/style.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/daterangepicker/daterangepicker.css') }}">
     @yield('headStyles')
 
     <!--- Scripts --->
@@ -21,6 +22,8 @@
     <script src="{{ asset('js/jquery.dataTables.min.js') }}"></script>
     <script src="{{ asset('js/Bootstrap/bootstrap.js') }}"></script>
     <script src="{{ asset('js/sweetalert2/dist/sweetalert2.all.min.js') }}"></script>
+    <script src="{{ asset('js/moment/moment.min.js') }}"></script>
+    <script src="{{ asset('js/daterangepicker/daterangepicker.min.js') }}"></script>
     @yield('headJs')
 </head>
 

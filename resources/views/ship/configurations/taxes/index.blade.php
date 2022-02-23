@@ -17,17 +17,6 @@
 @endsection
 
 @section('content')
-@if(session('mesage'))
-    <script>
-        msg = "<?php echo session('mesage'); ?>";
-        myIcon = "<?php echo session('icon'); ?>"
-
-        Swal.fire({
-            icon: myIcon,
-            title: msg
-        })
-    </script>
-@endif
 <h2>Configuraciones de impuestos</h2>
 <br>
 
