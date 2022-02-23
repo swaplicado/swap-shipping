@@ -50,15 +50,47 @@
     @enderror
 </div>
 {!! $data->id_vehicle == null ? (session()->has('form') ? session('form') : "") : "" !!}
+@if(!auth()->user()->isCarrier())
+    <div class="form-group">
+        <label for="insurance" class="form-label">Aseguradora</label>
+        <div id="sel_insurances">
+            @if(!is_null($data->id_vehicle))
+            <select class="form-select" name="insurance">
+                <option value="0" selected>Select Aseguradora</option>
+                @foreach($insurances as $ins => $index)
+                    @if($data->insurance_id == $index)
+                        <option selected value='{{$index}}'>{{$ins}}</option>
+                    @else
+                        <option value='{{$index}}'>{{$ins}}</option>
+                    @endif
+                @endforeach
+            </select>
+            @endif
+        </div>
+        @error('insurance')
+            <span class="text-danger">{{$message}}</span>
+        @enderror
+    </div>
+@else
 <div class="form-group">
     <label for="insurance" class="form-label">Aseguradora</label>
     <div id="sel_insurances">
-        
+        <select class="form-select" name="insurance">
+            <option value="0" selected>Select Aseguradora</option>
+            @foreach($insurances as $ins => $index)
+                @if($data->insurance_id == $index)
+                    <option selected value='{{$index}}'>{{$ins}}</option>
+                @else
+                    <option value='{{$index}}'>{{$ins}}</option>
+                @endif
+            @endforeach
+        </select>
     </div>
     @error('insurance')
         <span class="text-danger">{{$message}}</span>
     @enderror
 </div>
+@endif
 <div class="form-group">
     <label for="policy" class="form-label">Poliza</label>
     <input name="policy" type="text" class="form-control uppercase" value="{{ old('policy', $data->policy ?? '') }}" required>

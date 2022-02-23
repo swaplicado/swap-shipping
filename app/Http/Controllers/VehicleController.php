@@ -61,12 +61,11 @@ class VehicleController extends Controller
         if(auth()->user()->isCarrier()){
             $Insurances = Insurances::where('carrier_id', auth()->user()->carrier()->first()->id_carrier)->pluck('id_insurance', 'full_name');
         } else if (auth()->user()->isAdmin() || auth()->user()->isClient()){
-            $Insurances = Insurances::pluck('id_insurance', 'full_name');
+            // $Insurances = Insurances::pluck('id_insurance', 'full_name');
+            $Insurances = Insurances::get();
         }
         
         $carriers = Carrier::where('is_deleted', 0)->orderBy('fullname', 'ASC')->pluck('id_carrier', 'fullname');
-
-        $Insurances = Insurances::get();
 
         return view('ship/vehicles/create', ['data' => $data, 'LicenceSct' => $LicenceSct, 
             'VehicleConfig' => $VehicleConfig, 'insurances' => $Insurances, 'carriers' => $carriers]);

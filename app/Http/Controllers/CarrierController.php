@@ -400,7 +400,7 @@ class CarrierController extends Controller
         $error = "0";
 
         $validator = Validator::make($request->all(), [
-            'RFC' => ['required', 'unique:f_carriers'],
+            'RFC' => ['required'],
             'tax_regimes' => 'required|not_in:0',
             'prod_serv' => 'required|not_in:0'
         ]);
