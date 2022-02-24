@@ -81,6 +81,8 @@ class RegisterController extends Controller
                 ]);
         
                 $user->roles()->attach(Role::where('id', $data['user_type_id'])->first());
+                $user->tempPass = $data['password'];
+                $user->sendEmailVerificationNotification();
             });                
         } catch (QueryException $e) {
             $success = false;

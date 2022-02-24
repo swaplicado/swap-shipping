@@ -85,14 +85,14 @@
 </div>
 <div class="form-group">
     <label for="contact2" class="form-label">Nombre de contacto 2</label>
-    <input name="contact2" type="text" class="form-control uppercase" value="{{ old('contact2', $data->contact2 ?? '') }}" required>
+    <input name="contact2" type="text" class="form-control uppercase" value="{{ old('contact2', $data->contact2 ?? '') }}">
     @error('contact2')
         <span class="text-danger">{{ $message }}</span>
     @enderror
 </div>
 <div class="form-group">
     <label for="telephone2" class="form-label">Teléfono de contacto 2</label>
-    <input name="telephone2" type="text" class="form-control uppercase" value="{{ old('telephone2', $data->telephone2 ?? '') }}" required>
+    <input name="telephone2" type="text" class="form-control uppercase" value="{{ old('telephone2', $data->telephone2 ?? '') }}">
     @error('telephone2')
         <span class="text-danger">{{ $message }}</span>
     @enderror

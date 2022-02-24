@@ -21,6 +21,7 @@ use Illuminate\Support\Facades\Hash;
 use App\Utils\messagesErros;
 use App\Utils\CfdUtils;
 use App\Models\Certificate;
+use Illuminate\Validation\Rule;
 
 class CarrierController extends Controller
 {
@@ -117,8 +118,8 @@ class CarrierController extends Controller
                     'is_carrier' => 1
                 ]);
         
-                
                 $user->roles()->attach(Role::where('id', 3)->first());
+                $user->tempPass = $request->password;
                 $user->sendEmailVerificationNotification();
                 
                 $carrier = Carrier::create([
@@ -209,7 +210,7 @@ class CarrierController extends Controller
 
         $validator = Validator::make($request->all(), [
             'fullname' => 'required',
-            'RFC' => ['required', 'unique:f_carriers'],
+            'RFC' => ['required', Rule::unique('f_carriers','fiscal_id')->ignore($id, 'id_carrier')],
             'tax_regimes' => 'required|not_in:0',
             'prod_serv' => 'required|not_in:0'
         ]);

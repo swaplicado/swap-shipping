@@ -135,6 +135,7 @@ class DriverController extends Controller
                     }
 
                     $user->roles()->attach(Role::where('id', $rol)->first());
+                    $user->tempPass = $request->password;
                     $user->sendEmailVerificationNotification();
                 }
 
@@ -244,7 +245,7 @@ class DriverController extends Controller
 
         $validator = Validator::make($request->all(), [
             'fullname' => 'required',
-            'RFC' => 'required',
+            'RFC' => ['required', Rule::unique('f_trans_figures','fiscal_id')->ignore($id, 'id_trans_figure')],
             'licence' => 'required',
             'tp_figure' => 'required|not_in:0',
             'country' => 'required|not_in:0',

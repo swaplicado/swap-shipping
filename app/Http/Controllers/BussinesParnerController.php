@@ -81,11 +81,11 @@ class BussinesParnerController extends Controller
                     'email' => $request->email,
                     'password' => Hash::make($request->password),
                     'full_name' => strtoupper($request->fullname),
-                    'user_type_id' => 3,
-                    'is_carrier' => 1
+                    'user_type_id' => 3
                 ]);
-        
+
                 $user->roles()->attach(Role::where('id', 3)->first());
+                $user->tempPass = $request->password;
                 $user->sendEmailVerificationNotification();
                 
                 $UserVsTypes = UserVsTypes::create([
