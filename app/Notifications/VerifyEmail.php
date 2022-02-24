@@ -11,6 +11,10 @@ use Illuminate\Auth\Notifications\VerifyEmail as VerifyEmailBase;
 
 class VerifyEmail extends VerifyEmailBase
 {
+    public function __construct($tempPass)
+    {
+        $this->tempPass = $tempPass;
+    }
 //    use Queueable;
 
     // change as you want
@@ -19,13 +23,26 @@ class VerifyEmail extends VerifyEmailBase
         if (static::$toMailCallback) {
             return call_user_func(static::$toMailCallback, $notifiable);
         }
-        return (new MailMessage)
-            ->subject(Lang::getFromJson('Correo de verificación'))
-            ->line(Lang::getFromJson('Por favor haga click en el boton para verificar su dirección de correo.'))
-            ->action(
-                Lang::getFromJson('Verificar dirección de correo'),
-                $this->verificationUrl($notifiable)
-            )
-            ->line(Lang::getFromJson('Si usted no ha creado una cuenta ignore este mensaje.'));
+        if(!is_null($this->tempPass)){
+            return (new MailMessage)
+                ->subject(Lang::getFromJson('Correo de verificación'))
+                ->line(Lang::getFromJson('Por favor haga click en el boton para verificar su dirección de correo.'))
+                ->line(Lang::getFromJson('Su contraseña actual es "'.$this->tempPass.'" , le recomendamos cambie su contraseña
+                una vez ingrese al sistema por primera vez.'))
+                ->action(
+                    Lang::getFromJson('Verificar dirección de correo'),
+                    $this->verificationUrl($notifiable)
+                )
+                ->line(Lang::getFromJson('Si usted no ha creado una cuenta en CPT ignore este mensaje.'));    
+        }else{
+            return (new MailMessage)
+                ->subject(Lang::getFromJson('Correo de verificación'))
+                ->line(Lang::getFromJson('Por favor haga click en el boton para verificar su dirección de correo.'))
+                ->action(
+                    Lang::getFromJson('Verificar dirección de correo'),
+                    $this->verificationUrl($notifiable)
+                )
+                ->line(Lang::getFromJson('Si usted no ha creado una cuenta en CPT ignore este mensaje.'));    
+        }
     }
 }
