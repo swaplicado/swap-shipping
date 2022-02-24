@@ -25,6 +25,7 @@ class HomeController extends Controller
     {   
         // auth()->user()->authorizeRoles(['admin','driver', 'user']);
         // auth()->user()->authorizePermission(['A2', 'A3']);
-        return redirect()->route('documents', 1);
+        // return redirect()->route('documents', 1);
+        return view('home');
     }
 }

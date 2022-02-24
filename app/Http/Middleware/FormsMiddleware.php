@@ -3,7 +3,7 @@
 namespace App\Http\Middleware;
 
 use Closure;
-use App\Forms\Forms;
+use App\MiddlewareUtils\Forms;
 
 class FormsMiddleware
 {

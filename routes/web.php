@@ -21,7 +21,7 @@ Route::get('/login', function () {
 
 Route::get('/logoutFromVerify', function(){
     Auth::logout();
-    return redirect('/login');
+    return redirect('/');
 });
 
 Auth::routes(['verify' => true]);
@@ -30,7 +30,7 @@ Route::post('/login', 'Auth\LoginController@authenticate')->name('MyLogin');
 
 Route::middleware(['auth', 'verified', 'menu'])->group( function () {
 
-    Route::get('/home', 'HomeController@index')->name('home');
+    Route::get('/home', 'HomeController@index')->name('home')->middleware('home');
     Route::get('/logout', 'Auth\LoginController@logout');
 
     // Rutas Choferes
