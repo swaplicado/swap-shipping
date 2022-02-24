@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Forms;
+namespace App\MiddlewareUtils;
 
 use App\User;
 use Illuminate\Support\Facades\DB;

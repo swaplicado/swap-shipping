@@ -17,133 +17,124 @@
 @endsection
 
 @section('content')
-    <h1 class="normal-text">Home</h1>
-    <br>
-    <button type="button" class="btn btn-success" style="border-radius: 50%; padding: 5px 10px;">
-        <span class="icon bx bx-plus"></span>
-    </button>
-    <button type="button" class="btn btn-warning" style="border-radius: 50%; padding: 5px 10px;">
-        <span class="icon bx bx-edit-alt"></span>
-    </button>
-    <button id="btn_delete" type="button" class="btn btn-danger" style="border-radius: 50%; padding: 5px 10px;">
-        <span class="icon bx bx-trash"></span>
-    </button>
-    <br>
-    <br>
-    <div class="container table-responsive">
-        <table id="example" class="table" style="width:100%;">
-            <thead>
-                <tr>
-                    <th>Folio</th>
-                    <th>Fecha</th>
-                    <th>Estatus</th>
-                    <th>CFD</th>
-                    <th>Transporte internacional</th>
-                    <th>E/S</th>
-                    <th>Vía E/S</th>
-                    <th>Distancia total</th>
-                    <th>Vehículo</th>
-                    <th>Placa vehículo</th>
-                    <th>Remolque 1</th>
-                    <th>Placa remolque 1</th>
-                    <th>Remolque 2</th>
-                    <th>Placa remolque 2</th>
-                    <th>Usr nuevo</th>
-                    <th>Ts nuevo</th>
-                    <th>Usr mod</th>
-                    <th>Ts mod</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>9560</td>
-                    <td>29/12/2021</td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td>350</td>
-                    <td>camion1</td>
-                    <td>abc12345</td>
-                    <td>remolque1</td>
-                    <td>bcd78955</td>
-                    <td></td>
-                    <td></td>
-                    <td>super</td>
-                    <td>29/12/2021</td>
-                    <td>super</td>
-                    <td>29/12/2021</td>
-                </tr>
-                <tr>
-                    <td>9560</td>
-                    <td>29/12/2021</td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td>350</td>
-                    <td>camion1</td>
-                    <td>abc12345</td>
-                    <td>remolque1</td>
-                    <td>bcd78955</td>
-                    <td></td>
-                    <td></td>
-                    <td>super</td>
-                    <td>29/12/2021</td>
-                    <td>super</td>
-                    <td>29/12/2021</td>
-                </tr>
-                <tr>
-                    <td>9560</td>
-                    <td>29/12/2021</td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td>350</td>
-                    <td>camion1</td>
-                    <td>abc12345</td>
-                    <td>remolque1</td>
-                    <td>bcd78955</td>
-                    <td></td>
-                    <td></td>
-                    <td>super</td>
-                    <td>29/12/2021</td>
-                    <td>super</td>
-                    <td>29/12/2021</td>
-                </tr>
-            </tbody>
-        </table>
+  <div class="container">
+    <div class="row">
+      <div class="col">
+      </div>
+      <div class="col-md-8">
+        <figure>
+          <blockquote class="blockquote">
+            <h1>Bienvenido a CPT</h1>
+          </blockquote>
+          <figcaption class="blockquote-footer">
+            Bienvenido al sistema de emisión CFDI Carta Porte 
+          </figcaption>
+        </figure>
+      </div>
     </div>
-@endsection
+  </div>
 
-@section('scripts')
+  <br>
+    <h3>Guía rápida</h3>
+  <br>
 
-<script>
-    $(document).ready(function() {
-    var table = $('#example').DataTable();
- 
-    $('#example tbody').on( 'click', 'tr', function () {
-        if ( $(this).hasClass('selected') ) {
-            $(this).removeClass('selected');
-        }
-        else {
-            table.$('tr.selected').removeClass('selected');
-            $(this).addClass('selected');
-        }
-    } );
+  <div class="row">
+    <div class="col-sm-6">
+      <div class="card">
+        <div class="card-body" style="height: 150pt;">
+          <h5 class="card-title">Navegación</h5>
+          <p class="card-text">
+            A la izquierda de su pantalla encontrará un menu de color azul con el que podrá navegar por las
+            distintas vistas del sistema, solo debe presionar una vez el boton de la sección a la que desea
+            acceder y sera redirigido a dicha sección. El menu se pude guardar o dezplegar a gusto del usuario
+            solo debe presionar el boton 
+            <button class="btn-primary" type="button" >
+              <span class="icon menu-toggle"></span>
+            </button> para guardar o dezplegar el menu.
+          </p> 
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-6">
+      <div class="card">
+        <div class="card-body" style="height: 150pt;">
+          <h5 class="card-title">Creación de registros</h5>
+          <p class="card-text">
+            En las distintas vistas como vehículos, remolques, choferes, aseguradoras y cartas porte, se incluye
+            en la parte superior un boton del tipo 
+            <button class="btn btn-success" style="border-radius: 50%; padding: 5px 10px;" >
+              <span class="icon bx bx-plus"></span>
+            </button>
+            al presionar este boton se te redirigirá a una vista con un formulario para llenar los datos que deseas registrar.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <br>
 
-    $('#maincontainer').click(function() {
-        table.$('tr.selected').removeClass('selected');
-    });
- 
-    $('#btn_delete').click( function () {
-        table.row('.selected').remove().draw( false );
-    } );
-} );
-</script>
+  <div class="row">
+    <div class="col-sm-6">
+      <div class="card">
+        <div class="card-body" style="height: 150pt;">
+          <h5 class="card-title">Creación de registros</h5>
+          <p class="card-text">
+            En las distintas vistas como vehículos, remolques, choferes, aseguradoras y cartas porte, se incluye
+            una tabla con los distintos registros que se han guardado, para editar un registro solo debes presionar
+            una vez sobre el renglon del registros que deseas editar, el renglon se oscurecera señalando esto que ha sido
+            seleccionado, una vez seleccionado el renglon en la parte superior izquierda se incluye
+            un boton del tipo 
+            <button class="btn btn-warning" style="border-radius: 50%; padding: 5px 10px;" >
+              <span class="icon bx bx-edit-alt"></span>
+            </button>
+            al presionar este boton se te redirigirá a una vista con los datos que deseas editar.
+          </p> 
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-6">
+      <div class="card">
+        <div class="card-body" style="height: 150pt;">
+          <h5 class="card-title">Eliminación de registros</h5>
+          <p class="card-text">
+            En las distintas vistas como vehículos, remolques, choferes, aseguradoras y cartas porte, se incluye
+            una tabla con los distintos registros que se han guardado, para borrar un registro solo debes presionar
+            una vez sobre el renglon del registros que deseas borrar, el renglon se oscurecera señalando esto que ha sido
+            seleccionado, una vez seleccionado el renglon en la parte superior izquierda se incluye
+            un boton del tipo 
+            <button class="btn btn-danger" style="border-radius: 50%; padding: 5px 10px;" >
+              <span class="icon bx bx-trash"></span>
+            </button>
+            al presionar este boton se te preguntará si deseas elimiar el registro, al aceptar, el registro se eliminará.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <br>
 
+  <div class="row">
+    <div class="col-sm-6">
+      <div class="card">
+        <div class="card-body" style="height: 150pt;">
+          <h5 class="card-title">recuperación de registros</h5>
+          <p class="card-text">
+            En las distintas vistas como vehículos, remolques, choferes, aseguradoras y cartas porte, se incluye
+            una tabla con los distintos registros que se han guardado, para editar un registro solo debes presionar
+            una vez sobre el renglon del registros que deseas editar, el renglon se oscurecera señalando esto que ha sido
+            seleccionado, una vez seleccionado el renglon en la parte superior izquierda se incluye
+            un boton del tipo 
+            <button class="btn btn-info" style="border-radius: 50%; padding: 5px 10px;" >
+              <span class="icon bx bx-recycle"></span>
+            </button>
+            al presionar este boton se te preguntará si deseas recuperar el registrp, al aceptar, el registro se recuperará.
+          </p> 
+        </div>
+      </div>
+    </div>
+  </div>
+  <br>
+
+  {!! session()->has('home') ? session('home') : "" !!}
+  
 @endsection
