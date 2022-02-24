@@ -514,8 +514,11 @@ class CarrierController extends Controller
             $oCertificate->save();
         }
 
-        // Storage::delete($urlPc);
-        // Storage::delete($urlPv);
+        CfdUtils::encryptFile(Storage::disk('local')->path($urlPc), substr(Storage::disk('local')->path($urlPc), 0, strlen(Storage::disk('local')->path($urlPc)) - 4).'cer.enc', env('FL_KEY'));
+        CfdUtils::encryptFile(Storage::disk('local')->path($urlPv), substr(Storage::disk('local')->path($urlPv), 0, strlen(Storage::disk('local')->path($urlPv)) - 4).'key.enc', env('FL_KEY'));
+
+        Storage::disk('local')->delete($urlPc);
+        Storage::disk('local')->delete($urlPv);
 
         return redirect(route('editar_carrierFiscalData', ['id' => $oCarrier->id_carrier]))->with(['message' => $response['message'], 'icon' => 'success']);
     }

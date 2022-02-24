@@ -1,7 +1,7 @@
 <div class="row">
     <div class="col-md-12">
         <div class="form-group">
-            <label for="autotransporte">Autotransporte</label>
+            <label for="autotransporte">Autotransporte*</label>
             <select class="form-select" id="autotransporte" v-model="oVehicle">
                 <option v-for="vehicle in lVehicles" :value="vehicle">@{{ vehicle.alias }}</option>
             </select>

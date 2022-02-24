@@ -38,7 +38,7 @@
         </div>
         <div class="row">
             <div class="col-md-4">
-                <label for="valor_unitario" class="form-label">Valor unitario</label>
+                <label for="valor_unitario" class="form-label">Valor unitario*</label>
                 <my-currency-input :id="'valor_unitario' + itemObjKey" v-model="oConcept.valorUnitario" v-on:keyup="onChangeAmount()"></my-currency-input>
             </div>
             <div class="col-md-4">
