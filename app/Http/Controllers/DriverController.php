@@ -60,6 +60,7 @@ class DriverController extends Controller
         $data = new Driver;
         $data->FAddress = new FAddress;
         $data->users = NULL;
+        $data->is_new = 1;
         $tp_figures = TpFigure::pluck('id', 'description');
         $carriers = Carrier::where('is_deleted', 0)->orderBy('fullname', 'ASC')->pluck('id_carrier', 'fullname');
         $countrys = FiscalAddress::orderBy('description', 'ASC')->pluck('id', 'description');
@@ -96,6 +97,7 @@ class DriverController extends Controller
             'zip_code' => 'required',
             'state' => 'required|not_in:0',
             'carrier' => 'required|not_in:0',
+            'rol' => 'required',
             'password' => ['required', 'string', 'min:8', 'confirmed']
         ]);
 
@@ -114,11 +116,25 @@ class DriverController extends Controller
                         'email' => $request->email,
                         'password' => Hash::make($request->password),
                         'full_name' => strtoupper($request->fullname),
-                        'user_type_id' => 4,
-                        'is_driver' => 1
+                        'user_type_id' => 4
                     ]);
 
-                    $user->roles()->attach(Role::where('id', 4)->first());
+                    $rol = null;
+                    switch ($request->rol) {
+                        case '1':
+                            $rol = 6;
+                            break;
+                        case '2':
+                            $rol = 5;
+                            break;
+                        case '3':
+                            $rol = 4;
+                            break;
+                        default:
+                            break;
+                    }
+
+                    $user->roles()->attach(Role::where('id', $rol)->first());
                     $user->sendEmailVerificationNotification();
                 }
 
@@ -197,10 +213,13 @@ class DriverController extends Controller
         auth()->user()->authorizePermission(['313']);
         $data = Driver::where([['id_trans_figure', $id], ['is_deleted', 0]])->first();
         auth()->user()->carrierAutorization($data->carrier_id);
-        $data->each(function ($data) {
-            $data->FAddress;
+        $data->FAddress;
+        if(!is_null($data->UserVsTypes()->first())){
             $data->users;
-        });
+        }else{
+            $data->users = null;
+            $data->is_new = 0;
+        }
         $tp_figures = TpFigure::pluck('id', 'description');
         $carriers = Carrier::where('is_deleted', 0)->orderBy('fullname', 'ASC')->pluck('id_carrier', 'fullname');
         $countrys = FiscalAddress::orderBy('description', 'ASC')->pluck('id', 'description');
@@ -277,21 +296,22 @@ class DriverController extends Controller
                 $address->state_id = $sta_id;
                 $address->usr_upd_id = $user_id;
 
-                $user = User::findOrFail($Driver->users()->first()->id);
-
-                $user->username = strtoupper($request->fullname);
-                $user->full_name = strtoupper($request->fullname);
-                if(!is_null($request->editEmail)){
-                    if($user->email != $request->email){
-                        $user->email = $request->email;
-                        $user->email_verified_at = null;
-                        $user->sendEmailVerificationNotification();
-                    }
+                if(!is_null($Driver->UserVsTypes()->first())){
+                    $user = User::findOrFail($Driver->users()->first()->id);
+                    $user->username = strtoupper($request->fullname);
+                    $user->full_name = strtoupper($request->fullname);
+                    if(!is_null($request->editEmail)){
+                        if($user->email != $request->email){
+                            $user->email = $request->email;
+                            $user->email_verified_at = null;
+                            $user->sendEmailVerificationNotification();
+                        }
+                    }    
+                    $user->update();
                 }
 
                 $Driver->update();
                 $address->update();
-                $user->update();
             });
         } catch (QueryException $e) {
             $success = false;

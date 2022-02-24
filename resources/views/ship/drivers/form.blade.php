@@ -1,4 +1,4 @@
-@if(!$data->users)
+@if($data->is_new)
 <div class="form-check">
     <input class="form-check-input" type="checkbox" name="is_with_user" id="is_with_user" checked>
     <label class="form-check-label" for="is_with_user">
@@ -13,7 +13,7 @@
         <span class="text-danger">{{ $message }}</span>
     @enderror
 </div>
-@if(!is_null($data->users))
+@if(!$data->is_new && !is_null($data->users))
 <div class="form-group">
     <label for="email" class="form-label">E-mail</label>
     <input id="editEmail" name="editEmail" type="checkbox">
@@ -22,10 +22,11 @@
         <span class="text-danger">{{ $message }}</span>
     @enderror
 </div>
-@else
+@endif
+@if($data->is_new)
 <div class="form-group">
     <label for="email" class="form-label">E-mail</label>
-    <input id="email" name="email" type="text" class="form-control" value="{{ old('email', $data->users->email ?? '') }}" required>
+    <input id="email" name="email" type="text" class="form-control" value="" required>
     @error('email')
         <span class="text-danger">{{ $message }}</span>
     @enderror
@@ -165,7 +166,35 @@
     @enderror
 </div>
 {!! $data->id_trans_figure == null ? (session()->has('form') ? session('form') : "") : "" !!}
-@if(!$data->users)
+@if($data->is_new)
+<label for="permisos" class="form-label">Rol del chofer</label>
+<table class="table" name = "permisos">
+    <tbody>
+        <tr>
+            <td>
+                <div class="form-check">
+                    <input class = "form-check-input" name="rol" type="radio" value="1" id="rol1">
+                    <label class="form-check-label" for="rol1">Consultar CFDI</label>
+                </div>
+            </td>
+            <td>
+                <div class="form-check">
+                    <input class = "form-check-input" name="rol" type="radio" value="2" id="rol2">
+                    <label class="form-check-label" for="rol2">Consultar y timbrar CFDI</label>
+                </div>
+            </td>
+            <td>
+                <div class="form-check">
+                    <input class = "form-check-input" name="rol" type="radio" value="3" id="rol3">
+                    <label class="form-check-label" for="rol3">Consultar, timbrar y editar CFDI</label>
+                </div>
+            </td>
+        </tr>
+    </tbody>
+</table>
+@error('rol')
+    <span class="text-danger">{{ $message }}</span>
+@enderror
 <div class="form-group">
     <label for="password" class="form-label">{{ __('Password') }}</label>
     <input id="password" type="password"
