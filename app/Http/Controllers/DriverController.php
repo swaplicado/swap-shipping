@@ -97,6 +97,7 @@ class DriverController extends Controller
             'zip_code' => 'required',
             'state' => 'required|not_in:0',
             'carrier' => 'required|not_in:0',
+            'rol' => 'required',
             'password' => ['required', 'string', 'min:8', 'confirmed']
         ]);
 
@@ -115,11 +116,25 @@ class DriverController extends Controller
                         'email' => $request->email,
                         'password' => Hash::make($request->password),
                         'full_name' => strtoupper($request->fullname),
-                        'user_type_id' => 4,
-                        'is_driver' => 1
+                        'user_type_id' => 4
                     ]);
 
-                    $user->roles()->attach(Role::where('id', 4)->first());
+                    $rol = null;
+                    switch ($request->rol) {
+                        case '1':
+                            $rol = 6;
+                            break;
+                        case '2':
+                            $rol = 5;
+                            break;
+                        case '3':
+                            $rol = 4;
+                            break;
+                        default:
+                            break;
+                    }
+
+                    $user->roles()->attach(Role::where('id', $rol)->first());
                     $user->sendEmailVerificationNotification();
                 }
 

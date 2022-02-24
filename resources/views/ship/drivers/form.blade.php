@@ -167,6 +167,34 @@
 </div>
 {!! $data->id_trans_figure == null ? (session()->has('form') ? session('form') : "") : "" !!}
 @if($data->is_new)
+<label for="permisos" class="form-label">Rol del chofer</label>
+<table class="table" name = "permisos">
+    <tbody>
+        <tr>
+            <td>
+                <div class="form-check">
+                    <input class = "form-check-input" name="rol" type="radio" value="1" id="rol1">
+                    <label class="form-check-label" for="rol1">Consultar CFDI</label>
+                </div>
+            </td>
+            <td>
+                <div class="form-check">
+                    <input class = "form-check-input" name="rol" type="radio" value="2" id="rol2">
+                    <label class="form-check-label" for="rol2">Consultar y timbrar CFDI</label>
+                </div>
+            </td>
+            <td>
+                <div class="form-check">
+                    <input class = "form-check-input" name="rol" type="radio" value="3" id="rol3">
+                    <label class="form-check-label" for="rol3">Consultar, timbrar y editar CFDI</label>
+                </div>
+            </td>
+        </tr>
+    </tbody>
+</table>
+@error('rol')
+    <span class="text-danger">{{ $message }}</span>
+@enderror
 <div class="form-group">
     <label for="password" class="form-label">{{ __('Password') }}</label>
     <input id="password" type="password"
