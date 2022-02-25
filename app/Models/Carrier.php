@@ -23,7 +23,9 @@ class Carrier extends Model
         'prod_serv_id',
         'usr_new_id',
         'usr_upd_id',
-        'comercial_name'
+        'comercial_name',
+        'remisionista_can_stamp',
+        'carrier_stamp'
     ];
 
     public function UserVsTypes() {

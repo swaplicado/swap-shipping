@@ -70,6 +70,28 @@
                             @enderror
                         </div>
                         <br>
+                        <label for="prod_serv" class="form-label" style="color: red;">Delegación de timbrados:</label>
+                        <div class="form-group">
+                            <input name="delega_CFDI" class="form-check-input" type="radio" value="1" id="delega_CFDI1">
+                            <label class="form-check-label" for="delega_CFDI1">
+                              Acepto la delegación de la edición y del timbrado de mis documentos CFDI Carta Porte.
+                            </label>
+                        </div>
+                        <br>
+                        <div class="form-group">
+                            <input name="delega_CFDI" class="form-check-input" type="radio" value="2" id="delega_CFDI2">
+                            <label class="form-check-label" for="delega_CFDI2">
+                              Acepto la delegación solo del timbrado de mis documentos CFDI Carta Porte.
+                            </label>
+                        </div>
+                        <br>
+                        <div class="form-group">
+                            <input name="delega_CFDI" class="form-check-input" type="radio" value="3" id="delega_CFDI3">
+                            <label class="form-check-label" for="delega_CFDI3">
+                              Solo yo puedo   editar y timbrar mis documentos CFDI Carta Porte.
+                            </label>
+                        </div>
+                        <br>
                         <div class="row">
                             <div class="col-10"></div>
                             <div class="col-2">
@@ -159,14 +181,19 @@
 @section('scripts')
     <script>
         $(document).ready(function () {
-            const check = document.getElementById('editEmail');
-            check.addEventListener('change', function handleChange(event){
-                if(check.checked){
-                    document.getElementById('email').removeAttribute('readonly');
-                }else{
-                    document.getElementById('email').setAttribute('readonly', 'readonly');
-                }
-            });
+            const delega_edit_stamp = "<?php echo $data->delega_edit_stamp; ?>";
+            const delega_stamp = "<?php echo $data->delega_stamp; ?>";
+
+            if(delega_edit_stamp == 1){
+                var radio = document.getElementById('delega_CFDI1');
+                radio.setAttribute('checked', 'checked');
+            } else if (delega_stamp == 1) {
+                var radio = document.getElementById('delega_CFDI2');
+                radio.setAttribute('checked', 'checked');
+            }else{
+                var radio = document.getElementById('delega_CFDI3');
+                radio.setAttribute('checked', 'checked');
+            }
         });
     </script>
 @endsection

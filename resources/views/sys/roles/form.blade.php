@@ -11,6 +11,8 @@
     @error('description')
         <span class="text-danger">{{ $message }}</span>
     @enderror
+</div>
+<br>
 <div class="form-group">
     <label for="permissions" class="form-label">Permisos</label>
     <button id="btn_add_permission" type="button" class="btn btn-primary btn-sm">
