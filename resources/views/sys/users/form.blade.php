@@ -30,6 +30,7 @@
     @enderror
 </div>
 @endif
+<br>
 <div class="form-group">
     <label for="roles" class="form-label">Roles</label>
     <button id="btn_add_role" type="button" class="btn btn-primary btn-sm">

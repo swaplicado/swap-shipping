@@ -120,12 +120,12 @@ class CarrierController extends Controller
         
                 $user->roles()->attach(Role::where('id', 3)->first());
                 $user->tempPass = $request->password;
-                $user->sendEmailVerificationNotification();
                 
+                is_null($request->carrier_stamp) ? $request->carrier_stamp = 0 : "";
                 $carrier = Carrier::create([
                     'fullname' => strtoupper($request->fullname),
                     'comercial_name' => strtoupper($request->comercial_name),
-                    'fiscal_id' => $request->RFC,
+                    'fiscal_id' => strtoupper($request->RFC),
                     'tax_regimes_id' => $tr_id,
                     'contact1' => strtoupper($request->contact1),
                     'telephone1' => $request->telephone1,
@@ -133,7 +133,8 @@ class CarrierController extends Controller
                     'telephone2' => $request->telephone2,
                     'prod_serv_id' => $ps_id,
                     'usr_new_id' => $user_id,
-                    'usr_upd_id' => $user_id
+                    'usr_upd_id' => $user_id,
+                    'carrier_stamp' => $request->carrier_stamp
                 ]);
                 
                 $UserVsTypes = UserVsTypes::create([
@@ -141,7 +142,7 @@ class CarrierController extends Controller
                     'user_id' => $user->id,
                     'is_principal' => 1
                 ]);
-
+                $user->sendEmailVerificationNotification();
             });
         } catch (QueryException $e) {
             $success = false;
@@ -401,9 +402,10 @@ class CarrierController extends Controller
         $error = "0";
 
         $validator = Validator::make($request->all(), [
-            'RFC' => ['required'],
+            'RFC' => ['required', Rule::unique('f_carriers','fiscal_id')->ignore($id, 'id_carrier')],
             'tax_regimes' => 'required|not_in:0',
-            'prod_serv' => 'required|not_in:0'
+            'prod_serv' => 'required|not_in:0',
+            'delega_CFDI' => 'required'
         ]);
         $validator->validate();
         
@@ -422,11 +424,25 @@ class CarrierController extends Controller
             DB::transaction(function () use ($request, $user_id, $id, $tr_id, $ps_id) {
                 $carrier = Carrier::findOrFail($id);
                 
-                $carrier->fiscal_id = $request->RFC;
+                $carrier->fiscal_id = strtoupper($request->RFC);
                 $carrier->tax_regimes_id = $tr_id;
                 $carrier->prod_serv_id = $ps_id;
                 $carrier->usr_upd_id = $user_id;
 
+                $delega_stamp = 0;
+                $delega_edit_stamp = 0;
+                switch ($request->delega_CFDI) {
+                    case 1:
+                        $delega_edit_stamp = 1;
+                        break;
+                    case 2:
+                        $delega_stamp = 1;
+                        break;
+                    default:
+                        break;
+                }
+                $carrier->delega_stamp = $delega_stamp;
+                $carrier->delega_edit_stamp = $delega_edit_stamp;
                 $carrier->update();
             });
         } catch (QueryException $e) {

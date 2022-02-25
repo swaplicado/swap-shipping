@@ -98,6 +98,18 @@
     @enderror
 </div>
 @if(!$data->users)
+<br>
+<div class="form-check">
+    @if(!$data->carrier_stamp)
+        <input name="carrier_stamp" class="form-check-input" type="checkbox" value="1" id="carrier_stamp">
+    @else
+        <input name="carrier_stamp" class="form-check-input" type="checkbox" value="1" id="carrier_stamp" checked>
+    @endif
+    <label class="form-check-label" for="carrier_stamp">
+        El transportista realizará el timbrado de sus CFDI Carta Porte.
+    </label>
+</div>
+<br>
 <div class="form-group">
     <label for="password" class="form-label">{{ __('Password') }}</label>
     <input id="password" type="password"
