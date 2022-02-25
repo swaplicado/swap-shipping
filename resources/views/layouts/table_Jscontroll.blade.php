@@ -67,6 +67,11 @@
         });
 
         $('#id_sign').click(function () {
+            if (table.row('.selected').data() == undefined) {
+                SGui.showError("Debe seleccionar un renglón");
+                return;
+            }
+
             var id = table.row('.selected').data()[0];
             var url = '{{ isset($signRoute) ? route($signRoute, ":id") : "#" }}';
             url = url.replace(':id',id);
@@ -74,6 +79,16 @@
         });
 
         $('#id_cancel').click(function () {
+            if (table.row('.selected').data() == undefined) {
+                SGui.showError("Debe seleccionar un renglón");
+                return;
+            }
+
+            var id = table.row('.selected').data()[0];
+            var url = '{{ isset($cancelRoute) ? route($cancelRoute, ":id") : "#" }}';
+            url = url.replace(':id',id);
+            window.location.href = url;
+            
             // const { value: fruit } = await Swal.fire({
             //     title: 'Select field validation',
             //     input: 'select',
@@ -106,6 +121,11 @@
         });
         
         $('#btn_edit').click(function () {
+            if (table.row('.selected').data() == undefined) {
+                SGui.showError("Debe seleccionar un renglón");
+                return;
+            }
+
             var id = table.row('.selected').data()[0];
             var url = '{{route($editar, ":id")}}';
             url = url.replace(':id',id);
@@ -113,6 +133,11 @@
         });
 
         $('#btn_delete').click(function  () {
+            if (table.row('.selected').data() == undefined) {
+                SGui.showError("Debe seleccionar un renglón");
+                return;
+            }
+
             Swal.fire({
                 title: 'Desea eliminar?',
                 text: table.row('.selected').data()[2],
@@ -143,6 +168,11 @@
         });
 
         $('#btn_recover').click( function () {
+            if (table.row('.selected').data() == undefined) {
+                SGui.showError("Debe seleccionar un renglón");
+                return;
+            }
+
             Swal.fire({
                 title: 'Desea recuperar?',
                 text: table.row('.selected').data()[2],
@@ -173,6 +203,11 @@
         });
 
         $('#id_down_pdf').click(function () {
+            if (table.row('.selected').data() == undefined) {
+                SGui.showError("Debe seleccionar un renglón");
+                return;
+            }
+            
             var id = table.row('.selected').data()[0];
             var url = '{{route("cfdiToPdf", ":id")}}';
             url = url.replace(':id',id);

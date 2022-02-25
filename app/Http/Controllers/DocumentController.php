@@ -540,6 +540,6 @@ class DocumentController extends Controller
         $oCarrier = Carrier::find($oDocument->carrier_id);
 
         // cancelar cfdi
-        $cfdiResponse = FinkokCore::cancelCfdi($oMongoDocument->uuid, $oCarrier);
+        $cfdiResponse = FinkokCore::cancelCfdi($oMongoDocument, $oCarrier);
     }
 }

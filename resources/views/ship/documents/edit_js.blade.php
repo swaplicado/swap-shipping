@@ -11,10 +11,13 @@
         this.lPayForms = <?php echo json_encode($lPayForms) ?>;
         this.lCurrencies = <?php echo json_encode($lCurrencies) ?>;
         this.lCarrierSeries = <?php echo json_encode($lCarrierSeries) ?>;
+
+        this.oData.serie = this.oData.serie == '' && this.lCarrierSeries.length == 1 ? this.lCarrierSeries[0].prefix : this.oData.serie;
+        this.oVehicle = this.oVehicle.id_vehicle == undefined && this.lVehicles.length == 1 ? this.lVehicles[0] : this.oVehicle;
+        this.oFigure = this.oFigure.id_trans_figure == undefined && this.lFigures.length == 1 ? this.lFigures[0] : this.oFigure;
     }
     
     var oServerData = new GlobalData();
     console.log(oServerData);
 </script>
-<script src="{{ asset('js/myapp/gui/SGui.js') }}"></script>
 <script src="{{ asset('js/myapp/documents/SDocumentsApp.js') }}"></script>

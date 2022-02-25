@@ -26,8 +26,20 @@
 <h2>Cartas Porte ({{ $title }})</h2>
 <br>
 
+@php
+    $carrierFilter = 
+    '<div class="col-md-5">
+        <select class="form-control" name="ic" id="ic">
+            <option value="">Todos</option>';
+            foreach ($carriers as $carrier) {
+                $carrierFilter .= '<option value="'.$carrier->id_carrier.'"'.($carrier->id_carrier == $ic ? 'selected' : '').'>'.$carrier->fiscal_id.' - '.$carrier->fullname.'</option>';
+            }
+    $carrierFilter .= '</select>
+    </div>';
+@endphp
+
 @include('layouts.table_buttons', [
-        'crear' => 'crear_carrier', 
+        'crear' => 'crear_carrier',
         'moreButtons' => [
             ['id' => 'id_sign', 'class' => 'dark', 'icon' => 'bx-bell', 'url' => '#', 'title' => 'Timbrar'],
             ['id' => 'id_down_xml', 'class' => 'primary', 'icon' => 'bx-download', 'url' => '#', 'title' => 'Descagar XML'],
@@ -35,17 +47,24 @@
             ['id' => 'id_cancel', 'class' => 'danger', 'icon' => 'bx-block', 'url' => 'can', 'title' => 'Cancelar CFDI'],
         ],
         'moreFilters' => [
-            '<div class="col-md-5"></div>
-            <div class="col-md-4">
-                <div id="reportrange" style="background: #fff; cursor: pointer; padding: 5px 10px; border: 1px solid #ccc; width: 100%">
-                    <i class="fa fa-calendar"></i>&nbsp;
-                    <span></span> <i class="fa fa-caret-down"></i>
-                </div>
-            </div>
-            <div class="col-md-1">
-                <button type="button" class="btn btn-primary">
-                    <i class="bx bx-search-alt"></i>
-                </button>
+            '<div class="'.($withCarrierFilter ? 'col-md-2' : 'col-md-5').'"></div>
+            <div class="'.($withCarrierFilter ? 'col-md-8' : 'col-md-5').'">
+                <form action="" class="form-inline">
+                    <div class="row">
+                        '.($withCarrierFilter ? $carrierFilter : '')
+                        .($withDateFilter ? '<div class="'.($withCarrierFilter ? 'col-md-6' : 'col-md-10').'">
+                            <div id="reportrange" style="background: #fff; cursor: pointer; padding: 5px 10px; border: 1px solid #ccc; width: 100%">
+                                <i class="fa fa-calendar"></i>&nbsp;
+                                <span></span> <i class="fa fa-caret-down"></i>
+                            </div>
+                        </div>' : '').
+                        ($withDateFilter || $withCarrierFilter ? '<div class="col-md-1">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bx bx-search-alt"></i>
+                            </button>
+                        </div>' : '').'
+                    </div>
+                </form>
             </div>'
         ]
     ])
@@ -96,13 +115,15 @@
 
 @section('scripts')
 @include('layouts.table_Jscontroll', ['table_id' => 't_documents', 
-                                        'signRoute' => 'documents.sign', 
+                                        'signRoute' => 'documents.sign',
+                                        'cancelRoute' => 'documents.cancel',
                                         'editar' => 'documents.edit', 
                                         'eliminar' => 'documents.destroy', 
                                         'recuperar' => 'documents.restore',
                                         'Pdf' => 'cfdiToPdf'])
 <script type="text/javascript">
     moment.locale('es');
+
     $(function() {
     
         var start = moment().subtract(29, 'days');

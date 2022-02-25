@@ -51,6 +51,9 @@ var app = new Vue({
         lSelectedTrailers: oServerData.oData.lTrailers != undefined && oServerData.oData.lTrailers.lenght > 0 ? oServerData.oData.lTrailers : [],
         oCfdiData: {}
     },
+    mounted() {
+        this.changeSerie(this.oData.serie);
+    },
     methods: {
         addConcept() {
             let oCpt = this.oData.conceptos[0];
