@@ -28,12 +28,38 @@ class DocumentController extends Controller
                         ->join('f_carriers', 'f_carriers.id_carrier', '=', 'f_documents.carrier_id')
                         ->join('users', 'users.id', '=', 'f_documents.usr_gen_id');
 
+        $withCarrierFilter = false;
+        $carriers = [];
+        if (auth()->user()->isCarrier()) {
+            $lDocuments = $lDocuments->where('f_documents.carrier_id', auth()->user()->carrier()->first()->id_carrier);
+        }
+        else if (auth()->user()->isDriver()) {
+            $lDocuments = $lDocuments->where('f_documents.carrier_id', auth()->user()->driver()->first()->carrier_id);
+        }
+        else {
+            $carriers = Carrier::where('is_deleted', false)
+                                ->orderBy('fiscal_id', 'ASC')
+                                ->orderBy('fullname', 'ASC')
+                                ->select('id_carrier', 'fiscal_id', 'fullname')
+                                ->get();
+    
+            $withCarrierFilter = true;
+        }
+
         $title = "";
+        $ic = 0;
+        $withDateFilter = false;
+
+        if ($request->has('ic')) {
+            $lDocuments = $lDocuments->where('f_documents.carrier_id', $request->ic);
+            $ic = $request->ic;
+        }
 
         switch ($viewType) {
             case "0":
                 $lDocuments = $lDocuments->get();
                 $title = "todas";
+                $withDateFilter = true;
                 break;
 
             // Por procesar
@@ -57,6 +83,7 @@ class DocumentController extends Controller
                                             ->where('is_signed', true)
                                             ->get();
                 $title = "timbradas";
+                $withDateFilter = true;
                 break;
             
             default:
@@ -68,7 +95,11 @@ class DocumentController extends Controller
         return view('ship.documents.index', [
             'lDocuments' => $lDocuments,
             'viewType' => $viewType,
-            'title' => $title
+            'title' => $title,
+            'carriers' => $carriers,
+            'withCarrierFilter' => $withCarrierFilter,
+            'withDateFilter' => $withDateFilter,
+            'ic' => $ic,
         ]);
     }
 
@@ -494,6 +525,6 @@ class DocumentController extends Controller
         $oCarrier = Carrier::find($oDocument->carrier_id);
 
         // cancelar cfdi
-        $cfdiResponse = FinkokCore::cancelCfdi($oMongoDocument->uuid);
+        $cfdiResponse = FinkokCore::cancelCfdi($oMongoDocument->uuid, $oCarrier);
     }
 }
