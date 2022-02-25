@@ -9,9 +9,29 @@ use App\Models\Pdf;
 use App\Models\Document;
 use App\Models\M\MDocument;
 use App\Utils\Configuration;
+use App\Models\Carrier;
 
 class CfdiUtils
 {
+    public static function remisionistaCanEdit($carrier_id){
+        $canEditStamp = Carrier::where('id_carrier', $carrier_id)->value('delega_edit_stamp');
+        if($canEditStamp == 1){
+            return true;
+        }else{
+            return false;
+        }
+    }
+
+    public static function remisionistaCanStamp($carrier_id){
+        $canEditStamp = Carrier::where('id_carrier', $carrier_id)->value('delega_edit_stamp');
+        $canStamp = Carrier::where('id_carrier', $carrier_id)->value('delega_stamp');
+        if($canEditStamp == 1 || $canStamp == 1){
+            return true;
+        }else{
+            return false;
+        }
+    }
+
     public static function updatePdf($id, $xml){
         $pdf = CfdiUtils::generatePDF($xml);
         DB::transaction( function () use($id, $pdf) {
