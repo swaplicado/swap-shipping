@@ -29,7 +29,8 @@
 <br>
 <br>
 <div class="row">
-    <div class="col-lg-2" style="float: left;">
+    <div class="col-md-12">
+    <div class="col-md-2" style="float: left;">
         <select class="form-select" name="isDeleted" id="isDeleted">
             <option value="0" selected>Activos</option>
             <option value="1">Eliminados</option>
@@ -43,6 +44,7 @@
             @endphp
         @endforeach
     @endif
+    </div>
 </div>
 <br>
 

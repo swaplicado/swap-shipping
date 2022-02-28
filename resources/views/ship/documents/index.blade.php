@@ -28,14 +28,16 @@
 
 @php
     $carrierFilter = 
-    '<div class="col-md-5">
+    '
+    <div class="col-md-4">
         <select class="form-control" name="ic" id="ic">
             <option value="">Todos</option>';
             foreach ($carriers as $carrier) {
                 $carrierFilter .= '<option value="'.$carrier->id_carrier.'"'.($carrier->id_carrier == $ic ? 'selected' : '').'>'.$carrier->fiscal_id.' - '.$carrier->fullname.'</option>';
             }
     $carrierFilter .= '</select>
-    </div>';
+    </div>
+    ';
 @endphp
 
 @include('layouts.table_buttons', [
@@ -47,15 +49,24 @@
             ['id' => 'id_cancel', 'class' => 'danger', 'icon' => 'bx-block', 'url' => 'can', 'title' => 'Cancelar CFDI'],
         ],
         'moreFilters' => [
-            '<div class="'.($withCarrierFilter ? 'col-md-2' : 'col-md-5').'"></div>
-            <div class="'.($withCarrierFilter ? 'col-md-8' : 'col-md-5').'">
+            '
+            <div class="'.($withCarrierFilter ? 'col-md-12' : 'col-md-7').'">
                 <form action="" class="form-inline">
-                    <div class="row">
+                    <div class="row" >
                         '.($withCarrierFilter ? $carrierFilter : '')
-                        .($withDateFilter ? '<div class="'.($withCarrierFilter ? 'col-md-6' : 'col-md-10').'">
+                        .($withDateFilter ? '
+                        <div class="'.($withCarrierFilter ? 'col-md-4' : 'col-md-10').'" >
+                            <button id = "less" class = "btn-secondary" type="button" style = "float: left; width: 30px; height: 100%;">
+                                -
+                            </button>
+                            <button id = "plus" class = "btn-secondary" type="button" style = "float: right; width: 30px; height: 100%;">
+                                +
+                            </button>
                             <div id="reportrange" style="background: #fff; cursor: pointer; padding: 5px 10px; border: 1px solid #ccc; width: 100%">
                                 <i class="fa fa-calendar"></i>&nbsp;
                                 <span></span> <i class="fa fa-caret-down"></i>
+                                <input id = "calendarStart" type="hidden" name="calendarStart" value="">
+                                <input id = "calendarEnd" type="hidden" name="calendarEnd" value="">
                             </div>
                         </div>' : '').
                         ($withDateFilter || $withCarrierFilter ? '<div class="col-md-1">
@@ -125,27 +136,137 @@
     moment.locale('es');
 
     $(function() {
-    
-        var start = moment().subtract(29, 'days');
-        var end = moment();
-    
+        var n = 0;
+        // var start = moment().startOf('month');
+        // var end = moment().endOf('month');
+        var requestStart = '<?php echo $start ?>';
+        var requestEnd = '<?php echo $end ?>';
+        var start = moment(requestStart, 'YYYY-MM-DD');
+        var end = moment(requestEnd, 'YYYY-MM-DD');
+
+        var s = start;
+        var e = end;
+
+        var less = document.getElementById('less');
+        var plus = document.getElementById('plus');
+
+        var calendarStart = document.getElementById('calendarStart');
+        var calendarEnd = document.getElementById('calendarEnd');
+
+        less.addEventListener('click', function(){
+            var a = s.diff(e, 'days');
+            switch (a) {
+                case 0:
+                    n = n + 1;
+                    s = moment(requestStart, 'YYYY-MM-DD').subtract(n, 'days');
+                    e = moment(requestEnd, 'YYYY-MM-DD').subtract(n, 'days');
+                    break;
+                case -6:
+                    n = n + 1;
+                    s = moment(requestStart, 'YYYY-MM-DD').subtract(n, 'week').startOf('week');
+                    e = moment(requestEnd, 'YYYY-MM-DD').subtract(n, 'week').endOf('week');
+                    break;
+                case -27:
+                case -29:
+                case -30:
+                    n = n + 1;
+                    s = moment(requestStart, 'YYYY-MM-DD').subtract(n, 'month').startOf('month');
+                    e = moment(requestEnd, 'YYYY-MM-DD').subtract(n, 'month').endOf('month');
+                    break;
+                case -364:
+                    n = n + 1;
+                    s = moment(requestStart, 'YYYY-MM-DD').subtract(n, 'year').startOf('year');
+                    e = moment(requestEnd, 'YYYY-MM-DD').subtract(n, 'year').endOf('year');
+                    break;
+            
+                default:
+                    n = n + 1;
+                    s = moment(requestStart, 'YYYY-MM-DD').subtract(n, 'days');
+                    e = moment(requestEnd, 'YYYY-MM-DD').subtract(n, 'days');
+                    break;
+            }
+            cb(s,e);
+        });
+        
+        plus.addEventListener('click', function(){
+            var a = s.diff(e, 'days');
+            switch (a) {
+                case 0:
+                    n = n - 1;
+                    s = moment(requestStart, 'YYYY-MM-DD').subtract(n, 'days');
+                    e = moment(requestEnd, 'YYYY-MM-DD').subtract(n, 'days');
+                    break;
+                case -5:
+                case -6:
+                case -7:
+                    n = n - 1;
+                    s = moment(requestStart, 'YYYY-MM-DD').subtract(n, 'week').startOf('week');
+                    e = moment(requestEnd, 'YYYY-MM-DD').subtract(n, 'week').endOf('week');
+                    break;
+                case -27:
+                case -29:
+                case -30:
+                    n = n - 1;
+                    s = moment(requestStart, 'YYYY-MM-DD').subtract(n, 'month').startOf('month');
+                    e = moment(requestEnd, 'YYYY-MM-DD').subtract(n, 'month').endOf('month');
+                    break;
+                case -363:
+                case -364:
+                case -365:
+                    n = n - 1;
+                    s = moment(requestStart, 'YYYY-MM-DD').subtract(n, 'year').startOf('year');
+                    e = moment(requestEnd, 'YYYY-MM-DD').subtract(n, 'year').endOf('year');
+                    break;
+            
+                default:
+                    n = n - 1;
+                    s = moment(requestStart, 'YYYY-MM-DD').subtract(n, 'days');
+                    e = moment(requestEnd, 'YYYY-MM-DD').subtract(n, 'days');
+                    break;
+            }
+            cb(s,e);
+        });
+
         function cb(start, end) {
+            s = start;
+            e = end;
+            calendarStart.value = s;
+            calendarEnd.value = e;
             $('#reportrange span').html(start.format('D MMMM YYYY') + ' - ' + end.format('D MMMM YYYY'));
         }
-    
+
         $('#reportrange').daterangepicker({
             startDate: start,
             endDate: end,
             ranges: {
-                'Hoy': [moment(), moment()],
-                'Ayer': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
-                'Últimos 7 días': [moment().subtract(6, 'days'), moment()],
-                'Últimos 30 días': [moment().subtract(29, 'days'), moment()],
-                'Este mes': [moment().startOf('month'), moment().endOf('month')],
-                'Mes pasado': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+                'Día': [moment(), moment()],
+                'Semana': [moment().startOf('week'), moment().endOf('week')],
+                'Mes': [moment().startOf('month'), moment().endOf('month')],
+                'Año': [moment().startOf('year'), moment().endOf('year')]
             }
         }, cb);
+
+        function formatDate(date) {
+            var d = new Date(date),
+                month = '' + (d.getMonth() + 1),
+                day = '' + d.getDate(),
+                year = d.getFullYear();
+
+            if (month.length < 2) 
+                month = '0' + month;
+            if (day.length < 2) 
+                day = '0' + day;
+
+            return [year, month, day].join('-');
+        }
     
+        $('#reportrange').on('apply.daterangepicker', (e, picker) => {
+            n = 0;
+            date = new Date();
+            requestStart = formatDate(date);
+            requestEnd = formatDate(date);
+        });
+
         cb(start, end);
     
     });

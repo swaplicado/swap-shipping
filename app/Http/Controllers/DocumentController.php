@@ -24,12 +24,27 @@ class DocumentController extends Controller
 {
     public function index(Request $request, $viewType = 0)
     {
+        
+        if(!is_null($request->calendarStart)){
+            $start = getDate(strtotime($request->calendarStart));
+        }else{
+            $start = getDate(strtotime(date('Y-m-01')));
+        }
+        if(!is_null($request->calendarEnd)){
+            $end = getDate(strtotime($request->calendarEnd));
+        }else{
+            $end = getDate(strtotime(date('Y-m-t')));
+        }
+
         $lDocuments = \DB::table('f_documents')
                         ->join('f_carriers', 'f_carriers.id_carrier', '=', 'f_documents.carrier_id')
-                        ->join('users', 'users.id', '=', 'f_documents.usr_gen_id');
+                        ->join('users', 'users.id', '=', 'f_documents.usr_gen_id')
+                        ->whereDate('requested_at', '>=', $start['year'].'-'.$start['mon'].'-'.$start['mday'])
+                        ->whereDate('requested_at', '<=', $end['year'].'-'.$end['mon'].'-'.$end['mday']);
 
         $withCarrierFilter = false;
         $carriers = [];
+        
         if (auth()->user()->isCarrier()) {
             $lDocuments = $lDocuments->where('f_documents.carrier_id', auth()->user()->carrier()->first()->id_carrier);
         }
@@ -50,7 +65,7 @@ class DocumentController extends Controller
         $ic = 0;
         $withDateFilter = false;
 
-        if ($request->has('ic')) {
+        if ($request->has('ic') && !is_null($request->ic)) {
             $lDocuments = $lDocuments->where('f_documents.carrier_id', $request->ic);
             $ic = $request->ic;
         }
@@ -100,6 +115,8 @@ class DocumentController extends Controller
             'withCarrierFilter' => $withCarrierFilter,
             'withDateFilter' => $withDateFilter,
             'ic' => $ic,
+            'start' => $start['year'].'-'.$start['mon'].'-'.$start['mday'],
+            'end' => $end['year'].'-'.$end['mon'].'-'.$end['mday'],
         ]);
     }
 
