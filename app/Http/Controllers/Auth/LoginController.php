@@ -32,9 +32,9 @@ class LoginController extends Controller
      */
     protected $redirectTo = '/home';
 
-    protected $maxAttempts = 5;
+    // protected $maxAttempts = 5;
 
-    protected $decayMinutes = 1;
+    // protected $decayMinutes = 1;
 
     /**
      * Create a new controller instance.
@@ -53,17 +53,17 @@ class LoginController extends Controller
             'password' => 'required'
         ]);
 
-        if (method_exists($this, 'hasTooManyLoginAttempts') &&
-            $this->hasTooManyLoginAttempts($request)) {
-            $this->fireLockoutEvent($request);
+        // if (method_exists($this, 'hasTooManyLoginAttempts') &&
+        //     $this->hasTooManyLoginAttempts($request)) {
+        //     $this->fireLockoutEvent($request);
 
-            return $this->sendLockoutResponse($request);
-        }
+        //     return $this->sendLockoutResponse($request);
+        // }
 
         if (Auth::attempt(['email' => $request->email, 'password' => $request->password, 'is_deleted' => 0])) {
             return redirect()->intended('home');
         } else {
-            $this->incrementLoginAttempts($request);
+            // $this->incrementLoginAttempts($request);
             return $this->sendFailedLoginResponse($request);
         }
     }

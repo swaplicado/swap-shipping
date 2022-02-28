@@ -18,6 +18,7 @@ use App\UserVsTypes;
 use Auth;
 use Illuminate\Support\Facades\Hash;
 use App\Utils\messagesErros;
+use Illuminate\Validation\Rule;
 
 class DriverController extends Controller
 {
@@ -346,23 +347,26 @@ class DriverController extends Controller
                 $Driver = Driver::findOrFail($id);
                 auth()->user()->carrierAutorization($Driver->carrier_id);
                 $address = FAddress::where('trans_figure_id', $id)->firstOrFail();
-                $user = User::findOrFail($Driver->users()->first()->id);
+                if(!is_null($Driver->users())){
+                    $user = User::findOrFail($Driver->users()->first()->id);
+                    $user->is_deleted = 1;
+                    $UserVsTypes = UserVsTypes::where('trans_figure_id', $Driver->id_trans_figure)->firstOrFail();
+                    $UserVsTypes->is_deleted = 1;
+                }
 
                 $Driver->is_deleted = 1;
                 $Driver->usr_upd_id = $user_id;
 
                 $address->is_deleted = 1;
                 $address->usr_upd_id = $user_id;
-
-                $user->is_deleted = 1;
-
-                $UserVsTypes = UserVsTypes::where('trans_figure_id', $Driver->id_trans_figure)->firstOrFail();
-                $UserVsTypes->is_deleted = 1;
+                
 
                 $Driver->update();
                 $address->update();
-                $user->update();
-                $UserVsTypes->update();
+                if(!is_null($Driver->users())){
+                    $user->update();
+                    $UserVsTypes->update();
+                }
             });
         } catch (QueryException $e) {
             $success = false;
@@ -391,7 +395,12 @@ class DriverController extends Controller
                 $Driver = Driver::findOrFail($id);
                 auth()->user()->carrierAutorization($Driver->carrier_id);
                 $address = FAddress::where('trans_figure_id', $id)->firstOrFail();
-                $user = User::findOrFail($Driver->users()->first()->id);
+                if(!is_null($Driver->users())){
+                    $user = User::findOrFail($Driver->users()->first()->id);
+                    $user->is_deleted = 0;
+                    $UserVsTypes = UserVsTypes::where('trans_figure_id', $Driver->id_trans_figure)->firstOrFail();
+                    $UserVsTypes->is_deleted = 0;
+                }
 
                 $Driver->is_deleted = 0;
                 $Driver->usr_upd_id = $user_id;
@@ -399,15 +408,14 @@ class DriverController extends Controller
                 $address->is_deleted = 0;
                 $address->usr_upd_id = $user_id;
 
-                $user->is_deleted = 0;
 
-                $UserVsTypes = UserVsTypes::where('trans_figure_id', $Driver->id_trans_figure)->firstOrFail();
-                $UserVsTypes->is_deleted = 0;
 
                 $Driver->update();
                 $address->update();
-                $user->update();
-                $UserVsTypes->update();
+                if(!is_null($Driver->users())){
+                    $user->update();
+                    $UserVsTypes->update();
+                }
             });
         } catch (QueryException $e) {
             $success = false;

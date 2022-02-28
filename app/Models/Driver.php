@@ -32,7 +32,11 @@ class Driver extends Model
     {
         // $this->hasMany(UserVsTypes::class, 'carrier_id')->select('user_id')->first()->user_id
         $UserVsTypes = $this->UserVsTypes()->first();
-        return $UserVsTypes->user();
+        if(!is_null($UserVsTypes)){
+            return $UserVsTypes->user();
+        }else{
+            return null;
+        }
     }
 
     public function FAddress(){

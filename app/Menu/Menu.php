@@ -70,17 +70,6 @@ class Menu {
                     </li>
                 ';
             }
-            $menu = $menu.'
-                <li>
-                    <a class="show-cat-btn" href="##">
-                        <span class="icon bx bxs-truck bx-sm" aria-hidden="true"></span>Transportistas
-                        <span class="category__btn transparent-btn" title="Open list">
-                            <span class="sr-only">Open list</span>
-                            <span class="icon arrow-down" aria-hidden="true"></span>
-                        </span>
-                    </a>
-                    <ul class="cat-sub-menu">
-            ';
             if($oUser->hasPermission('211')){
                 $route = route('carriers');
                 $menu = $menu.'
@@ -105,11 +94,6 @@ class Menu {
                         </li>
                 ';
             }
-
-            $menu =  $menu.'
-                    </ul>
-                </li>
-            ';
         }
 
         if($oUser->hasAnyPermission(['300'])){
@@ -134,37 +118,15 @@ class Menu {
 
         if($oUser->hasAnyPermission(['240'])){
             $menu = $menu.'
-                <li>
-                    <a class="show-cat-btn" href="##">
-                        <span class="icon bx bxs-user bx-sm" aria-hidden="true"></span>Asociados
-                        <span class="category__btn transparent-btn" title="Open list">
-                            <span class="sr-only">Open list</span>
-                            <span class="icon arrow-down" aria-hidden="true"></span>
-                        </span>
-                    </a>
-                    <ul class="cat-sub-menu">
             ';
-            if($oUser->hasPermission('242')){
-                $route = route('crear_parner');
-                $menu = $menu.'
-                        <li>
-                            <a href="'.$route.'"><span class="icon bx bxs-user-plus bx-sm" aria-hidden="true"></span>Agregar socio</a>
-                        </li>
-                ';
-            }
             if($oUser->hasPermission('241')){
                 $route = route('parners');
                 $menu = $menu.'
                         <li>
-                            <a href="'.$route.'"><span class="icon bx bxs-user-detail bx-sm" aria-hidden="true"></span>Ver socios</a>
+                            <a href="'.$route.'"><span class="icon bx bxs-user-detail bx-sm" aria-hidden="true"></span>Asociados</a>
                         </li>
                 ';
             }
-
-            $menu =  $menu.'
-                    </ul>
-                </li>
-            ';
         }
 
         if($oUser->hasAnyPermission(['400'])){
@@ -228,14 +190,6 @@ class Menu {
                     </a>
                     <ul class="cat-sub-menu">
             ';
-            if($oUser->hasPermission('512')){
-                $route = route('register');
-                $menu = $menu.'
-                        <li>
-                            <a href="'.$route.'"><span class="icon bx bxs-user-plus bx-sm" aria-hidden="true"></span>Nuevo usuario</a>
-                        </li>
-                ';
-            }
             if($oUser->hasPermission('511')){
                 $route = route('users');
                 $menu = $menu.'

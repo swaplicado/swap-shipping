@@ -241,7 +241,7 @@ class VehicleController extends Controller
         try {
             DB::transaction(function () use ($id, $user_id) {
                 $Vehicle = Vehicle::findOrFail($id);
-                auth()->user()->carrierAutorization($vehicle->carrier_id);
+                auth()->user()->carrierAutorization($Vehicle->carrier_id);
                 $Vehicle->is_deleted = 1;
                 $Vehicle->usr_upd_id = $user_id;
 
@@ -272,7 +272,7 @@ class VehicleController extends Controller
         try {
             DB::transaction(function () use ($id, $user_id) {
                 $Vehicle = Vehicle::findOrFail($id);
-                auth()->user()->carrierAutorization($vehicle->carrier_id);
+                auth()->user()->carrierAutorization($Vehicle->carrier_id);
                 $Vehicle->is_deleted = 0;
                 $Vehicle->usr_upd_id = $user_id;
 
