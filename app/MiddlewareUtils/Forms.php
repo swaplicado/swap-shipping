@@ -57,6 +57,10 @@ class Forms {
                 <label for="telephone2" class="form-label">Teléfono 2</label>
                 <input name="telephone2" type="text" class="form-control" value='.$carrier->contact2.'>
             </div>
+            <div class="mb-3">
+                <label for="formFile" class="form-label">Seleccionar mi logo (Acepta archivos .jpg, .jpeg, .png, .ico, .svg, .eps)</label>
+                <input class="form-control" type="file" id="formFile" name="logo" accept=".jpg,.jpeg,.png,.ico, .svg, .eps">
+            </div>
             ';
         } else if ($oUser->isDriver()) {
             $driver = $oUser->driver()->first();

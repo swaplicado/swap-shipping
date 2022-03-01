@@ -17,7 +17,7 @@
                     <span>Mi perfil</span>
                 </div>
                 <div class="card-body">
-                    <form action="{{ route(session('route'), ['id' => $data->id]) }}" method="POST">
+                    <form action="{{ route(session('route'), ['id' => $data->id]) }}" method="POST" enctype="multipart/form-data">
                         @csrf @method("put")
                         @include('auth.profile.form')
                     </form>

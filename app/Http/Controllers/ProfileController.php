@@ -195,8 +195,17 @@ class ProfileController extends Controller
             $validator->validate();
         }
 
+            $name = auth()->user()->carrier()->first()->fullname;
+            $logo_name = null;
+            $file = $request->file('logo');
+            if(!is_null($file)){
+                $logo_name = str_replace(' ', '_', $name);
+                $logo_name = 'logo_'.$logo_name.'.'.$file->extension();
+                $file->move('./logos',$logo_name);
+            }
+
         try {
-            DB::transaction(function () use ($request){
+            DB::transaction(function () use ($request, $logo_name){
                 $user = User::findOrFail(auth()->user()->id);
                 $carrier = Carrier::findOrFail(auth()->user()->carrier()->first()->id_carrier);
 
@@ -218,6 +227,7 @@ class ProfileController extends Controller
                 $carrier->telephone1 = $request->telephone1;
                 $carrier->contact2 = strtoupper($request->contact2);
                 $carrier->telephone2 = $request->telephone2;
+                $carrier->logo = $logo_name;
                 
                 $carrier->update();
                 $user->update();

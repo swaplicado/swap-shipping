@@ -32,8 +32,9 @@ class CfdiUtils
         }
     }
 
-    public static function updatePdf($id, $xml){
-        $pdf = CfdiUtils::generatePDF($xml);
+    public static function updatePdf($id, $xml, $carrier_id){
+        $logo_name = Carrier::where('id_carrier',$carrier_id)->value('logo');
+        $pdf = CfdiUtils::generatePDF($xml, $logo_name);
         DB::transaction( function () use($id, $pdf) {
             $Document = MDocument::findOrFail($id);
             $Document->pdf = $pdf;
@@ -119,7 +120,7 @@ class CfdiUtils
         return $QR;
     }
 
-    public static function generatePDF($xml){
+    public static function generatePDF($xml, $logo_name){
         // $filepath = file_get_contents("./doc/prueba.xml");
         $formatterES = new \NumberFormatter("es", \NumberFormatter::SPELLOUT);
         $data = Configuration::getConfigurations();
@@ -531,9 +532,9 @@ class CfdiUtils
             <table class = "container border">
                 <tbody>
                     <tr>
-                        <td class = "border" style = "width: 15%;">
-                            <img src="./logo/'.$logo.'" style="width: 2cm;">
-                        </td>
+                        <td class = "border" style = "width: 15%;">'.
+                            (!is_null($logo_name) ? '<img src="./logos/'.$logo_name.'" style="width: 2cm;">' : '')
+                        .'</td>
                         <td class = "border" style = "width: 54%;">
                             <b style = "font-size: 3.5mm;">'.$Nombre_E.'</b>
                             <p style="margin-top: 0; font-size: 3mm">
