@@ -82,6 +82,7 @@ class DocumentController extends Controller
                 $lDocuments = $lDocuments->where('is_processed', false)
                                             ->get();
                 $title = "por procesar";
+                $withDateFilter = true;
                 break;
 
             // Por timbrar
@@ -90,6 +91,7 @@ class DocumentController extends Controller
                                             ->where('is_signed', false)
                                             ->get();
                 $title = "por timbrar";
+                $withDateFilter = true;
                 break;
 
             // Timbrados
@@ -104,6 +106,7 @@ class DocumentController extends Controller
             default:
                 $lDocuments = $lDocuments->get();
                 $title = "todas";
+                $withDateFilter = true;
                 break;
         }
 
