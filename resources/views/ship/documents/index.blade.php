@@ -161,19 +161,25 @@
                     s = moment(requestStart, 'YYYY-MM-DD').subtract(n, 'days');
                     e = moment(requestEnd, 'YYYY-MM-DD').subtract(n, 'days');
                     break;
+                case -5:
                 case -6:
+                case -7:
                     n = n + 1;
                     s = moment(requestStart, 'YYYY-MM-DD').subtract(n, 'week').startOf('week');
                     e = moment(requestEnd, 'YYYY-MM-DD').subtract(n, 'week').endOf('week');
                     break;
                 case -27:
+                case -28:
                 case -29:
                 case -30:
+                case -31:
                     n = n + 1;
                     s = moment(requestStart, 'YYYY-MM-DD').subtract(n, 'month').startOf('month');
                     e = moment(requestEnd, 'YYYY-MM-DD').subtract(n, 'month').endOf('month');
                     break;
+                case -363:
                 case -364:
+                case -365:
                     n = n + 1;
                     s = moment(requestStart, 'YYYY-MM-DD').subtract(n, 'year').startOf('year');
                     e = moment(requestEnd, 'YYYY-MM-DD').subtract(n, 'year').endOf('year');
@@ -204,8 +210,10 @@
                     e = moment(requestEnd, 'YYYY-MM-DD').subtract(n, 'week').endOf('week');
                     break;
                 case -27:
+                case -28:
                 case -29:
                 case -30:
+                case -31:
                     n = n - 1;
                     s = moment(requestStart, 'YYYY-MM-DD').subtract(n, 'month').startOf('month');
                     e = moment(requestEnd, 'YYYY-MM-DD').subtract(n, 'month').endOf('month');
