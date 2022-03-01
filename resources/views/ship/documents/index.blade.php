@@ -96,6 +96,13 @@
                 <th>Folio</th>
                 <th>Embarque</th>
                 <th>Báscula</th>
+                @if($enableTotales)
+                    <th>Total Impuestos Retenidos</th>
+                    <th>Total Impuestos Trasladados</th>
+                    <th>Descuentos</th>
+                    <th>subtotal</th>
+                    <th>Total</th>
+                @endif
                 <th>Fecha petición</th>
                 <th>Fecha generación</th>
             </tr>
@@ -115,6 +122,13 @@
                 <td>{{ str_pad($doc->folio, 6, "0", STR_PAD_LEFT) }}</td>
                 <td>{{ str_pad($doc->shipping_folio, 6, "0", STR_PAD_LEFT) }}</td>
                 <td>{{ str_pad($doc->scale_ticket, 6, "0", STR_PAD_LEFT) }}</td>
+                @if($enableTotales)
+                    <td>{{ $doc->totalImpuestosRetenidos }}</td>
+                    <td>{{ $doc->totalImpuestosTrasladados }}</td>
+                    <td>{{ $doc->discounts }}</td>
+                    <td>{{ $doc->subTotal }}</td>
+                    <td>{{ $doc->total }}</td>
+                @endif
                 <td>{{ $doc->requested_at }}</td>
                 <td>{{ $doc->generated_at }}</td>
             </tr>

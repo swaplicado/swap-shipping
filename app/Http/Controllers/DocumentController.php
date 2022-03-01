@@ -110,6 +110,23 @@ class DocumentController extends Controller
                 break;
         }
 
+        $enableTotales = false;
+        if(auth()->user()->hasAnyRole(['Admin','Carrier','user','driverT1','driverT2'])){
+            if(!is_null($lDocuments)){
+                foreach($lDocuments as $ld){
+                    $mdocument = MDocument::where('_id', $ld->mongo_document_id)->select('subTotal','total',
+                            'totalImpuestosTrasladados','totalImpuestosRetenidos','discounts')->first();
+                    $ld->discounts = SFormats::formatMoney($mdocument->discounts);
+                    $ld->totalImpuestosRetenidos = SFormats::formatMoney($mdocument->totalImpuestosRetenidos);
+                    $ld->totalImpuestosTrasladados = SFormats::formatMoney($mdocument->totalImpuestosTrasladados);
+                    $ld->subTotal = SFormats::formatMoney($mdocument->subTotal);
+                    $ld->total = SFormats::formatMoney($mdocument->total);
+                }
+            }
+            $enableTotales = true;
+        }
+
+        
         return view('ship.documents.index', [
             'lDocuments' => $lDocuments,
             'viewType' => $viewType,
@@ -120,6 +137,7 @@ class DocumentController extends Controller
             'ic' => $ic,
             'start' => $start['year'].'-'.$start['mon'].'-'.$start['mday'],
             'end' => $end['year'].'-'.$end['mon'].'-'.$end['mday'],
+            'enableTotales' => $enableTotales
         ]);
     }
 
