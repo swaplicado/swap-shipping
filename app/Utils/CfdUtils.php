@@ -122,7 +122,7 @@ class CfdUtils
         return $error ? false : $dest;
     }
 
-    public static function decryptFile(string $source, string $dest, string $key)
+    public static function decryptFile($source, $dest, string $key)
     {
         $key = substr(sha1($key, true), 0, 16);
 

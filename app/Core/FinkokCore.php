@@ -2,6 +2,9 @@
 
 use Illuminate\Support\Facades\Storage;
 use SoapClient;
+use App\Utils\CfdUtils;
+use App\Utils\FileUtils;
+use App\Models\Certificate;
 
 class FinkokCore {
 
@@ -85,22 +88,41 @@ class FinkokCore {
         return null;
     }
 
-    public static function cancelCfdi($pcFile, $pvFile, $pw, $fiscalId)
+    public static function cancelCfdi($oMDocument, $oCarrier)
     {
-        $cerFile = Storage::disk('local')->path($pcFile);
-        $keyFile = Storage::disk('local')->path($pvFile);
+        // env('DEST_PATH');
+        $cerEncFile = Storage::disk('local')->path(env('DEST_PATH')).'/'.$oCarrier->fiscal_id.'_cer.enc';
+        $keyEncFile = Storage::disk('local')->path(env('DEST_PATH')).'/'.$oCarrier->fiscal_id.'_key.enc';
+
+        $cerFile = Storage::disk('local')->path(env('DEST_PATH')).'/'.$oCarrier->fiscal_id.'_.cer';
+        $cerFile = CfdUtils::decryptFile($cerEncFile, $cerFile, env('FL_KEY'));
+
+        $keyFile = Storage::disk('local')->path(env('DEST_PATH')).'/'.$oCarrier->fiscal_id.'_.key';
+        $keyFile = CfdUtils::decryptFile($keyEncFile, $keyFile, env('FL_KEY'));
+
+
+        $cer = Certificate::where('carrier_id', $oCarrier->id_carrier)->first();
+
+        if ($cer == null) {
+            return ['success' => false, 'message' => 'No se encontró el certificado'];
+        }
+
+        $pw = CfdUtils::decryptPass($cer->pswrd);
         
         # Generar el certificado y llave en formato .pem
-        shell_exec("openssl x509 -inform DER -outform PEM -in /home/user/Downloads/CSD/certificado.cer -pubkey -out /home/user/Downloads/CSD/certificado.pem");
-        shell_exec("openssl pkcs8 -inform DER -in /home/user/Downloads/CSD/llave.key -passin pass:12345678a -out /home/user/Downloads/CSD/llave.key.pem");
-        shell_exec("openssl rsa -in /home/user/Downloads/CSD/llave.key.pem -des3 -out /home/user/Downloads/CSD/llave.enc -passout pass:F.1994JCN");
+        $cerPem = (Storage::disk('local')->path(env('DEST_PATH')."/".$oCarrier->fiscal_id))."_cer.pem";
+        $keyPem = (Storage::disk('local')->path(env('DEST_PATH')."/".$oCarrier->fiscal_id))."_key.pem";
+        $encKey = Storage::disk('local')->path(env('DEST_PATH'))."/".($oCarrier->fiscal_id)."_llave.enc";
+        shell_exec("openssl x509 -inform DER -outform PEM -in ".($cerFile)." -pubkey -out ".$cerPem);
+        shell_exec("openssl pkcs8 -inform DER -in ".($keyFile)." -passin pass:".($pw)." -out ".$keyPem);
+        shell_exec("openssl rsa -in ".$keyPem." -des3 -out ".$encKey." -passout pass:".env('FINKOK_PASSWORD'));
         
-        $username = 'pruebas@finkok.com';
-        $password = 'S0port3.22';
-        $taxpayer = 'EKU9003173C9';
+        $username = env('FINKOK_USERNAME');
+        $password = env('FINKOK_PASSWORD');
+        $taxpayer = $oCarrier->fiscal_id;
         
         # Read the x509 certificate file on PEM format and encode it on base64
-        $cer_path = "/home/user/Downloads/CSD/certificado.pem"; 
+        $cer_path = $cerPem; 
         $cer_file = fopen($cer_path, "r");
         $cer_content = fread($cer_file, filesize($cer_path));
         fclose($cer_file);
@@ -108,38 +130,48 @@ class FinkokCore {
         #$cer_content = base64_encode($cer_content);
 
         # Read the Encrypted Private Key (des3) file on PEM format and encode it on base64
-        $key_path = "/home/user/Downloads/CSD/llave.enc";
+        $key_path = $encKey;
         $key_file = fopen($key_path, "r");
-        $key_content = fread($key_file,filesize($key_path));
+        $key_content = fread($key_file, filesize($key_path));
         fclose($key_file);
         # In newer PHP versions the SoapLib class automatically converts FILE parameters to base64, so the next line is not needed, otherwise uncomment it
         #$key_content = base64_encode($key_content);
 
         $client = new SoapClient("https://demo-facturacion.finkok.com/servicios/soap/cancel.wsdl", array('trace' => 1));
         
-        $uuids = array("UUID" => "277C8C2C-4B76-50BD-851B-FB9EA3B8FCCB", "Motivo" => "02", "FolioSustitucion" => "");
+        $uuids = array("UUID" => $oMDocument->uuid, "Motivo" => "02", "FolioSustitucion" => "");
         $uuid_ar = array('UUID' => $uuids);
         $uuids_ar = array('UUIDS' => $uuid_ar);
-        print_r($uuids_ar);
+        // print_r($uuids_ar);
         
-        $params = array("UUIDS"=>$uuid_ar,
+        $params = array("UUIDS"=> $uuid_ar,
                         "username" => $username,
                         "password" => $password,
                         "taxpayer_id" => $taxpayer,
                         "cer" => $cer_content,
                         "key" => $key_content);
         
-        print_r($params);
+        // print_r($params);
         
         $response = $client->__soapCall("cancel", array($params));
         
-        # Generación de archivo .xml con el Request de timbrado
-        $file = fopen("/home/user/Downloads/pruebas_can/SoapRequest.xml", "a");
-        fwrite($file, $client->__getLastRequest() . "\n");
-        fclose($file);
-        
-        $file = fopen("/home/user/Downloads/pruebas_can/SoapResponse.xml", "a");
-        fwrite($file, $client->__getLastResponse() . "\n");
-        fclose($file);
+        if (isset($response->cancelResult)) {
+            if (isset($response->cancelResult->Folios->Folio)) {
+                $resp = $response->cancelResult->Folios->Folio;
+
+                if ($resp->EstatusUUID == "201") {
+                    $oResponse = new \stdClass();
+                    $oResponse->success = true;
+                    $oResponse->code = $resp->EstatusUUID;
+                    $oResponse->message = $resp->EstatusCancelacion;
+                    $oResponse->acuse = $response->cancelResult->Acuse;
+                    $oResponse->date = $response->cancelResult->Fecha;
+
+                    return ['success' => true, 'data' => $oResponse];
+                }
+            }
+        }
+
+        return ['success' => false, 'message' => "Error al cancelar el CFDI"];
     }
 }
