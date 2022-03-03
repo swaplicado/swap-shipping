@@ -82,6 +82,7 @@ Route::middleware(['auth', 'verified', 'menu'])->group( function () {
 
     //Rutas Usuarios
     Route::get('/users', 'UserController@index')->name('users');
+    Route::get('/users/create', 'UserController@create')->name('crear_user');
     Route::post('/users', 'UserController@store')->name('guardar_user');
     Route::get('/users/{id}/edit', 'UserController@edit')->name('editar_user');
     Route::put('/users/{id}', 'UserController@update')->name('actualizar_user');

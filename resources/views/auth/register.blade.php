@@ -16,7 +16,7 @@
                 <div class="card-header">{{ __('Registro') }}</div>
 
                 <div class="card-body">
-                    <form method="POST" action="{{ route('register') }}">
+                    <form method="POST" action="{{ route('guardar_user') }}">
                         @csrf
 
                         {{-- <div class="form-group row">
@@ -76,7 +76,7 @@
                                 <select class="form-select" id="user_type_id" name="user_type_id" type="integer">
                                     <option value="0">Select</option>
                                     <option value="1">Admin</option>
-                                    <option value="2">Usuario</option>
+                                    <option value="2">Remisionista</option>
                                 </select>
                                 @error('user_type_id')
                                 <span class="invalid-feedback" role="alert">

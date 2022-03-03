@@ -20,7 +20,7 @@
 <h2>Usuarios</h2>
 <br>
 
-@include('layouts.table_buttons', ['crear' => 'register'])
+@include('layouts.table_buttons', ['crear' => 'crear_user'])
 
 <div class="container table-responsive">
     <table id="T_users" class="display" style="width:100%;">
