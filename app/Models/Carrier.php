@@ -40,7 +40,7 @@ class Carrier extends Model
     }
     
     public function tax_regime(){
-        return $this->hasOne('App\Models\Sat\tax_regimes', 'id', 'tax_regimes_id');
+        return $this->hasOne('App\Models\Sat\Tax_regimes', 'id', 'tax_regimes_id');
     }
 
     public function parners(){
