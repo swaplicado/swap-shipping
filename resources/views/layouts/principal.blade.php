@@ -8,7 +8,7 @@
     <title>{{ env('APP_NAME', "SWAP-Shipping") }}</title>
 
     <!-- Favicon -->
-    <link rel="shortcut icon" href="./img/svg/logo.svg" type="image/x-icon">
+    {{-- <link rel="shortcut icon" href="{{asset('img/svg/logo.svg')}}" type="image/x-icon"> --}}
     <link href='https://unpkg.com/boxicons@2.1.1/css/boxicons.min.css' rel='stylesheet'>
 
     <!-- Custom styles -->

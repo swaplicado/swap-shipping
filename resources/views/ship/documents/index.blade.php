@@ -25,7 +25,7 @@
     $carrierFilter = 
     '
     <div class="col-md-4">
-        <select class="form-control" name="ic" id="ic">
+        <select class="form-select" name="ic" id="ic">
             <option value="">Todos</option>';
             foreach ($carriers as $carrier) {
                 $carrierFilter .= '<option value="'.$carrier->id_carrier.'"'.($carrier->id_carrier == $ic ? 'selected' : '').'>'.$carrier->fiscal_id.' - '.$carrier->fullname.'</option>';

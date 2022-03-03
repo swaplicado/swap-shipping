@@ -6,8 +6,14 @@ use SoapClient;
 class FinkokCore {
 
     public static function signCfdi($xml = "") {
-        $username = env('FINKOK_USERNAME'); # Usuario de Finkok
-        $password = env('FINKOK_PASSWORD'); # Contraseña de Finkok
+        // $username = env('FINKOK_USERNAME'); # Usuario de Finkok
+        // $password = env('FINKOK_PASSWORD'); # Contraseña de Finkok
+        $username = env('APP_ENV') === "local" ? env('FINKOK_USERNAME_LOCAL') : 
+                    (env('APP_ENV') === "production" ? env('FINKOK_USERNAME_PRODUCTION') : '');
+
+        $password = env('APP_ENV') === "local" ? env('FINKOK_PASSWORD_LOCAL') : 
+                    (env('APP_ENV') === "production" ? env('FINKOK_PASSWORD_PRODUCTION') : '');
+                    
         // $xml_content = base64_encode($xml); # En base64
         $xml_content = $xml;
         
@@ -19,7 +25,10 @@ class FinkokCore {
         );
         
         # Petición al web service
-        $client = new SoapClient("https://demo-facturacion.finkok.com/servicios/soap/stamp.wsdl", array('trace' => 1));
+        $client = new SoapClient((env('APP_ENV') === "local" ? env('FINKOK_URL_STAMP_LOCAL') :
+                                (env('APP_ENV') === "production" ? env('FINKOK_URL_STAMP_PRODUCTION') : ''))
+                                , array('trace' => 1));
+        
         $result = $client->__soapCall("sign_stamp", array($params));
         
         $request = $client->__getLastRequest();
@@ -67,7 +76,10 @@ class FinkokCore {
             "passphrase" => $passKey
         );
                  
-        $client = new SoapClient('http://demo-facturacion.finkok.com/servicios/soap/registration.wsdl', array('trace' => 1));
+        $client = new SoapClient((env('APP_ENV') === "local" ? env('FINKOK_URL_REGISTRATION_LOCAL') :
+                                (env('APP_ENV') === "production" ? env('FINKOK_URL_REGISTRATION_PRODUCTION') : ''))
+                                , array('trace' => 1));
+
         try {
             $result = $client->__soapCall("add", array($params));
         }
@@ -115,7 +127,9 @@ class FinkokCore {
         # In newer PHP versions the SoapLib class automatically converts FILE parameters to base64, so the next line is not needed, otherwise uncomment it
         #$key_content = base64_encode($key_content);
 
-        $client = new SoapClient("https://demo-facturacion.finkok.com/servicios/soap/cancel.wsdl", array('trace' => 1));
+        $client = new SoapClient((env('APP_ENV') === "local" ? env('FINKOK_URL_CANCEL_LOCAL') :
+                                (env('APP_ENV') === "production" ? env('FINKOK_URL_CANCEL_PRODUCTION') : ''))
+                                , array('trace' => 1));
         
         $uuids = array("UUID" => "277C8C2C-4B76-50BD-851B-FB9EA3B8FCCB", "Motivo" => "02", "FolioSustitucion" => "");
         $uuid_ar = array('UUID' => $uuids);

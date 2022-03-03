@@ -37,7 +37,7 @@
                 <th>Moneda local</th>
                 <th>Tarifa base</th>
                 <th>Tarifa base escala</th>
-                <th>Distancia minima</th>
+                <th>Distancia minima (km)</th>
                 <th>Clave Prod/Serv</th>
                 <th>Prod/Serv</th>
                 <th>Clave unidad</th>
@@ -61,7 +61,7 @@
                 <td>{{$data->localCurrency}}</td>
                 <td>{{$data->tarifaBase}}</td>
                 <td>{{$data->tarifaBaseEscala}}</td>
-                <td>{{$data->distanciaMinima}} km</td>
+                <td>{{$data->distanciaMinima}}</td>
                 <td>{{$data->cfdi4_0->claveServicio}}</td>
                 <td>{{$data->cfdi4_0->prodServDescripcion}}</td>
                 <td>{{$data->cfdi4_0->claveUnidad}}</td>

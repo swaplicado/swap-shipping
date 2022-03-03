@@ -3,7 +3,6 @@
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('img/uvaeth_aeth.png') }}">
         <title>{{ env('APP_NAME', false) }}</title>
 
         <!-- Fonts -->
@@ -77,7 +76,7 @@
 
             <div class="content">
                 <div>
-                    <img src="{{ asset('logo/orange.svg') }}" width="30%" height="30%" alt="">
+                    <img src="{{ asset('img/svg/orange.svg') }}" width="30%" height="30%" alt="">
                 </div>
                 <div>
                     <h2>Bienvenido al</h2>
