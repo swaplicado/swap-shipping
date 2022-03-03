@@ -30,8 +30,8 @@
                 <th>is deleted</th>
                 <th>id carrier</th>
                 <th>Placas</th>
-                <th>Clave subtipo de remolque</th>
-                <th>Subtipo de remolque</th>
+                <th>Clave subtipo remolque</th>
+                <th>Subtipo remolque</th>
                 <th>Transportista</th>
             </tr>
         </thead>

@@ -36,21 +36,20 @@
                 <th>Email</th>
                 <th>Moneda local</th>
                 <th>Tarifa base</th>
-                <th>tarifa base escala</th>
+                <th>Tarifa base escala</th>
                 <th>Distancia minima</th>
-                <th>Clave prod/servicio</th>
+                <th>Clave Prod/Serv</th>
                 <th>Prod/Serv</th>
                 <th>Clave unidad</th>
-                <th>Simbolo unidad</th>
+                <th>Símbolo unidad</th>
                 <th>Tipo de comprobante</th>
-                <th>RFC</th>
+                <th>RFC receptor</th>
                 <th>Nombre del receptor</th>
                 <th>Domicilio fiscal receptor</th>
-                <th>Regimen fiscal receptor</th>
+                <th>Régimen fiscal receptor</th>
                 <th>Uso CFDI</th>
                 <th>Lugar expedición</th>
-                <th>objeto impuesto</th>
-                <th>Logo para impresión</th>
+                <th>Objeto impuesto</th>
             </tr>
         </thead>
         <tbody>
@@ -62,7 +61,7 @@
                 <td>{{$data->localCurrency}}</td>
                 <td>{{$data->tarifaBase}}</td>
                 <td>{{$data->tarifaBaseEscala}}</td>
-                <td>{{$data->distanciaMinima}}</td>
+                <td>{{$data->distanciaMinima}} km</td>
                 <td>{{$data->cfdi4_0->claveServicio}}</td>
                 <td>{{$data->cfdi4_0->prodServDescripcion}}</td>
                 <td>{{$data->cfdi4_0->claveUnidad}}</td>
@@ -75,7 +74,6 @@
                 <td>{{$data->cfdi4_0->usoCFDI}}</td>
                 <td>{{$data->cfdi4_0->lugarExpedicion}}</td>
                 <td>{{$data->cfdi4_0->objetoImp}}</td>
-                <td><img src="./logo/{{$data->logo}}" style="width: 2cm;"></td>
             </tr>
         </tbody>
     </table>
@@ -86,6 +84,21 @@
 <script>
     $(document).ready(function () {
         var table = $('#T_config').DataTable({
+            "language": {
+                "lengthMenu": "Mostrar _MENU_ registros",
+                "zeroRecords": "No se encontraron resultados",
+                "EmptyTable": "Ningún dato disponible en esta tabla",
+                "info": "Mostrando página _PAGE_ de _PAGES_",
+                "infoEmpty": "Mostrando registros del 0 al 0 de un total de 0 registros",
+                "infoFiltered": "(filtrado de un total de _MAX_ registros)",
+                "search": "Buscar:",
+                "paginate": {
+                    "first": "Primero",
+                    "last": "Último",
+                    "next": "Siguiente",
+                    "previous": "Anterior"
+                }
+            },
             "columnDefs": [
                 {
                     "targets": [0,1,2],

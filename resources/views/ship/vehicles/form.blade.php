@@ -43,7 +43,7 @@
     @enderror
 </div>
 <div class="form-group">
-    <label for="drvr_reg_trib" class="form-label">Reg trib</label>
+    <label for="drvr_reg_trib" class="form-label">Reg. trib</label>
     <input name="drvr_reg_trib" type="text" class="form-control uppercase" value="{{ old('drvr_reg_trib', $data->drvr_reg_trib ?? '') }}" required>
     @error('drvr_reg_trib')
         <span class="text-danger">{{ $message }}</span>
@@ -92,7 +92,7 @@
 </div>
 @endif
 <div class="form-group">
-    <label for="policy" class="form-label">Poliza</label>
+    <label for="policy" class="form-label">Póliza</label>
     <input name="policy" type="text" class="form-control uppercase" value="{{ old('policy', $data->policy ?? '') }}" required>
     @error('policy')
         <span class="text-danger">{{ $message }}</span>

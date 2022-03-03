@@ -15,7 +15,7 @@
 </div>
 @if(!$data->is_new && !is_null($data->users))
 <div class="form-group">
-    <label for="email" class="form-label">E-mail</label>
+    <label for="email" class="form-label">Email</label>
     <input id="editEmail" name="editEmail" type="checkbox">
     <input id="email" name="email" type="text" class="form-control" value="{{ old('email', $data->users->email ?? '') }}" readonly required>
     @error('email')
@@ -25,7 +25,7 @@
 @endif
 @if($data->is_new)
 <div class="form-group">
-    <label for="email" class="form-label">E-mail</label>
+    <label for="email" class="form-label">Email</label>
     <input id="email" name="email" type="text" class="form-control" value="" required>
     @error('email')
         <span class="text-danger">{{ $message }}</span>
@@ -138,14 +138,14 @@
     @enderror
 </div>
 <div class="form-group">
-    <label for="street_num_ext" class="form-label">Numero exterior</label>
+    <label for="street_num_ext" class="form-label">Número exterior</label>
     <input name="street_num_ext" type="text" class="form-control uppercase" value="{{old('street_num_ext', $data->FAddress->street_num_ext ?? '')}}">
     @error('street_num_ext')
         <span class="text-danger">{{ $message }}</span>
     @enderror
 </div>
 <div class="form-group">
-    <label for="street_num_int" class="form-label">Numero interior</label>
+    <label for="street_num_int" class="form-label">Número interior</label>
     <input name="street_num_int" type="text" class="form-control uppercase" value="{{old('street_num_int', $data->FAddress->street_num_int ?? '')}}">
     @error('street_num_int')
         <span class="text-danger">{{ $message }}</span>

@@ -14,7 +14,7 @@
         <div class="col-lg-8">
             <div class="card">
                 <div class="card-header">
-                    <span>Nuevo asociado</span>
+                    <span>Nuevo administrador</span>
                 </div>
                 <div class="card-body">
                     <form action="{{ route('guardar_parner') }}" method="POST">

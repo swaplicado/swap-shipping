@@ -18,9 +18,9 @@
                     </a>
                 </li>
                 <li>
-                    <a href="{{ route('home') }}">
+                    {{-- <a href="{{ route('home') }}">
                         <span class="icon bx bxs-book-reader bx-sm" aria-hidden="true"></span>Manual de usuario
-                    </a>
+                    </a> --}}
                 </li>
                 {!! session()->has('menu') ? session('menu') : "" !!}
             </ul>

@@ -21,9 +21,8 @@
             <div>{{ Auth::user()->username }}</div>
 
             <div class="nav-user-wrapper">
-                <button href="##" class="nav-user-btn dropdown-btn" title="My
-                    profile" type="button">
-                    <span class="sr-only">My profile</span>
+                <button href="##" class="nav-user-btn dropdown-btn" title="Mi perfil" type="button">
+                    <span class="sr-only">Mi perfil</span>
                     <span class="nav-user-img">
                         <picture><source
                                 srcset="{{ asset('img/avatar/avatar-illustrated-02.webp') }}"
@@ -37,13 +36,13 @@
                     <li>
                         <a href="{{ route('profile') }}">
                             <i data-feather="user" aria-hidden="true"></i>
-                            <span>Profile</span>
+                            <span>Mi Perfil</span>
                         </a>
                     </li>
                     <li>
                         <a class="danger" href="{{ route('logout') }}">
                             <i data-feather="log-out" aria-hidden="true"></i>
-                            <span>Log out</span>
+                            <span>Cerrar sesión</span>
                         </a>
                     </li>
                 </ul>

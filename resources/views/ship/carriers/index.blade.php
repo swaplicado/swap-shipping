@@ -32,7 +32,7 @@
                 <th>Nombre</th>
                 <th>Nombre comercial</th>
                 <th>RFC</th>
-                <th>Regimen fiscal</th>
+                <th>Régimen fiscal</th>
                 <th>Teléfono 1</th>
                 <th>Contacto 1</th>
                 <th>Teléfono 2</th>

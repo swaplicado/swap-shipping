@@ -7,7 +7,7 @@
 </div>
 @if(!is_null($data))
 <div class="form-group">
-    <label for="email" class="form-label">E-mail</label>
+    <label for="email" class="form-label">Email</label>
     <input id="editEmail" name="editEmail" type="checkbox">
     <input id="email" name="email" type="text" class="form-control" value="{{ old('email', $data->email ?? '') }}" readonly required>
     @error('email')
@@ -16,7 +16,7 @@
 </div>
 @else
 <div class="form-group">
-    <label for="email" class="form-label">E-mail</label>
+    <label for="email" class="form-label">Email</label>
     <input id="email" name="email" type="text" class="form-control" value="{{ old('email', $data->email ?? '') }}" required>
     @error('email')
         <span class="text-danger">{{ $message }}</span>

@@ -14,7 +14,7 @@
 </div>
 @if(!is_null($data->users))
 <div class="form-group">
-    <label for="email" class="form-label">E-mail</label>
+    <label for="email" class="form-label">Email</label>
     <input id="editEmail" name="editEmail" type="checkbox">
     <input id="email" name="email" type="text" class="form-control" value="{{ old('email', $data->users->email ?? '') }}" readonly required>
     @error('email')
@@ -23,7 +23,7 @@
 </div>
 @else
 <div class="form-group">
-    <label for="email" class="form-label">E-mail</label>
+    <label for="email" class="form-label">Email</label>
     <input id="email" name="email" type="text" class="form-control" value="{{ old('email', $data->users->email ?? '') }}" required>
     @error('email')
         <span class="text-danger">{{ $message }}</span>
@@ -38,9 +38,9 @@
     @enderror
 </div>
 <div class="form-group">
-    <label for="tax_regimes" class="form-label">Regimen fiscal</label>
+    <label for="tax_regimes" class="form-label">Régimen fiscal</label>
     <select class="form-select" name="tax_regimes">
-        <option value="0" selected>Regimen fiscal</option>
+        <option value="0" selected>Régimen fiscal</option>
         @foreach($tax_regimes as $tr => $index)
             @if($data->tax_regime->id == $index)
                 <option selected value='{"id":"{{$index}}","name":"{{$tr}}"}'>{{$tr}}</option>

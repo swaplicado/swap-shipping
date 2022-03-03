@@ -14,7 +14,7 @@
         <div class="col-lg-8">
             <div class="card">
                 <div class="card-header">
-                    <span>Editar asociado</span>
+                    <span>Editar administrador</span>
                 </div>
                 <div class="card-body">
                     @foreach($data as $data)

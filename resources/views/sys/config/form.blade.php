@@ -144,9 +144,9 @@
         <span class="text-danger">{{$message}}</span>
     @enderror
 </div>
-<div class="mb-3">
+{{-- <div class="mb-3">
     <label for="formFile" class="form-label">Seleccionar una imagen (.jpg,.jpeg,.png,.ico, .svg, .eps)</label>
     <input class="form-control" type="file" id="formFile" name="logo" accept=".jpg,.jpeg,.png,.ico, .svg, .eps">
-</div>
+</div> --}}
 <br>
 <button type="submit" class="btn btn-primary">Guardar</button>

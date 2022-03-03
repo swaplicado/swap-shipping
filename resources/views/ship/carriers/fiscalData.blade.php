@@ -38,9 +38,9 @@
                             @enderror
                         </div>
                         <div class="form-group">
-                            <label for="tax_regimes" class="form-label">Regimen fiscal</label>
+                            <label for="tax_regimes" class="form-label">Régimen fiscal</label>
                             <select class="form-select" name="tax_regimes">
-                                <option value="0" selected>Regimen fiscal</option>
+                                <option value="0" selected>Régimen fiscal</option>
                                 @foreach($tax_regimes as $tr => $index)
                                     @if($data->tax_regime->id == $index)
                                         <option selected value='{"id":"{{$index}}","name":"{{$tr}}"}'>{{$tr}}</option>
@@ -88,7 +88,7 @@
                         <div class="form-group">
                             <input name="delega_CFDI" class="form-check-input" type="radio" value="3" id="delega_CFDI3">
                             <label class="form-check-label" for="delega_CFDI3">
-                              Solo yo puedo   editar y timbrar mis documentos CFDI Carta Porte.
+                              Solo yo puedo editar y timbrar mis documentos CFDI Carta Porte.
                             </label>
                         </div>
                         <br>
