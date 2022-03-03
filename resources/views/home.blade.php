@@ -38,6 +38,9 @@
     <h3>Guía rápida</h3>
   <br>
 
+  {!! session()->has('home') ? session('home') : "" !!}
+
+  <br>
   <div class="row">
     <div class="col-sm-6">
       <div class="card">
@@ -134,7 +137,5 @@
     </div>
   </div>
   <br>
-
-  {!! session()->has('home') ? session('home') : "" !!}
   
 @endsection

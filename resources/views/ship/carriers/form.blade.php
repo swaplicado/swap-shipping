@@ -101,8 +101,6 @@
 <br>
 <div class="form-check">
     @if(!$data->carrier_stamp)
-        <input name="carrier_stamp" class="form-check-input" type="checkbox" value="1" id="carrier_stamp">
-    @else
         <input name="carrier_stamp" class="form-check-input" type="checkbox" value="1" id="carrier_stamp" checked>
     @endif
     <label class="form-check-label" for="carrier_stamp">
