@@ -41,7 +41,7 @@
   <div class="row">
     <div class="col-sm-6">
       <div class="card">
-        <div class="card-body" style="height: 250px;">
+        <div class="card-body" style="height: 250px; text-align: justify;">
           <h5 class="card-title">Navegación</h5>
           <p class="card-text">
             A la izquierda de su pantalla encontrará un menú de color azul con el que podrá navegar por 
@@ -57,7 +57,7 @@
     </div>
     <div class="col-sm-6">
       <div class="card">
-        <div class="card-body" style="height: 250px;">
+        <div class="card-body" style="height: 250px; text-align: justify;">
           <h5 class="card-title">Creación de registros</h5>
           <p class="card-text">
             En las distintas vistas como vehículos, remolques, choferes, aseguradoras y cartas porte, se incluye
@@ -76,7 +76,7 @@
   <div class="row">
     <div class="col-sm-6">
       <div class="card">
-        <div class="card-body" style="height: 250px;">
+        <div class="card-body" style="height: 250px; text-align: justify;">
           <h5 class="card-title">Edición de registros</h5>
           <p class="card-text">
             En las distintas vistas como vehículos, remolques, choferes, aseguradoras y cartas porte, 
@@ -94,7 +94,7 @@
     </div>
     <div class="col-sm-6">
       <div class="card">
-        <div class="card-body" style="height: 250px;">
+        <div class="card-body" style="height: 250px; text-align: justify;">
           <h5 class="card-title">Eliminación de registros</h5>
           <p class="card-text">
             En las distintas vistas como vehículos, remolques, choferes, aseguradoras y cartas porte, 
@@ -116,7 +116,7 @@
   <div class="row">
     <div class="col-sm-6">
       <div class="card">
-        <div class="card-body" style="height: 250px;">
+        <div class="card-body" style="height: 250px; text-align: justify;">
           <h5 class="card-title">Recuperación de registros</h5>
           <p class="card-text">
             En las distintas vistas como vehículos, remolques, choferes, aseguradoras y cartas porte, 
