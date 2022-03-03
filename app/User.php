@@ -13,9 +13,8 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Contracts\Auth\CanResetPassword;
 use App\Notifications\VerifyEmail;
 use App\Notifications\PasswordReset;
-use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
 
-class User extends Authenticatable implements MustVerifyEmail, AuthenticatableContract
+class User extends Authenticatable implements MustVerifyEmail
 {
     use HasApiTokens, Notifiable;
 
