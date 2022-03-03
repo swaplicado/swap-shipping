@@ -77,21 +77,21 @@
 
             <div class="content">
                 <div>
-                    <img src="{{ asset('logo/orange.svg') }}" width="60%" height="60%" alt="">
+                    <img src="{{ asset('logo/orange.svg') }}" width="30%" height="30%" alt="">
                 </div>
                 <div>
-                    <h2>Bienvenido a</h2>
+                    <h2>Bienvenido al</h2>
                 </div>
                 <div class="title m-b-md">
-                    CFDI Carta Porte
+                    Sistema de emisión CFDI Cartas Porte Transportista
                 </div>
                 <br>
-                <div class="links">
+                {{-- <div class="links">
                     <a href="#">AETH</a>
                     <a href="#">Tutorial</a>
                     <a href="#">Software Aplicado</a>
                     <a href="#">Contacto</a>
-                </div>
+                </div> --}}
             </div>
         </div>
     </body>

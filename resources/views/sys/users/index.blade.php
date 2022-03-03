@@ -31,7 +31,7 @@
                 <th></th>
                 <th>Usuario</th>
                 <th>Nombre completo</th>
-                <th>E-mail</th>
+                <th>Email</th>
                 <th>Roles</th>
             </tr>
         </thead>

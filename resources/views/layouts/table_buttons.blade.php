@@ -1,4 +1,6 @@
-<a href="{{route($crear)}}" class="btn btn-success" style="border-radius: 50%; padding: 5px 10px;"><span class="icon bx bx-plus"></span></a>
+@if(isset($crear))
+    <a href="{{route($crear)}}" class="btn btn-success" style="border-radius: 50%; padding: 5px 10px;"><span class="icon bx bx-plus"></span></a>
+@endif
 
 <button id="btn_edit" type="button" class="btn btn-warning" style="border-radius: 50%; padding: 5px 10px;">
     <span class="icon bx bx-edit-alt"></span>

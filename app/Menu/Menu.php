@@ -82,7 +82,7 @@ class Menu {
                 $route = route('vehicles');
                 $menu = $menu.'
                         <li>
-                            <a href="'.$route.'"><span class="icon bx bxs-key bx-sm" aria-hidden="true"></span>Vehiculos</a>
+                            <a href="'.$route.'"><span class="icon bx bxs-key bx-sm" aria-hidden="true"></span>Vehículos</a>
                         </li>
                 ';
             }
@@ -123,7 +123,7 @@ class Menu {
                 $route = route('parners');
                 $menu = $menu.'
                         <li>
-                            <a href="'.$route.'"><span class="icon bx bxs-user-detail bx-sm" aria-hidden="true"></span>Asociados</a>
+                            <a href="'.$route.'"><span class="icon bx bxs-group bx-sm" aria-hidden="true"></span>Administradores</a>
                         </li>
                 ';
             }
@@ -143,11 +143,11 @@ class Menu {
             ';
             if($oUser->hasPermission('411')){
                 $route = route('states');
-                $menu = $menu.'
-                        <li>
-                            <a href="'.$route.'"><span class="icon bx bxs-map-alt bx-sm" aria-hidden="true"></span>Estados</a>
-                        </li>
-                ';
+                // $menu = $menu.'
+                //         <li>
+                //             <a href="'.$route.'"><span class="icon bx bxs-map-alt bx-sm" aria-hidden="true"></span>Estados</a>
+                //         </li>
+                // ';
                 $route = route('municipalities');
                 $menu = $menu.'
                         <li>

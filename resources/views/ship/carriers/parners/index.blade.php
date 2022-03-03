@@ -17,7 +17,7 @@
 @endsection
 
 @section('content')
-<h2>Asociados</h2>
+<h2>Administradores</h2>
 <br>
 
 @include('layouts.table_buttons', ['crear' => 'crear_parner', 'filterCarrier' => (auth()->user()->isAdmin() || auth()->user()->isClient())])
@@ -30,7 +30,7 @@
                 <th>is deleted</th>
                 <th></th>
                 <th>Nombre</th>
-                <th>E-mail</th>
+                <th>Email</th>
                 <th>Transportista</th>
             </tr>
         </thead>

@@ -2,12 +2,7 @@
 
 @section('headStyles')
 <link rel="stylesheet" href="{{ asset('css/DataTables/datatables.css') }}">
-<style>
-    .dataTables_wrapper {
-        font-size: 0.8em;
-    }
 
-</style>
 @endsection
 
 @section('headJs')
@@ -41,7 +36,6 @@
 @endphp
 
 @include('layouts.table_buttons', [
-        'crear' => 'crear_carrier',
         'moreButtons' => [
             ['id' => 'id_sign', 'class' => 'dark', 'icon' => 'bx-bell', 'url' => '#', 'title' => 'Timbrar'],
             ['id' => 'id_down_xml', 'class' => 'primary', 'icon' => 'bx-download', 'url' => '#', 'title' => 'Descagar XML'],
@@ -55,7 +49,7 @@
                     <div class="row" >
                         '.($withCarrierFilter ? $carrierFilter : '')
                         .($withDateFilter ? '
-                        <div class="'.($withCarrierFilter ? 'col-md-4' : 'col-md-10').'" >
+                        <div class="'.($withCarrierFilter ? 'col-md-5' : 'col-md-10').'" >
                             <button id = "less" class = "btn-secondary" type="button" style = "float: left; width: 30px; height: 100%;">
                                 -
                             </button>
@@ -100,7 +94,7 @@
                     <th>Total Impuestos Retenidos</th>
                     <th>Total Impuestos Trasladados</th>
                     <th>Descuentos</th>
-                    <th>subtotal</th>
+                    <th>Subtotal</th>
                     <th>Total</th>
                 @endif
                 <th>Fecha petición</th>

@@ -32,14 +32,14 @@
                 <th>id carrier</th>
                 <th>Placas</th>
                 <th>Modelo</th>
-                <th>Clave de permiso Sct</th>
-                <th>Permiso Sct</th>
-                <th>Núm. Permiso Sct</th>
-                <th>Reg Trib</th>
-                <th>Poliza</th>
+                <th>Clave permiso SCT</th>
+                <th>Permiso SCT</th>
+                <th>Núm. permiso SCT</th>
+                <th>Reg. tributario</th>
+                <th>Póliza</th>
                 <th>Aseguradora</th>
-                <th>Clave de conf. Vehícular</th>
-                <th>Conf. Vehícular</th>
+                <th>Clave conf. vehicular</th>
+                <th>Conf. vehicular</th>
                 <th>Transportista</th>
             </tr>
         </thead>

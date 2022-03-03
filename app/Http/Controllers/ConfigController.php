@@ -18,6 +18,7 @@ use App\Models\Sat\UsoCFDI;
 use App\Models\Sat\Taxes;
 use App\Models\Certificate;
 use App\Models\Carrier;
+use App\Utils\SFormats;
 
 class ConfigController extends Controller
 {
@@ -30,6 +31,9 @@ class ConfigController extends Controller
     {
         auth()->user()->authorizePermission(['011']);
         $data = Configuration::getConfigurations();
+        $data->tarifaBase = SFormats::formatMoney($data->tarifaBase);
+        $data->tarifaBaseEscala = SFormats::formatMoney($data->tarifaBaseEscala);
+        $data->distanciaMinima = SFormats::formatNumber($data->distanciaMinima);
         return view('sys/config/index', ['data' => $data]);
     }
 
@@ -125,13 +129,19 @@ class ConfigController extends Controller
             \File::delete(public_path('logo/'.$logo));
         }
         
-        $file = $request->file('logo');
-        $file->move('./logo',$file->getClientOriginalName());
+        // $file = $request->file('logo');
+        // if(!is_null($file)){
+        //     $file->move('./logo',$file->getClientOriginalName());
+        // }
 
         $json = [];
         try {
             $json["email"] = $request->email;
-            $json["logo"] = $file->getClientOriginalName();
+            // if(!is_null($file)){
+            //     $json["logo"] = $file->getClientOriginalName();
+            // }else{
+            //     $json["logo"] = null;
+            // }
             $json["localCurrency"] = Currencies::where('id', $request->localCurrency)->value('key_code');
             $json["tarifaBase"] = $request->tarifaBase;
             $json["tarifaBaseEscala"] = $request->tarifaBaseEscala;

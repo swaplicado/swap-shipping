@@ -26,7 +26,12 @@
     <script src="{{ asset('js/daterangepicker/daterangepicker.min.js') }}"></script>
     @yield('headJs')
 </head>
+<style>
+    .dataTables_wrapper {
+        font-size: 0.8em;
+    }
 
+</style>
 <body>
     <div class="layer"></div>
     <!-- ! Body -->
@@ -53,7 +58,7 @@
                     @yield('content')
                 </div>
             </main>
-            @yield('footer')
+            @include('layouts.footer')
         </div>
     </div>
 
