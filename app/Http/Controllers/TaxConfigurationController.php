@@ -14,6 +14,7 @@ class TaxConfigurationController extends Controller
      * */
     public function index()
     {
+        auth()->user()->authorizePermission(['701']);
         $lConfigurations = \DB::table('f_tax_configurations AS cfg')
                                 ->join('sat_taxes AS tx', 'cfg.tax_id', '=', 'tx.id')
                                 ->leftjoin('sat_tax_regimes AS reg', 'cfg.fiscal_regime_id', '=', 'reg.id')
@@ -50,6 +51,7 @@ class TaxConfigurationController extends Controller
      * */
     public function create()
     {
+        auth()->user()->authorizePermission(['702']);
         $lRegimes = \DB::table('sat_tax_regimes')->select('id', 'key_code', 'description')->get();
         $lConcepts = \DB::table('sat_prod_serv')->select('id', 'key_code', 'description')->where('is_active', true)->get();
         $lTaxes = \DB::table('sat_taxes')->select('id', 'key_code', 'description')->get();
@@ -70,6 +72,7 @@ class TaxConfigurationController extends Controller
      * */
     public function store(Request $request)
     {
+        auth()->user()->authorizePermission(['702']);
         $oTaxConfiguration = new TaxConfiguration($request->all());
         $oTaxConfiguration->amount = 0;
         $oTaxConfiguration->is_deleted = false;
@@ -103,6 +106,7 @@ class TaxConfigurationController extends Controller
      * */
     public function edit($id)
     {
+        auth()->user()->authorizePermission(['703']);
         $oTaxConfiguration = TaxConfiguration::find($id);
 
         $lRegimes = \DB::table('sat_tax_regimes')->select('id', 'key_code', 'description')->get();
@@ -126,6 +130,7 @@ class TaxConfigurationController extends Controller
      * */
     public function update(Request $request, $id)
     {
+        auth()->user()->authorizePermission(['703']);
         $oTaxConfiguration = TaxConfiguration::find($id);
         $oTaxConfiguration->fill($request->all());
         $oTaxConfiguration->usr_upd_id = \Auth::user()->id;
@@ -157,6 +162,7 @@ class TaxConfigurationController extends Controller
      * */
     public function destroy($id)
     {
+        auth()->user()->authorizePermission(['704']);
         $oTaxConfiguration = TaxConfiguration::find($id);
         $oTaxConfiguration->is_deleted = true;
         $oTaxConfiguration->usr_upd_id = \Auth::user()->id;

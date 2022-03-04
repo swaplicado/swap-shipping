@@ -27,7 +27,7 @@
             <h1>Bienvenido a CPT</h1>
           </blockquote>
           <figcaption class="blockquote-footer">
-            Bienvenido al sistema de emisión CFDI Cartas Porte Transportista
+            Bienvenido a Cartas Porte de Transportistas
           </figcaption>
         </figure>
       </div>
