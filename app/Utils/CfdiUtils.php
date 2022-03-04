@@ -10,6 +10,8 @@ use App\Models\Document;
 use App\Models\M\MDocument;
 use App\Utils\Configuration;
 use App\Models\Carrier;
+use App\Models\Sat\Units;
+use App\Models\Sat\VehicleConfig;
 
 class CfdiUtils
 {
@@ -123,9 +125,9 @@ class CfdiUtils
     public static function generatePDF($xml, $logo_name){
         // $filepath = file_get_contents("./doc/prueba.xml");
         $formatterES = new \NumberFormatter("es", \NumberFormatter::SPELLOUT);
-        $data = Configuration::getConfigurations();
+        // $data = Configuration::getConfigurations();
         
-        $logo = $data->logo;
+        // $logo = $data->logo;
 
         $cfdi = \CfdiUtils\Cfdi::newFromString($xml);
         $cfdi->getVersion();
@@ -176,10 +178,14 @@ class CfdiUtils
             $LugarExpedicion = $comprobante['LugarExpedicion'];
             $TipoDeComprobante = $comprobante['TipoDeComprobante'];
             $Moneda = $comprobante['Moneda'];
+            $VersionComprobante = $comprobante['Version'];
+            $Exportacion = $comprobante['Exportacion'];
+            $NoCertificado = $comprobante['NoCertificado'];
             $FormaPago = $comprobante['FormaPago'].CfdiUtils::claveDescription($comprobante['FormaPago'], 'FormaPago');
             $TipoCambio = $comprobante['TipoCambio'];
             $MetodoPago = $comprobante['MetodoPago'].CfdiUtils::claveDescription($comprobante['MetodoPago'], 'MetodoPago');
             $SubTotal = $comprobante['SubTotal'];
+            $Descuento = $comprobante['Descuento'];
             $Total = $comprobante['Total'];
             $NoCertificado = $comprobante['NoCertificado'];
         } else {
@@ -189,10 +195,14 @@ class CfdiUtils
             $LugarExpedicion = null;
             $TipoDeComprobante = null;
             $Moneda = null;
+            $Version = null;
+            $Exportacion = null;
+            $NoCertificado = null;
             $FormaPago = null;
             $TipoCambio = null;
             $MetodoPago = null;
             $SubTotal = null;
+            $Descuento = null;
             $Total = null;
             $NoCertificado = null;
         }
@@ -322,6 +332,9 @@ class CfdiUtils
         /*Atributos (ConfigVehicular, PlacaVM, AnioModeloVM) del nodo IdentificacionVehicular */        
         if($IdentificacionVehicular != null){
             $ConfigVehicular = $IdentificacionVehicular['ConfigVehicular'];
+
+            $ConfVehiDescription = VehicleConfig::where('key_code', $ConfigVehicular)->value('description');
+
             $PlacaVM = $IdentificacionVehicular['PlacaVM'];
             $AnioModeloVM = $IdentificacionVehicular['AnioModeloVM'];
         }
@@ -382,13 +395,15 @@ class CfdiUtils
                     ';
             }
 
+            $UnitDescription = Units::where('key_code', $c['ClaveUnidad'])->value('description');
+
             $tabla_partidas = $tabla_partidas.
                             '
                             <tr>
                                 <td class="td1 text-c">'.$c['ClaveProdServ'].'</td>
                                 <td class="td1 text-c">'.$c['Descripcion'].'</td>
                                 <td class="td1 text-r">'.$c['Cantidad'].'</td> 
-                                <td class="td1 text-c">'.$c['ClaveUnidad'].'</td>
+                                <td class="td1 text-c">'.$c['ClaveUnidad'].' - '.$UnitDescription.'</td>
                                 <td class="td1 text-r">'.$c['ValorUnitario'].'</td> 
                                 <td class="td1 text-r">'.$c['Importe'].'</td>
                                 <td class="td1 text-r">'.$c['Descuento'].'</td>
@@ -418,12 +433,13 @@ class CfdiUtils
         /*Creación de la tabla Mercania */        
         $tabla_Mercancia='';
         foreach($Mercancia as $m){
+            $UnitMercDescription = Units::where('key_code', $m['ClaveUnidad'])->value('description');
             $tabla_Mercancia = $tabla_Mercancia.'
                             <tr>
                                 <td class="td1 text-c">'.$m['BienesTransp'].'</td>
                                 <td class="td1 text-c">'.$m['Descripcion'].'</td>
                                 <td class="td1 text-c">'.$m['Cantidad'].'</td>
-                                <td class="td1 text-c">'.$m['ClaveUnidad'].'</td>
+                                <td class="td1 text-c">'.$m['ClaveUnidad'].' - '.$UnitMercDescription.'</td>
                                 <td class="td1 text-c">'.$m['MaterialPeligroso'].'</td>
                                 <td class="td1 text-c">'.$m['PesoEnKg'].'</td>
                                 <td class="td1 text-r">'.$m['ValorMercancia'].'</td>
@@ -447,18 +463,22 @@ class CfdiUtils
         /*Creación de la tabla Remitente/Destinatario de la carta porte */
         $tabla_Remitente_Destinatario = '';
         foreach($Ubicacion as $u){
+            $IDUbicacion_r = null;
             $CP_Rfc_r = null;
             $CP_Nombre_r = null;
             $CP_FechaHoraSalidaLlegada_r = null;
+            $IDUbicacion_d = null;
             $CP_Rfc_d = null;
             $CP_Nombre_d = null;
             $CP_FechaHoraSalidaLlegada_d = null;
 
             if($u['TipoUbicacion'] == "Origen"){
+                $IDUbicacion_r = $u['IDUbicacion'];
                 $CP_Rfc_r = $u['RFCRemitenteDestinatario'];
                 $CP_Nombre_r = $u['NombreRemitenteDestinatario'];
                 $CP_FechaHoraSalidaLlegada_r = $u['FechaHoraSalidaLlegada'];
             } else {
+                $IDUbicacion_d = $u['IDUbicacion'];
                 $CP_Rfc_d = $u['RFCRemitenteDestinatario'];
                 $CP_Nombre_d = $u['NombreRemitenteDestinatario'];
                 $CP_FechaHoraSalidaLlegada_d = $u['FechaHoraSalidaLlegada'];
@@ -466,9 +486,11 @@ class CfdiUtils
             $tabla_Remitente_Destinatario = $tabla_Remitente_Destinatario.
                                             '
                                             <tr>
+                                                <td class="td1 text-c">'.$IDUbicacion_r.'</td>
                                                 <td class="td1 text-c">'.$CP_Rfc_r.'</td>
                                                 <td class="td1 text-c">'.$CP_Nombre_r.'</td>
                                                 <td class="td1 text-c">'.$CP_FechaHoraSalidaLlegada_r.'</td>
+                                                <td class="td1 text-c">'.$IDUbicacion_d.'</td>
                                                 <td class="td1 text-c">'.$CP_Rfc_d.'</td>
                                                 <td class="td1 text-c">'.$CP_Nombre_d.'</td>
                                                 <td class="td1 text-c">'.$CP_FechaHoraSalidaLlegada_d.'</td>
@@ -535,38 +557,59 @@ class CfdiUtils
                         <td class = "border" style = "width: 15%;">'.
                             (!is_null($logo_name) ? '<img src="./logos/'.$logo_name.'" style="width: 2cm;">' : '')
                         .'</td>
-                        <td class = "border" style = "width: 54%;">
-                            <b style = "font-size: 3.5mm;">'.$Nombre_E.'</b>
+                        <td colspan="3" class = "border" style = "width: 54%;">
+                            <b>Emisor: </b><b style = "font-size: 3.5mm;">'.$Nombre_E.'</b>
                             <p style="margin-top: 0; font-size: 3mm">
-                                <b>RFC: </b>'.$Rfc_E.'<br>
-                                <b>Regimen fiscal: </b>'.$RegimenFiscal_E.'<br>
+                                <b>RFC emisor: </b>'.$Rfc_E.'<br>
+                                <b>Regimen fiscal emisor: </b>'.$RegimenFiscal_E.'<br>
                             </p>
                         </td>
                         <td class = "border text-c" style = "width: 30%;">
                         <b style = "font-size: 3mm;">Serie:</b>
                         <p style = "font-size: 3mm; margin:0px; outline:none;">'.$serie.'</p>
-                            <b style = "font-size: 3mm">Folio fiscal:</b>
+                            <b style = "font-size: 3mm">Folio:</b>
                             <p style = "font-size: 3mm; margin:0px; outline:none;">'.$Folio.'</p>
                         </td>
                     </tr>
                     <tr>
-                        <td colspan = "2" class = "border" style = "width: 76.3%; text-align: left">
+                        <td colspan = "4" class = "border" style = "width: 76.3%; text-align: left">
                             <p style="margin-top: 0; font-size: 3mm">
                                 <b>Receptor: </b>'.$Nombre_R.'<br>
-                                <b>RFC: </b>'.$Rfc_R.'
-                                <b>&nbsp; Regimen fiscal: </b>'.$RegimenFiscal_R.'<br>
-                                <b>Domicilio: </b>'.$DomicilioFiscalReceptor.'
+                                <b>RFC receptor: </b>'.$Rfc_R.'
+                                <b>&nbsp; Regimen fiscal receptor: </b>'.$RegimenFiscal_R.'<br>
+                                <b>Código postal receptor: </b>'.$DomicilioFiscalReceptor.'
                             </p>
                         </td>
                         <td class = "border text-c" style = "width: 23%;">
-                            <b>Moneda</b>
-                            <p>'.$Moneda.'</p>
-                            <b>Tipo de cambio</b>
-                            <p>'.$TipoCambio.'</p>
+                            <b>Tipo comprobante</b>
+                            <p>'.$TipoDeComprobante.'</p>
+                            <b>Lugar y fecha expedición</b>
+                            <p>'.$LugarExpedicion.'</p>
                             <p style="margin-top: 0; font-size: 3mm">
-                                <b>fecha de expedición:</b>
                                 '.$Fecha.'
                             </p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class = "border text-c">
+                            <b>Versión:</b>
+                            <p>'.$VersionComprobante.'</p>
+                        </td>
+                        <td class = "border text-c">
+                            <b>Exportación:</b>
+                            <p>'.$Exportacion.'</p>
+                        </td>
+                        <td class = "border text-c">
+                            <b>No. Certificado:</b>
+                            <p>'.$NoCertificado.'</p>
+                        </td>
+                        <td class = "border text-c">
+                            <b>Moneda:</b>
+                            <p>'.$Moneda.'</p>
+                        </td>
+                        <td class = "border text-c">
+                            <b>Tipo de cambio:</b>
+                            <p>'.$TipoCambio.'</p>
                         </td>
                     </tr>
                 </tbody>
@@ -596,7 +639,7 @@ class CfdiUtils
                     </tr>
                     <tr>
                         <td colspan = "2" class = "text-c" style = "font-size: 2mm">
-                            COMPROBANTE FISCAL GENERADO CON *NOMBRE PENDIENTE SWOFTWARE APLICADO S.A. DE C.V.
+                            COMPROBANTE FISCAL GENERADO CON CPT SWOFTWARE APLICADO S.A. DE C.V.
                             Tels.:(443) 204-1146 y 47 www.swaplicado.com.mx
                         </td>
                     </tr>
@@ -635,7 +678,7 @@ class CfdiUtils
             <table style = "width: 100%">
                 <tbody>
                     <tr>
-                        <td style = "width: 40%;"><b>Importe con letra:</b></td>
+                        <td style = "width: 40%;"><b>Importe total con letra:</b></td>
                         <td style = "width: 20%"><b>Uso CFDI:</b></td>
                         <td rowspan = "4" style = "border-bottom: 0.03cm solid black; width: 40%">
                             <table style = "width: 100%;">
@@ -646,10 +689,10 @@ class CfdiUtils
                                     </tr>
                                     <tr>
                                         <td class = "text-r"><b>Descuento:</b></td>
-                                        <td class = "text-r">'.$Moneda.'</td>
+                                        <td class = "text-r">'.$Descuento.' '.$Moneda.'</td>
                                     </tr>
                                     <tr>
-                                        <td class = "text-r"><b>Total impuestos trasslado:</b></td>
+                                        <td class = "text-r"><b>Total impuestos traslado:</b></td>
                                         <td class = "text-r">'.$TotalImpuestosTrasladados.' '.$Moneda.'</td>
                                     </tr>
                                     <tr>
@@ -748,7 +791,7 @@ class CfdiUtils
                     <tr>
                         <td class="th2">Versión</td>
                         <td class="th2">Traslado internacional</td>
-                        <td class="th2">Total distancia recorrida</td>
+                        <td class="th2">Total distancia recorrida (km)</td>
                         <td class="th2">Peso total mercancía</td>
                         <td class="th2">No. Total Mercancias</td>
                     </tr>
@@ -756,7 +799,7 @@ class CfdiUtils
                         <td class="td1 text-c">'.$Version.'</td>
                         <td class="td1 text-c">'.$TranspInternac.'</td>
                         <td class="td1 text-c">'.$TotalDistRec.'</td>
-                        <td class="td1 text-c">'.$PesoBrutoTotal.'</td>
+                        <td class="td1 text-c">'.$PesoBrutoTotal.' '.$UnidadPeso.'</td>
                         <td class="td1 text-c">'.$NumTotalMercancias.'</td>
                     </tr>    
                 </tbody>
@@ -769,9 +812,11 @@ class CfdiUtils
                         <th colspan="3" class="th1 border">Destinatario:</th>
                     </tr>
                     <tr>
+                        <td class="th2">ID ubicación</td>
                         <td class="th2">RFC remitente</td>
                         <td class="th2">Nombre remitente</td>
                         <td class="th2">Fecha y hora salida</td>
+                        <td class="th2">ID ubicación</td>
                         <td class="th2">RFC destinatario</td>
                         <td class="th2">Nombre destinatario</td>
                         <td class="th2">Fecha y hora salida</td>
@@ -817,7 +862,7 @@ class CfdiUtils
                         <td class="th2">Estado</td>
                         <td class="th2">País</td>
                         <td class="th2">Código postal</td>
-                        <td class="th2">Distancia recorrida</td>
+                        <td class="th2">Distancia recorrida (km)</td>
                     </tr>
                     '.$tabla_ubicacion_destino.' 
                 </tbody>
@@ -866,7 +911,7 @@ class CfdiUtils
                             <td class="td1 text-c">'.$NumPermisoSCT.'</td>
                             <td class="td1 text-c">'.$Aseguradoras.'</td>
                             <td class="td1 text-c">'.$polizas.'</td>
-                            <td class="td1 text-c">'.$ConfigVehicular.'</td>
+                            <td class="td1 text-c">'.$ConfigVehicular.' - '.$ConfVehiDescription.'</td>
                             <td class="td1 text-c">'.$PlacaVM.'</td>
                             <td class="td1 text-c">'.$AnioModeloVM.'</td>
                             <td class="td1 text-c">'.$SubTipoRem.'</td>
@@ -897,7 +942,7 @@ class CfdiUtils
             'mode' => 'c',
             'margin_left' => 10,
             'margin_right' => 10,
-            'margin_top' => 55,
+            'margin_top' => 60,
             'margin_bottom' => 30,
             'margin_header' => 10,
             'margin_footer' => 10
