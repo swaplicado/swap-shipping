@@ -30,9 +30,6 @@
                 <th>is deleted</th>
                 <th>id carrier</th>
                 <th>Nombre</th>
-                <th>Responsabilidad civil</th>
-                <th>Ambiental</th>
-                <th>Carga</th>
                 <th>transportista</th>
             </tr>
         </thead>
@@ -43,21 +40,6 @@
                 <td>{{$d->is_deleted}}</td>
                 <td>{{$d->carrier_id}}</td>
                 <td>{{$d->full_name}}</td>
-                @if ($d->is_civ_resp)
-                    <td style="text-align: center"><i class='bx bx-check bx-sm'></i></td>
-                @else
-                    <td style="text-align: center"><i class='bx bx-x bx-sm'></i></td>
-                @endif
-                @if ($d->is_ambiental)
-                    <td style="text-align: center"><i class='bx bx-check bx-sm'></i></td>
-                @else
-                    <td style="text-align: center"><i class='bx bx-x bx-sm'></i></td>
-                @endif
-                @if ($d->is_cargo)
-                    <td style="text-align: center"><i class='bx bx-check bx-sm'></i></td>
-                @else
-                    <td style="text-align: center"><i class='bx bx-x bx-sm'></i></td>
-                @endif
                 <td>{{$d->carrier->fullname}}</td>
             </tr>
             @endforeach

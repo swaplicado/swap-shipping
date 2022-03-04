@@ -65,8 +65,7 @@ class InsurancesController extends Controller
         $error = "0";
         $validator = Validator::make($request->all(), [
             'fullname' => 'required',
-            'carrier' => 'required|not_in:0',
-            'checkbox' => 'required'
+            'carrier' => 'required|not_in:0'
         ]);
 
         $validator->validate();
@@ -74,21 +73,6 @@ class InsurancesController extends Controller
         $resp_civ = 0;
         $ambiental = 0;
         $carga = 0;
-        foreach($request->checkbox as $c){
-            switch($c){
-                case "1":
-                    $resp_civ = 1;
-                    break;
-                case "2":
-                    $ambiental = 1;
-                    break;
-                case "3":
-                    $carga = 1;
-                    break;
-                default:
-                    break;
-            }
-        }
 
         $user_id = (auth()->check()) ? auth()->user()->id : null;
         
@@ -96,9 +80,6 @@ class InsurancesController extends Controller
             DB::transaction(function () use ($request, $user_id, $resp_civ, $ambiental, $carga) {
                 $Insurance = Insurances::create([
                     'full_name' => strtoupper($request->fullname),
-                    'is_civ_resp' => $resp_civ,
-                    'is_ambiental' => $ambiental,
-                    'is_cargo' => $carga,
                     'carrier_id' => $request->carrier,
                     'usr_new_id' => $user_id,
                     'usr_upd_id' => $user_id
@@ -158,8 +139,7 @@ class InsurancesController extends Controller
         $success = true;
         $error = "0";
         $validator = Validator::make($request->all(), [
-            'fullname' => 'required',
-            'checkbox' => 'required'
+            'fullname' => 'required'
         ]);
 
         $validator->validate();
@@ -167,21 +147,6 @@ class InsurancesController extends Controller
         $resp_civ = 0;
         $ambiental = 0;
         $carga = 0;
-        foreach($request->checkbox as $c){
-            switch($c){
-                case "1":
-                    $resp_civ = 1;
-                    break;
-                case "2":
-                    $ambiental = 1;
-                    break;
-                case "3":
-                    $carga = 1;
-                    break;
-                default:
-                    break;
-            }
-        }
 
         $user_id = (auth()->check()) ? auth()->user()->id : null;
         
@@ -190,9 +155,6 @@ class InsurancesController extends Controller
                 $Insurance = Insurances::findOrFail($id);
                 auth()->user()->carrierAutorization($Insurance->carrier_id);
                 $Insurance->full_name = strtoupper($request->fullname);
-                $Insurance->is_civ_resp = $resp_civ;
-                $Insurance->is_ambiental = $ambiental;
-                $Insurance->is_cargo = $carga;
                 $Insurance->usr_upd_id = $user_id;
                 
                 $Insurance->update();
