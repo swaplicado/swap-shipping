@@ -9,13 +9,8 @@ use App\Models\Certificate;
 class FinkokCore {
 
     public static function signCfdi($xml = "") {
-        // $username = env('FINKOK_USERNAME'); # Usuario de Finkok
-        // $password = env('FINKOK_PASSWORD'); # Contraseña de Finkok
-        $username = env('APP_ENV') === "local" ? env('FINKOK_USERNAME_LOCAL') : 
-                    (env('APP_ENV') === "production" ? env('FINKOK_USERNAME_PRODUCTION') : '');
-
-        $password = env('APP_ENV') === "local" ? env('FINKOK_PASSWORD_LOCAL') : 
-                    (env('APP_ENV') === "production" ? env('FINKOK_PASSWORD_PRODUCTION') : '');
+        $username = FinkokCore::getFinkokUser();
+        $password = FinkokCore::getFinkokPass();
                     
         // $xml_content = base64_encode($xml); # En base64
         $xml_content = $xml;
@@ -66,8 +61,8 @@ class FinkokCore {
         $typeUser= "O";
         $passKey = $pwDecrypted;
 
-        $username = env('FINKOK_USERNAME'); # Usuario de Finkok
-        $password = env('FINKOK_PASSWORD'); # Contraseña de Finkok
+        $username = FinkokCore::getFinkokUser();
+        $password = FinkokCore::getFinkokPass();
         
         $params = array(
             "reseller_username" => $username,
@@ -78,10 +73,9 @@ class FinkokCore {
             "key" => $contenidoKey,
             "passphrase" => $passKey
         );
-                 
-        $client = new SoapClient((env('APP_ENV') === "local" ? env('FINKOK_URL_REGISTRATION_LOCAL') :
-                                (env('APP_ENV') === "production" ? env('FINKOK_URL_REGISTRATION_PRODUCTION') : ''))
-                                , array('trace' => 1));
+                
+        $url = (env('APP_ENV') === "local" ? env('FINKOK_URL_REGISTRATION_LOCAL') : (env('APP_ENV') === "production" ? env('FINKOK_URL_REGISTRATION_PRODUCTION') : ''));
+        $client = new SoapClient($url, array('trace' => 1));
 
         try {
             $result = $client->__soapCall("add", array($params));
@@ -129,8 +123,9 @@ class FinkokCore {
         shell_exec("openssl pkcs8 -inform DER -in ".($keyFile)." -passin pass:".($pw)." -out ".$keyPem);
         shell_exec("openssl rsa -in ".$keyPem." -des3 -out ".$encKey." -passout pass:".env('FINKOK_PASSWORD'));
         
-        $username = env('FINKOK_USERNAME');
-        $password = env('FINKOK_PASSWORD');
+        $username = FinkokCore::getFinkokUser();
+        $password = FinkokCore::getFinkokPass();
+
         $taxpayer = $oCarrier->fiscal_id;
         
         # Read the x509 certificate file on PEM format and encode it on base64
@@ -188,4 +183,15 @@ class FinkokCore {
 
         return ['success' => false, 'message' => "Error al cancelar el CFDI"];
     }
+
+    private static function getFinkokPass() {
+        return env('APP_ENV') === "local" ? env('FINKOK_PASSWORD_LOCAL') : 
+                    (env('APP_ENV') === "production" ? env('FINKOK_PASSWORD_PRODUCTION') : '');
+    }
+
+    private static function getFinkokUser() {
+        return env('APP_ENV') === "local" ? env('FINKOK_USERNAME_LOCAL') : 
+                    (env('APP_ENV') === "production" ? env('FINKOK_USERNAME_PRODUCTION') : '');
+    }
+    
 }

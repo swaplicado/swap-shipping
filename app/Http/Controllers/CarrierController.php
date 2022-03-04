@@ -486,13 +486,13 @@ class CarrierController extends Controller
         $oCarrier = Carrier::where('fiscal_id', $certificate->fiscalId)->first();
 
         if ($oCarrier == null) {
-            Storage::delete($urlPc);
+            Storage::disk('local')->delete($urlPc);
             return response()->json(['error' => 'El RFC del emisor en el certificado no existe en la base de datos'], 400);
         }
 
         if (auth()->user()->isCarrier()) {
             if (auth()->user()->carrier->fiscal_id != $oCarrier->fiscal_id) {
-                Storage::delete($urlPc);
+                Storage::disk('local')->delete($urlPc);
                 return response()->json(['error' => 'El RFC del emisor en el certificado no corresponde al RFC del emisor del usuario'], 400);
             }
         }
@@ -514,6 +514,9 @@ class CarrierController extends Controller
         $response = FinkokCore::regCertificates($urlPc, $urlPv, $request->pw, $oCarrier->fiscal_id);
 
         if (! $response['success']) {
+            Storage::disk('local')->delete($urlPc);
+            Storage::disk('local')->delete($urlPv);
+            
             return redirect(route('editar_carrierFiscalData', ['id' => $oCarrier->id_carrier]))->with(['message' => $response['message'], 'icon' => 'error']);
         }
 
