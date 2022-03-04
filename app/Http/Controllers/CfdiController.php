@@ -14,7 +14,9 @@ class CfdiController extends Controller
 
     public function index($id){
         $pdf = CfdiUtils::index($id);
-
-        return view('pdf', ['pdf' => $pdf]);
+        // return view('pdf', ['pdf' => $pdf]);
+        $data = base64_decode($pdf->pdf);
+        header('Content-Type: application/pdf');
+        echo $data;
     }
 }

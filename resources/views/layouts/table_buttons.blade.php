@@ -1,21 +1,21 @@
 @if(isset($crear))
-    <a href="{{route($crear)}}" class="btn btn-success" style="border-radius: 50%; padding: 5px 10px;"><span class="icon bx bx-plus"></span></a>
+    <a href="{{route($crear)}}" class="btn btn-success" style="border-radius: 50%; padding: 5px 10px;" title="Nuevo registro"><span class="icon bx bx-plus"></span></a>
 @endif
 
-<button id="btn_edit" type="button" class="btn btn-warning" style="border-radius: 50%; padding: 5px 10px;">
+<button id="btn_edit" type="button" class="btn btn-warning" style="border-radius: 50%; padding: 5px 10px;" title="Editar registro">
     <span class="icon bx bx-edit-alt"></span>
 </button>
 
 <form id="form_delete" class="d-inline" method="POST">
     @csrf @method("delete")
-    <button id="btn_delete" type="button" class="btn btn-danger" style="border-radius: 50%; padding: 5px 10px;">
+    <button id="btn_delete" type="button" class="btn btn-danger" style="border-radius: 50%; padding: 5px 10px;" title="Eliminar registro">
         <span class="icon bx bx-trash"></span>
     </button>
 </form>
 
 <form id="form_recover" class="d-inline" method="POST">
     @csrf @method("put")
-    <button id="btn_recover" type="button" class="btn btn-info" style="border-radius: 50%; padding: 5px 10px;">
+    <button id="btn_recover" type="button" class="btn btn-info" style="border-radius: 50%; padding: 5px 10px;" title="Recuperar registro">
         <span class="icon bx bx-recycle"></span>
     </button>
 </form>
