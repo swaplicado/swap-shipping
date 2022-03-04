@@ -79,10 +79,10 @@
                     <img src="{{ asset('img/svg/orange.svg') }}" width="30%" height="30%" alt="">
                 </div>
                 <div>
-                    <h2>Bienvenido al</h2>
+                    <h2>Bienvenido a</h2>
                 </div>
                 <div class="title m-b-md">
-                    Sistema de emisión CFDI Cartas Porte Transportista
+                    Cartas Porte de Transportistas
                 </div>
                 <br>
                 {{-- <div class="links">

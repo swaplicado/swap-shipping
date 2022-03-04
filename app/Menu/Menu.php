@@ -213,6 +213,16 @@ class Menu {
             ';
         }
 
+        if($oUser->hasAnyPermission(['701'])){
+            $menu = $menu.'
+            <li>
+                <a href="'.route('config.taxes').'">
+                    <span class="icon bx bxs-category bx-sm" aria-hidden="true"></span>Conf. impuestos
+                </a>
+            </li>
+            ';
+        }
+
         if($oUser->hasAnyPermission(['000'])){
             $menu = $menu.'
             <li>
