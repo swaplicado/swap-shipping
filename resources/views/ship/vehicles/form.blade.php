@@ -92,7 +92,7 @@
 </div>
 @endif
 <div class="form-group">
-    <label for="policy" class="form-label">Póliza</label>
+    <label for="policy" class="form-label">Póliza responsabilidad civil</label>
     <input name="policy" type="text" class="form-control uppercase" value="{{ old('policy', $data->policy ?? '') }}" required>
     @error('policy')
         <span class="text-danger">{{ $message }}</span>

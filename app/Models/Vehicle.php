@@ -9,6 +9,7 @@ class Vehicle extends Model
     protected $table = 'f_vehicles';
     protected $primaryKey = 'id_vehicle';
     protected $fillable = [
+        'alias',
         'plates',
         'year_model',
         'license_sct_num',

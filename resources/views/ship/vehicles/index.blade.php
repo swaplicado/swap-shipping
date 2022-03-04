@@ -30,13 +30,14 @@
                 <th>id</th>
                 <th>is deleted</th>
                 <th>id carrier</th>
+                <th>Alías</th>
                 <th>Placas</th>
                 <th>Modelo</th>
                 <th>Clave permiso SCT</th>
                 <th>Permiso SCT</th>
                 <th>Núm. permiso SCT</th>
                 <th>Reg. tributario</th>
-                <th>Póliza</th>
+                <th>Póliza resp. civ.</th>
                 <th>Aseguradora</th>
                 <th>Clave conf. vehicular</th>
                 <th>Conf. vehicular</th>
@@ -49,6 +50,7 @@
                 <td>{{$d->id_vehicle}}</td>
                 <td>{{$d->is_deleted}}</td>
                 <td>{{$d->carrier_id}}</td>
+                <td>{{$d->alias}}</td>
                 <td>{{$d->plates}}</td>
                 <td>{{$d->year_model}}</td>
                 <td>{{$d->LicenceSct->key_code}}</td>
