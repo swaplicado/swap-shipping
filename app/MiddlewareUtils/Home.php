@@ -30,7 +30,29 @@ class Home {
                 <div class="col-sm-6">
                 <div class="card">
                     <div class="card-body" style="height: 250px; text-align: justify;">
-                    <h5 class="card-title">Paso 2: Registra al menos una aseguradora para tus vehículos.</h5>
+                    <h5 class="card-title">Paso 2: Registra una serie para tus documentos.</h5>
+                    <p class="card-text">
+                    Es necesario registrar una serie y folio, para tus documentos, sin esta no será posible 
+                    editar ni timbrar tus documentos cartas porte, la serie que registres es libre, puedes 
+                    registrar la serie con el nombre que tú desees. Para acceder a la vista de series, 
+                    presiona en la sección "Catálogos" del menú en el lado izquierdo de su pantalla, 
+                    luego presiona en "Series", o presionando el botón "Ir a mis series", al presionar 
+                    el botón se te dirigirá a la vista series donde podrás comprobar la lista de tus 
+                    series registradas.  
+                    </p>
+                    <br>
+                    <a href="series" class="btn btn-primary">Ir a mis series</a>
+                    </div>
+                </div>
+                </div>
+            </div>
+            <br>
+            
+            <div class="row">
+                <div class="col-sm-6">
+                <div class="card">
+                    <div class="card-body" style="height: 250px; text-align: justify;">
+                    <h5 class="card-title">Paso 3: Registra al menos una aseguradora para tus vehículos.</h5>
                     <p class="card-text">
                         Es necesario registrar al menos a una aseguradora para poder proceder con el registro de tus 
                         vehículos, puedes acceder a la vista de aseguradoras en la sección "Catálogos" del menú en el 
@@ -43,14 +65,10 @@ class Home {
                     </div>
                 </div>
                 </div>
-            </div>
-            <br>
-            
-            <div class="row">
                 <div class="col-sm-6">
                 <div class="card">
                     <div class="card-body" style="height: 250px; text-align: justify;">
-                    <h5 class="card-title">Paso 3: Registra un vehículo.</h5>
+                    <h5 class="card-title">Paso 4: Registra un vehículo.</h5>
                     <p class="card-text">
                         Puedes acceder a la vista de vehículos desde la sección "Vehículos" en el menú del lado izquierdo de su pantalla, 
                         o presionando el botón Ir a mis vehículos", al presionar el botón se te dirigirá a la vista vehículos donde 
@@ -61,10 +79,14 @@ class Home {
                     </div>
                 </div>
                 </div>
+            </div>
+            <br>
+            
+            <div class="row">
                 <div class="col-sm-6">
                 <div class="card">
                     <div class="card-body" style="height: 250px; text-align: justify;">
-                    <h5 class="card-title">Paso 4: Registra un remolque.</h5>
+                    <h5 class="card-title">Paso 5: Registra un remolque.</h5>
                     <p class="card-text">
                         Puedes acceder a la vista de remolques desde la sección "Remolques" en el menú del lado izquierdo de su 
                         pantalla, o presionando el botón Ir a mis remolques", al presionar el botón se te dirigirá a la vista 
@@ -75,14 +97,10 @@ class Home {
                     </div>
                 </div>
                 </div>
-            </div>
-            <br>
-            
-            <div class="row">
                 <div class="col-sm-6">
                 <div class="card">
                     <div class="card-body" style="height: 250px; text-align: justify;">
-                    <h5 class="card-title">Paso 5: Registra un chofer.</h5>
+                    <h5 class="card-title">Paso 6: Registra un chofer.</h5>
                     <p class="card-text">
                         Puedes acceder a la vista de choferes desde la sección "Choferes" en el menú del lado 
                         izquierdo de su pantalla, o presionando el botón "Ir a mis choferes", al presionar el 
