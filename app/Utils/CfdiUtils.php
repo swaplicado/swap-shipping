@@ -561,7 +561,7 @@ class CfdiUtils
                             <b>Emisor: </b><b style = "font-size: 3.5mm;">'.$Nombre_E.'</b>
                             <p style="margin-top: 0; font-size: 3mm">
                                 <b>RFC emisor: </b>'.$Rfc_E.'<br>
-                                <b>Regimen fiscal emisor: </b>'.$RegimenFiscal_E.'<br>
+                                <b>Régimen fiscal emisor: </b>'.$RegimenFiscal_E.'<br>
                             </p>
                         </td>
                         <td class = "border text-c" style = "width: 30%;">
@@ -576,14 +576,14 @@ class CfdiUtils
                             <p style="margin-top: 0; font-size: 3mm">
                                 <b>Receptor: </b>'.$Nombre_R.'<br>
                                 <b>RFC receptor: </b>'.$Rfc_R.'
-                                <b>&nbsp; Regimen fiscal receptor: </b>'.$RegimenFiscal_R.'<br>
+                                <b>&nbsp; Régimen fiscal receptor: </b>'.$RegimenFiscal_R.'<br>
                                 <b>Código postal receptor: </b>'.$DomicilioFiscalReceptor.'
                             </p>
                         </td>
                         <td class = "border text-c" style = "width: 23%;">
-                            <b>Tipo comprobante</b>
+                            <b>Tipo comprobante:</b>
                             <p>'.$TipoDeComprobante.'</p>
-                            <b>Lugar y fecha expedición</b>
+                            <b>Lugar y fecha expedición:</b>
                             <p>'.$LugarExpedicion.'</p>
                             <p style="margin-top: 0; font-size: 3mm">
                                 '.$Fecha.'
@@ -684,23 +684,23 @@ class CfdiUtils
                             <table style = "width: 100%;">
                                 <tbody>
                                     <tr>
-                                        <td class = "text-r"><b>SubTotal:</b></td>
+                                        <td class = "text-r"><b>Subtotal:</b></td>
                                         <td class = "text-r">'.$SubTotal.' '.$Moneda.'</td>
                                     </tr>
                                     <tr>
                                         <td class = "text-r"><b>Descuento:</b></td>
-                                        <td class = "text-r">'.$Descuento.' '.$Moneda.'</td>
+                                        <td class = "text-r">'.(!is_null($Descuento) ? $Descuento : '0.00').' '.$Moneda.'</td>
                                     </tr>
                                     <tr>
-                                        <td class = "text-r"><b>Total impuestos traslado:</b></td>
+                                        <td class = "text-r"><b>Total impuestos traslados:</b></td>
                                         <td class = "text-r">'.$TotalImpuestosTrasladados.' '.$Moneda.'</td>
                                     </tr>
                                     <tr>
-                                        <td class = "text-r"><b>Total impuestoa retenido:</b></td>
+                                        <td class = "text-r"><b>Total impuestos retenidos:</b></td>
                                         <td class = "text-r">'.$TotalImpuestosRetenidos.' '.$Moneda.'</td>
                                     </tr>
                                     <tr>
-                                        <td class = "text-r"><b>Total comprobante:</b></td>
+                                        <td class = "text-r"><b>Total:</b></td>
                                         <td class = "text-r">'.$Total.' '.$Moneda.'</td>
                                     </tr>
                                 </tbody>
@@ -708,7 +708,7 @@ class CfdiUtils
                         </td>
                     </tr>
                     <tr>
-                        <td style = "width: 40%;">'.$formatterES->format($Total).'</td>
+                        <td style = "width: 40%;">'.ucfirst($formatterES->format($Total)).'</td>
                         <td style = "width: 20%;">'.$UsoCFDI.'</td>
                     </tr>
                     <tr>

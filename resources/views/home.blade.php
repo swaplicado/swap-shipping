@@ -47,9 +47,9 @@
         <div class="card-body" style="height: 250px; text-align: justify;">
           <h5 class="card-title">Navegación</h5>
           <p class="card-text">
-            A la izquierda de su pantalla encontrará un menú de color azul con el que podrá navegar por 
-            las distintas vistas del sistema, solo debe presionar una vez el botón de la sección a la que 
-            desea acceder y será redirigido a dicha sección. El menú se puede guardar o desplegar a gusto 
+            A la izquierda de tu pantalla encontrarás un menú de color azul con el que podrás navegar por 
+            las distintas vistas del sistema, solo debes presionar una vez el botón de la sección a la que 
+            deseas acceder y serás redirigido a dicha sección. El menú se puede guardar o desplegar a gusto 
             del usuario, solamente debe presionar el botón
             <button class="btn-primary" type="button" style="background-color: #0f2e52;" >
               <span class="icon menu-toggle"></span>

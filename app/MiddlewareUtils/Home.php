@@ -19,7 +19,7 @@ class Home {
                     <h5 class="card-title">Paso 1: Revisa tus datos fiscales.</h5>
                     <p class="card-text">
                         Asegúrate de que tus datos fiscales sean correctos, puedes revisarlos y actualizarlos
-                        si es necesario en la sección "Mis datos fiscales" del menú en lado izquierdo de su pantalla, 
+                        si es necesario en la sección "Mis datos fiscales" del menú en el lado izquierdo de tu pantalla, 
                         o presionando el botón "Ir a mis datos fiscales".
                     </p>
                     <br>
@@ -35,7 +35,7 @@ class Home {
                     Es necesario registrar una serie y folio, para tus documentos, sin esta no será posible 
                     editar ni timbrar tus documentos cartas porte, la serie que registres es libre, puedes 
                     registrar la serie con el nombre que tú desees. Para acceder a la vista de series, 
-                    presiona en la sección "Catálogos" del menú en el lado izquierdo de su pantalla, 
+                    presiona en la sección "Catálogos" del menú en el lado izquierdo de tu pantalla, 
                     luego presiona en "Series", o presionando el botón "Ir a mis series", al presionar 
                     el botón se te dirigirá a la vista series donde podrás comprobar la lista de tus 
                     series registradas.  
@@ -56,7 +56,7 @@ class Home {
                     <p class="card-text">
                         Es necesario registrar al menos a una aseguradora para poder proceder con el registro de tus 
                         vehículos, puedes acceder a la vista de aseguradoras en la sección "Catálogos" del menú en el 
-                        lado izquierdo de su pantalla presionando en "Aseguradoras", o presionando el botón "Ir a mis 
+                        lado izquierdo de tu pantalla presionando en "Aseguradoras", o presionando el botón "Ir a mis 
                         aseguradoras", al presionar el botón se te dirigirá a la vista aseguradora donde podrás 
                         comprobar la lista de tus aseguradoras registradas.
                     </p>
@@ -70,7 +70,7 @@ class Home {
                     <div class="card-body" style="height: 250px; text-align: justify;">
                     <h5 class="card-title">Paso 4: Registra un vehículo.</h5>
                     <p class="card-text">
-                        Puedes acceder a la vista de vehículos desde la sección "Vehículos" en el menú del lado izquierdo de su pantalla, 
+                        Puedes acceder a la vista de vehículos desde la sección "Vehículos" en el menú del lado izquierdo de tu pantalla, 
                         o presionando el botón Ir a mis vehículos", al presionar el botón se te dirigirá a la vista vehículos donde 
                         podrás revisar la lista de tus vehículos registrados.
                     </p>
@@ -88,7 +88,7 @@ class Home {
                     <div class="card-body" style="height: 250px; text-align: justify;">
                     <h5 class="card-title">Paso 5: Registra un remolque.</h5>
                     <p class="card-text">
-                        Puedes acceder a la vista de remolques desde la sección "Remolques" en el menú del lado izquierdo de su 
+                        Puedes acceder a la vista de remolques desde la sección "Remolques" en el menú del lado izquierdo de tu 
                         pantalla, o presionando el botón Ir a mis remolques", al presionar el botón se te dirigirá a la vista 
                         remolques donde podrás revisar la lista de tus remolques registrados.
                     </p>
@@ -103,7 +103,7 @@ class Home {
                     <h5 class="card-title">Paso 6: Registra un chofer.</h5>
                     <p class="card-text">
                         Puedes acceder a la vista de choferes desde la sección "Choferes" en el menú del lado 
-                        izquierdo de su pantalla, o presionando el botón "Ir a mis choferes", al presionar el 
+                        izquierdo de tu pantalla, o presionando el botón "Ir a mis choferes", al presionar el 
                         botón se te dirigirá a la vista choferes donde podrás verificar la lista de tus choferes 
                         registrados.
                     </p>
