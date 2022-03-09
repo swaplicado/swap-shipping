@@ -68,7 +68,7 @@
                 return;
             }
 
-            SGui.showWaiting(3000);
+            SGui.showWaiting(10000);
             app.setData();
 
             document.getElementById("saveButton").disabled = true;

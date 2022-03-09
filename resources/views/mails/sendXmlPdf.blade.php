@@ -2,7 +2,7 @@
 <html>
 <body>
 
-    <h2>Documentos generados con {{ config('app.name') }}</h2>
+    <h2>Comprobante fiscal generado con {{ config('app.name') }}</h2>
 
 </body>
 </html>

@@ -126,6 +126,10 @@
                                     <input type="password" id="pw" name="pw" class="form-control" placeholder="Contraseña de certificados" required/>
                                 </div>
                                 <input type="hidden" name="carrier" value="{{ $data->id_carrier }}">
+                                <small style="color: red;">NOTA: Los certificados se gardarán de forma segura en el servidor bajo una doble encriptación.
+                                    La contraseña de igual manera será codificada mediante una clave privada, por lo que tu información está segura y no podrá ser accedida ni por los administradores
+                                    del sistema.
+                                </small>
                                 <br>
                                 <div class="row">
                                     <div class="col-10"></div>

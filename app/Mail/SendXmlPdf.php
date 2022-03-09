@@ -19,13 +19,14 @@ class SendXmlPdf extends Mailable
      *
      * @return void
      */
-    public function __construct($xml, $pdf64, $comercial_name, $folio, $serie)
+    public function __construct($xml, $pdf64, $comercial_name, $folio, $serie, $uuid)
     {
         $this->xml = $xml;
         $this->pdf = base64_decode($pdf64);
         $this->comercial_name = $comercial_name;
         $this->folio = $folio;
         $this->serie = $serie;
+        $this->uuid = $uuid;
     }
 
     /**
@@ -36,8 +37,8 @@ class SendXmlPdf extends Mailable
     public function build()
     {
         return $this->view('mails.sendXmlPdf')
-                    ->subject(Lang::getFromJson(config('app.name').' - '.$this->comercial_name.' - '.$this->serie.' - '.$this->folio))
-                    ->attachData($this->xml, 'xml.xml')
-                    ->attachData($this->pdf, 'pdf.pdf', ['mime' => 'application/pdf',]);
+                    ->subject(Lang::getFromJson(config('app.name').(strlen($this->comercial_name) > 0 ? ' - '.$this->comercial_name : '').' - '.$this->serie.' - '.$this->folio))
+                    ->attachData($this->xml, $this->uuid.'.xml')
+                    ->attachData($this->pdf, $this->uuid.'.pdf', ['mime' => 'application/pdf',]);
     }
 }

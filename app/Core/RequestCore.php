@@ -2,6 +2,7 @@
 
 use App\Models\Carrier;
 use Carbon\Carbon;
+use App\Utils\SFormats;
 
 class RequestCore {
 
@@ -153,10 +154,10 @@ class RequestCore {
             $oConcept->quantity = 1;
             $oConcept->discount = 0;
             $oConcept->claveProdServ = $oConfigurations->cfdi4_0->claveServicio;
-            $oConcept->claveUnidad = $oConfigurations->cfdi4_0->claveUnidad;
+            $oConcept->claveUnidad = $oCarrier->prod_serv->key_code;
             $oConcept->simboloUnidad = $oConfigurations->cfdi4_0->simboloUnidad;
             $oConcept->unidad = $lUnits[$oConfigurations->cfdi4_0->claveUnidad];
-            $oConcept->numIndentificacion = (date('YmdHis').'_'.(random_int(100, 999)));
+            $oConcept->numIndentificacion = (date('YmdHis').''.(random_int(100, 999)));
 
             $oState = \DB::table('sat_states')
                             ->where('key_code', $oLocDest->domicilio->estado)
@@ -172,11 +173,11 @@ class RequestCore {
             $freightType = "";
             if ($iDestination == $nLocationsTemp - 1) {
                 $oConcept->valorUnitario = $oConfigurations->tarifaBase * $oState->rate;
-                $freightType = "Flete";
+                $freightType = "Destino";
             }
             else {
                 $oConcept->valorUnitario = $oConfigurations->tarifaBaseEscala * $oState->rate;
-                $freightType = "Escala";
+                $freightType = "Reparto";
             }
 
             $oConcept->description = $oConfigurations->cfdi4_0->prodServDescripcion." - ".$freightType.
@@ -219,15 +220,15 @@ class RequestCore {
              * Distancia recorrida
              */
             if ($oLocSource->tipoUbicacion == "Origen") {
-                $oLocSource->distanciaRecorrida = 0;
-                $oLocDest->distanciaRecorrida = $oState->distance;
+                $oLocSource->distanciaRecorrida = SFormats::formatNumber(0, 3);
+                $oLocDest->distanciaRecorrida = SFormats::formatNumber($oState->distance, 3);
             }
             else {
                 if ($oLocSource->domicilio->estado == $oLocDest->domicilio->estado) {
-                    $oLocDest->distanciaRecorrida = $oConfigurations->distanciaMinima;
+                    $oLocDest->distanciaRecorrida = SFormats::formatNumber($oConfigurations->distanciaMinima, 3);
                 }
                 else {
-                    $oLocDest->distanciaRecorrida = $oState->distance > $traveledDistance ? $oState->distance - $traveledDistance : 0;
+                    $oLocDest->distanciaRecorrida = SFormats::formatNumber($oState->distance > $traveledDistance ? $oState->distance - $traveledDistance : 0, 3);
                 }
             }
 
@@ -267,7 +268,7 @@ class RequestCore {
         //*********************************************************************************************
         $oObjData->oCartaPorte = new \stdClass();
         $oObjData->oCartaPorte->version = "2.0";
-        $oObjData->oCartaPorte->totalDistancia = $traveledDistance;
+        $oObjData->oCartaPorte->totalDistancia = SFormats::formatNumber($traveledDistance, 3);
         $oObjData->oCartaPorte->transpInternac = $oRequest->transpInternac;
 
         $oObjData->oCartaPorte->ubicaciones = $oRequest->ubicaciones;

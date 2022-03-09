@@ -5,6 +5,7 @@ use SoapClient;
 use App\Utils\CfdUtils;
 use App\Utils\FileUtils;
 use App\Models\Certificate;
+use App\Core\SATCore;
 
 class FinkokCore {
 
@@ -44,7 +45,7 @@ class FinkokCore {
                 $error = ["error_code" => $incidencia->CodigoError, 
                             "message" => str_replace('"', '', $incidencia->MensajeIncidencia).(isset($incidencia->ExtraInfo) ? ("-".str_replace('"', '', $incidencia->ExtraInfo)) : "")];
 
-                return [$error];
+                return $error;
             }
         }
 
@@ -94,7 +95,7 @@ class FinkokCore {
         return null;
     }
 
-    public static function cancelCfdi($oMDocument, $oCarrier)
+    public static function cancelCfdi($oMDocument, $oCarrier, $oReason, $oMDocumentRef = null)
     {
         // env('DEST_PATH');
         $cerEncFile = Storage::disk('local')->path(env('DEST_PATH')).'/'.$oCarrier->fiscal_id.'_cer.enc';
@@ -106,7 +107,6 @@ class FinkokCore {
         $keyFile = Storage::disk('local')->path(env('DEST_PATH')).'/'.$oCarrier->fiscal_id.'_.key';
         $keyFile = CfdUtils::decryptFile($keyEncFile, $keyFile, env('FL_KEY'));
 
-
         $cer = Certificate::where('carrier_id', $oCarrier->id_carrier)->first();
 
         if ($cer == null) {
@@ -116,12 +116,13 @@ class FinkokCore {
         $pw = CfdUtils::decryptPass($cer->pswrd);
         
         # Generar el certificado y llave en formato .pem
-        $cerPem = (Storage::disk('local')->path(env('DEST_PATH')."/".$oCarrier->fiscal_id))."_cer.pem";
-        $keyPem = (Storage::disk('local')->path(env('DEST_PATH')."/".$oCarrier->fiscal_id))."_key.pem";
+        $cerPem = Storage::disk('local')->path(env('DEST_PATH')."/".$oCarrier->fiscal_id)."_cer.pem";
+        $keyPem = Storage::disk('local')->path(env('DEST_PATH')."/".$oCarrier->fiscal_id)."_key.pem";
         $encKey = Storage::disk('local')->path(env('DEST_PATH'))."/".($oCarrier->fiscal_id)."_llave.enc";
+
         shell_exec("openssl x509 -inform DER -outform PEM -in ".($cerFile)." -pubkey -out ".$cerPem);
         shell_exec("openssl pkcs8 -inform DER -in ".($keyFile)." -passin pass:".($pw)." -out ".$keyPem);
-        shell_exec("openssl rsa -in ".$keyPem." -des3 -out ".$encKey." -passout pass:".env('FINKOK_PASSWORD'));
+        shell_exec("openssl rsa -in ".$keyPem." -des3 -out ".$encKey." -passout pass:".FinkokCore::getFinkokPass());
         
         $username = FinkokCore::getFinkokUser();
         $password = FinkokCore::getFinkokPass();
@@ -147,8 +148,8 @@ class FinkokCore {
         $client = new SoapClient((env('APP_ENV') === "local" ? env('FINKOK_URL_CANCEL_LOCAL') :
                                 (env('APP_ENV') === "production" ? env('FINKOK_URL_CANCEL_PRODUCTION') : ''))
                                 , array('trace' => 1));
-        
-        $uuids = array("UUID" => $oMDocument->uuid, "Motivo" => "02", "FolioSustitucion" => "");
+
+        $uuids = array("UUID" => $oMDocument->uuid, "Motivo" => $oReason->reason_code, "FolioSustitucion" => $folioRef);
         $uuid_ar = array('UUID' => $uuids);
         $uuids_ar = array('UUIDS' => $uuid_ar);
         // print_r($uuids_ar);
@@ -163,6 +164,12 @@ class FinkokCore {
         // print_r($params);
         
         $response = $client->__soapCall("cancel", array($params));
+
+        unlink($cerFile);
+        unlink($keyFile);
+        unlink($cerPem);
+        unlink($keyPem);
+        unlink($encKey);
         
         if (isset($response->cancelResult)) {
             if (isset($response->cancelResult->Folios->Folio)) {
@@ -178,6 +185,12 @@ class FinkokCore {
 
                     return ['success' => true, 'data' => $oResponse];
                 }
+            }
+            else if (isset($response->cancelResult->CodEstatus)) {
+                return ['success' => false, 
+                        'error_code' => "Error",
+                        'message' => $response->cancelResult->CodEstatus
+                    ];
             }
         }
 

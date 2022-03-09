@@ -16,3 +16,5 @@ shipconfig.json
 .key
 *.key
 *.cer
+config/debugbar.php
+storage/debugbar/*.json

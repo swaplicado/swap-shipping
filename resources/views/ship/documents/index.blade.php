@@ -45,7 +45,7 @@
         'moreFilters' => [
             '
             <div class="'.($withCarrierFilter ? 'col-md-12' : 'col-md-7').'">
-                <form action="" class="form-inline">
+                <form action="'.(route('documents', $viewType)).'" class="form-inline">
                     <div class="row" >
                         '.($withCarrierFilter ? $carrierFilter : '')
                         .($withDateFilter ? '
@@ -107,7 +107,7 @@
                 <td>{{ $doc->id_document }}</td>
                 <td>{{ $doc->is_deleted }}</td>
                 <td>{{$doc->id_carrier}}</td>
-                <td>{{ (!$doc->is_processed) ? "PENDIENTE" : ($doc->is_signed ? "TIMBRADO" : ($doc->is_processed ? "PROCESADO" : "CANCELADO")) }}</td>
+                <td>{{ (! $doc->is_processed) ? "PENDIENTE" : ($doc->is_canceled ? "CANCELADO" : ($doc->is_signed ? "TIMBRADO" : "PROCESADO")) }}</td>
                 {{-- <td>{{ $doc->xml_version }}</td>
                 <td>{{ $doc->comp_version }}</td> --}}
                 <td>{{ $doc->fiscal_id }}</td>
@@ -130,9 +130,14 @@
         </tbody>
     </table>
 </div>
+
+@include('ship.documents.cancel_modal')
 @endsection
 
 @section('scripts')
+<script>
+    var urlCancel = '{{ route($cancelRoute, [":id", ":id_reason", ":ref"]) }}';
+</script>
 @include('layouts.table_Jscontroll', ['table_id' => 't_documents', 
                                         'signRoute' => 'documents.sign',
                                         'cancelRoute' => 'documents.cancel',
@@ -149,6 +154,11 @@
         // var end = moment().endOf('month');
         var requestStart = '<?php echo $start ?>';
         var requestEnd = '<?php echo $end ?>';
+
+        if (requestStart == "" || requestStart == null || requestStart == undefined) {
+            return;
+        }
+        
         var start = moment(requestStart, 'YYYY-MM-DD');
         var end = moment(requestEnd, 'YYYY-MM-DD');
 
@@ -287,4 +297,5 @@
     
     });
 </script>
+<script src="{{ asset('js/myapp/documents/SDocumentsIndex.js') }}"></script>
 @endsection

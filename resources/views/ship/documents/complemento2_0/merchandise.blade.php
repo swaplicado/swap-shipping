@@ -12,6 +12,7 @@
         <input type="text" class="form-control" id="num_mercancias" :value="oData.oCartaPorte.mercancia.unidadPesoName" readonly>
     </div>
 </div>
+<br>
 <div class="row" v-for="merch in oData.oCartaPorte.mercancia.mercancias">
     <div style="border-radius: 15px; margin-left: 0%" class="row border border-info">
         <div class="row">

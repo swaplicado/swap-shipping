@@ -136,7 +136,7 @@ Route::middleware(['auth', 'verified', 'menu'])->group( function () {
     Route::resource('documents', 'DocumentController');
     Route::put('documents/restore/{id}', 'DocumentController@restore')->name('documents.restore');
     Route::get('documents/sign/{id}', 'DocumentController@sign')->name('documents.sign');
-    Route::get('documents/cancel/{id}', 'DocumentController@cancel')->name('documents.cancel');
+    Route::get('documents/cancel/{id}/{reason}/{ref?}', 'DocumentController@cancel')->name('documents.cancel');
 
     // Configuraciones
     Route::prefix('config')->group(function () {

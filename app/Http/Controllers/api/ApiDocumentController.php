@@ -17,9 +17,8 @@ class ApiDocumentController extends Controller
         $oConfigurations = \App\Utils\Configuration::getConfigurations();
         $oObjData = (object) $request->info;
 
-        $verify = json_decode(verifyDocument::verifyJson($oObjData));
-
-        if($verify->code == 200){
+        $verify = verifyDocument::verifyJson($oObjData);
+        if($verify->code == 200) {
             $oCarrier = Carrier::where('fiscal_id', $oObjData->rfcTransportista)
                                 ->where('is_deleted', false)
                                 ->first();
@@ -50,8 +49,11 @@ class ApiDocumentController extends Controller
             $oDoc->usr_upd_id = 1;
             
             $oDoc->save();
-        } else {
-            return $verify->message;
+
+            return json_encode(['code' => $verify->code, 'message' => 'Documento guardado correctamente', 'data' => $verify], JSON_PRETTY_PRINT);
+        }
+        else {
+            return json_encode(['code' => $verify->code, 'message' => 'Error al guardar el documento', 'data' => $verify], JSON_PRETTY_PRINT);
         }
 
         // return json_encode($oDoc->id_document);

@@ -34,6 +34,43 @@
     </div>
   </div>
 
+  @if ($showPanel)
+    <br>
+      <h3>Panel de tareas</h3>
+    <br>
+    <div class="container">
+      <div class="row">
+        <div class="col-md-4">
+          <div class="form-group">
+            <a href="{{ route('documents', 1) }}"><i class='bx bxs-hand-right bx-tada'>
+              </i><label for="">Cartas porte por procesar</label>
+              <input style="text-align: center;" type="text" class="form-control" value="{{ $pendingDocuments }}" aria-describedby="helpId" readonly>
+            </a>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="form-group">
+            <a href="{{ route('documents', 2) }}">
+              <i class='bx bxs-hand-right bx-tada'></i><label for="">Cartas porte por timbrar</label>
+              <input style="text-align: center" type="text" class="form-control" value="{{ $processedDocuments }}" aria-describedby="helpId" readonly>
+            </a>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="form-group">
+            <a href="{{ route('documents', 3) }}">
+              <i class='bx bxs-hand-right bx-tada'></i><label for="">Cartas porte timbradas</label>
+              <input style="text-align: center" type="text" class="form-control" value="{{ $stampedDocuments }}" aria-describedby="helpId" readonly>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <br>
+    <hr>
+  @endif
+
   <br>
     <h3>Guía rápida</h3>
   <br>

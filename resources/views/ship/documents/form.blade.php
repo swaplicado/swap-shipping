@@ -73,7 +73,7 @@
     </div>
     <div class="accordion-item">
       <h2 class="accordion-header" id="headingLocations">
-        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseLocations" aria-expanded="false" aria-controls="collapseLocations">
+        <button id="btnLocations" class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseLocations" aria-expanded="false" aria-controls="collapseLocations">
           Ubicaciones
         </button>
       </h2>

@@ -99,40 +99,27 @@
                 return;
             }
 
-            var id = table.row('.selected').data()[0];
-            var url = '{{ isset($cancelRoute) ? route($cancelRoute, ":id") : "#" }}';
-            url = url.replace(':id',id);
-            window.location.href = url;
-            
-            // const { value: fruit } = await Swal.fire({
-            //     title: 'Select field validation',
-            //     input: 'select',
-            //     inputOptions: {
-            //         'Fruits': {
-            //             apples: 'Apples',
-            //             bananas: 'Bananas',
-            //             grapes: 'Grapes',
-            //             oranges: 'Oranges'
-            //         },
-            //         'Vegetables': {
-            //             potato: 'Potato',
-            //             broccoli: 'Broccoli',
-            //             carrot: 'Carrot'
-            //         },
-            //         'icecream': 'Ice cream'
-            //     },
-            //     inputPlaceholder: 'Select a fruit',
-            //     showCancelButton: true,
-            //     inputValidator: (value) => {
-            //         return new Promise((resolve) => {
-            //         if (value === 'oranges') {
-            //             resolve()
-            //         } else {
-            //             resolve('You need to select oranges :)')
-            //         }
-            //         })
-            //     }
-            // })
+            var idCancel = table.row('.selected').data()[0];
+
+            $("#cancelModal").modal('show');
+        });
+
+        $('#id_cancel_confirm').click(function () {
+            let e = document.getElementById("cancel_reason");
+            let uuidss = document.getElementById("uuid_rel")
+            let ref = uuidss.options[uuidss.selectedIndex].value;
+            SGui.showWaiting(8000);
+
+            if (table.row('.selected').data() == undefined) {
+                SGui.showError("Debe seleccionar un renglón");
+                return;
+            }
+
+            let idCancel = table.row('.selected').data()[0];
+            if (idCancel != undefined && urlCancel != undefined) {
+                url = urlCancel.replace(':id', idCancel).replace(':id_reason', e.value).replace(':ref', ref);
+                window.location.href = url;
+            }
         });
         
         $('#btn_edit').click(function () {

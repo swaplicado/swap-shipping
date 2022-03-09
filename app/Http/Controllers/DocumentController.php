@@ -24,32 +24,27 @@ class DocumentController extends Controller
 {
     public function index(Request $request, $viewType = 0)
     {
-        
-        if(!is_null($request->calendarStart)){
-            $start = getDate(strtotime($request->calendarStart));
-        }else{
-            $start = getDate(strtotime(date('Y-m-01')));
-        }
-        if(!is_null($request->calendarEnd)){
-            $end = getDate(strtotime($request->calendarEnd));
-        }else{
-            $end = getDate(strtotime(date('Y-m-t')));
-        }
-
+        // Comienza la declaración de la obtención de los documentos
         $lDocuments = \DB::table('f_documents')
-                        ->join('f_carriers', 'f_carriers.id_carrier', '=', 'f_documents.carrier_id')
-                        ->join('users', 'users.id', '=', 'f_documents.usr_gen_id')
-                        ->whereDate('requested_at', '>=', $start['year'].'-'.$start['mon'].'-'.$start['mday'])
-                        ->whereDate('requested_at', '<=', $end['year'].'-'.$end['mon'].'-'.$end['mday']);
+                            ->join('f_carriers', 'f_carriers.id_carrier', '=', 'f_documents.carrier_id')
+                            ->join('users', 'users.id', '=', 'f_documents.usr_gen_id');
 
         $withCarrierFilter = false;
         $carriers = [];
-        
+        // Se obtienen los documentos candidatos para ser referenciados para una cancelación
+        $lUuids = \DB::table('f_documents')
+                        ->select('uuid', 'serie', 'folio', 'requested_at', 'id_document')
+                        ->where('is_signed', true)
+                        ->where('is_deleted', false);
+
+        // Se realiza el filtrado de documentos dependiendo el tipo de usuario
         if (auth()->user()->isCarrier()) {
             $lDocuments = $lDocuments->where('f_documents.carrier_id', auth()->user()->carrier()->first()->id_carrier);
+            $lUuids = $lUuids->where('carrier_id', auth()->user()->carrier()->first()->id_carrier);
         }
         else if (auth()->user()->isDriver()) {
             $lDocuments = $lDocuments->where('f_documents.carrier_id', auth()->user()->driver()->first()->carrier_id);
+            $lUuids = $lUuids->where('carrier_id', auth()->user()->driver()->first()->carrier_id);
         }
         else {
             $carriers = Carrier::where('is_deleted', false)
@@ -61,61 +56,86 @@ class DocumentController extends Controller
             $withCarrierFilter = true;
         }
 
+        $lUuids = $lUuids->orderBy('requested_at', 'ASC')->get();
+
         $title = "";
         $ic = 0;
         $withDateFilter = false;
-
+        // se filtra por transportista si así se requiere
         if ($request->has('ic') && !is_null($request->ic)) {
             $lDocuments = $lDocuments->where('f_documents.carrier_id', $request->ic);
             $ic = $request->ic;
         }
 
+        // Se determina el tipo de filtro dependiento del tipo de vista
         switch ($viewType) {
             case "0":
-                $lDocuments = $lDocuments->get();
                 $title = "todas";
                 $withDateFilter = true;
                 break;
 
             // Por procesar
             case "1":
-                $lDocuments = $lDocuments->where('is_processed', false)
-                                            ->get();
+                $lDocuments = $lDocuments->where('is_processed', false);
                 $title = "por procesar";
-                $withDateFilter = true;
+                $withDateFilter = false;
                 break;
 
             // Por timbrar
             case "2":
                 $lDocuments = $lDocuments->where('is_processed', true)
-                                            ->where('is_signed', false)
-                                            ->get();
+                                            ->where('is_signed', false);
                 $title = "por timbrar";
-                $withDateFilter = true;
+                $withDateFilter = false;
                 break;
 
             // Timbrados
             case "3":
                 $lDocuments = $lDocuments->where('is_processed', true)
-                                            ->where('is_signed', true)
-                                            ->get();
+                                            ->where('is_signed', true);
                 $title = "timbradas";
                 $withDateFilter = true;
                 break;
             
             default:
-                $lDocuments = $lDocuments->get();
                 $title = "todas";
                 $withDateFilter = true;
                 break;
         }
 
+        // si se determinó que llevará filtro de fechas se realiza la consulta
+        if ($withDateFilter) {
+            if (! is_null($request->calendarStart)) {
+                $start = getDate(strtotime($request->calendarStart));
+            }
+            else {
+                $start = getDate(strtotime(date('Y-m-01')));
+            }
+    
+            if (! is_null($request->calendarEnd)) {
+                $end = getDate(strtotime($request->calendarEnd));
+            }
+            else {
+                $end = getDate(strtotime(date('Y-m-t')));
+            }
+
+            $lDocuments = $lDocuments->whereBetween('requested_at', [$start['year'] . '-' . $start['mon'] . '-' . $start['mday'], 
+                                                                    $end['year'] . '-' . $end['mon'] . '-' . $end['mday']]);
+        }
+        else {
+            $start = null;
+            $end = null;
+        }
+
+        $lDocuments = $lDocuments->get();
+
+        // Se obtienen los montos de los documentos
         $enableTotales = false;
-        if(auth()->user()->hasAnyRole(['Admin','Carrier','user','driverT1','driverT2'])){
-            if(!is_null($lDocuments)){
-                foreach($lDocuments as $ld){
-                    $mdocument = MDocument::where('_id', $ld->mongo_document_id)->select('subTotal','total',
-                            'totalImpuestosTrasladados','totalImpuestosRetenidos','discounts')->first();
+        if (auth()->user()->hasAnyRole(['Admin', 'Carrier', 'user', 'driverT1', 'driverT2'])) {
+            if (!is_null($lDocuments)) {
+                foreach ($lDocuments as $ld) {
+                    $mdocument = MDocument::where('_id', $ld->mongo_document_id)->select('subTotal', 'total',
+                        'totalImpuestosTrasladados', 'totalImpuestosRetenidos', 'discounts')->first();
                     $ld->discounts = SFormats::formatMoney($mdocument->discounts);
                     $ld->totalImpuestosRetenidos = SFormats::formatMoney($mdocument->totalImpuestosRetenidos);
                     $ld->totalImpuestosTrasladados = SFormats::formatMoney($mdocument->totalImpuestosTrasladados);
@@ -123,9 +143,11 @@ class DocumentController extends Controller
                     $ld->total = SFormats::formatMoney($mdocument->total);
                 }
             }
+
             $enableTotales = true;
         }
 
+        $lCancelReasons = \DB::table('f_documents_cancel_reasons')->get();
         
         return view('ship.documents.index', [
             'lDocuments' => $lDocuments,
@@ -135,9 +157,12 @@ class DocumentController extends Controller
             'withCarrierFilter' => $withCarrierFilter,
             'withDateFilter' => $withDateFilter,
             'ic' => $ic,
-            'start' => $start['year'].'-'.$start['mon'].'-'.$start['mday'],
-            'end' => $end['year'].'-'.$end['mon'].'-'.$end['mday'],
-            'enableTotales' => $enableTotales
+            'start' => $start != null ? ($start['year'].'-'.$start['mon'].'-'.$start['mday']) : null,
+            'end' => $end != null ? ($end['year'].'-'.$end['mon'].'-'.$end['mday']) : null,
+            'enableTotales' => $enableTotales,
+            'lCancelReasons' => $lCancelReasons,
+            'cancelRoute' => 'documents.cancel',
+            'lUuids' => $lUuids
         ]);
     }
 
@@ -386,6 +411,7 @@ class DocumentController extends Controller
             $aConcept["unidad"] = $oClientConcept->unidad;
             $aConcept["numIdentificacion"] = $oClientConcept->numIndentificacion;
             
+            $lCptTraslados = [];
             foreach ($aConcept["oImpuestos"]["lTraslados"] as $aTraslado) {
                 $aTraslado["tasa"] = round($aTraslado["tasa"], 4);
                 $aTraslado["base"] = $aConcept["importe"];
@@ -404,20 +430,25 @@ class DocumentController extends Controller
                                                             ];
                 }
 
+                $lCptTraslados[] = $aTraslado;
                 $dTraslados += $aTraslado["importe"];
             }
 
+            $lCptRetenciones = [];
             foreach ($aConcept["oImpuestos"]["lRetenciones"] as $aRetecion) {
                 $aRetecion["tasa"] = round($aRetecion["tasa"], 4);
                 $aRetecion["base"] = $aConcept["importe"];
                 $aRetecion["importe"] = round($aRetecion["base"] * $aRetecion["tasa"], 2);
 
+                $lCptRetenciones[] = $aRetecion;
                 $dRetention += $aRetecion["importe"];
             }
 
             $dSubTotal += $aConcept["importe"];
             $dDiscount += $aConcept["discount"];
 
+            $aConcept["oImpuestos"]["lTraslados"] = $lCptTraslados;
+            $aConcept["oImpuestos"]["lRetenciones"] = $lCptRetenciones;
             $lConcepts[] = $aConcept;
             $indexConcept++;
         }
@@ -428,10 +459,6 @@ class DocumentController extends Controller
         $oImpuestos = new \stdClass();
         $oImpuestos->totalImpuestosTrasladados = $dTraslados;
         $oImpuestos->totalImpuestosRetenidos = $dRetention;
-
-        $oMongoDocument->subTotal = round($dSubTotal, 2);
-        $oMongoDocument->total = round($dSubTotal - $dDiscount + $dTraslados - $dRetention, 2);
-        $oMongoDocument->discounts = round($dDiscount, 2);
 
         $oImpuestos->lTraslados = [];
         foreach ($aTraslados as $key => $value) {
@@ -450,6 +477,12 @@ class DocumentController extends Controller
 
         $oMongoDocument->oImpuestos = json_decode(json_encode($oImpuestos), true);
 
+        $oMongoDocument->subTotal = round($dSubTotal, 2);
+        $oMongoDocument->discounts = round($dDiscount, 2);
+        $oMongoDocument->totalImpuestosRetenidos = $dRetention;
+        $oMongoDocument->totalImpuestosTrasladados = $dTraslados;
+        $oMongoDocument->total = round($dSubTotal - $dDiscount + $dTraslados - $dRetention, 2);
+
         // Carta Porte
         $oMongoDocument->oVehicle = json_decode(json_encode($oCfdiData->oVehicle), true);
         $oMongoDocument->oFigure = json_decode(json_encode($oCfdiData->oFigure), true);
@@ -465,8 +498,29 @@ class DocumentController extends Controller
         $oCP = $oMongoDocument->oCartaPorte;
         $oCP["mercancia"]["pesoBrutoTotal"] = $pesoBrutoTotal;
         $oMongoDocument->oCartaPorte = $oCP;
+
+        // Ubicaciones
+        $totalDistancia = 0.0;
+        foreach ($oMongoDocument->oCartaPorte["ubicaciones"] as $index => $location) {
+            $oClientLoc = $oCfdiData->oData->oCartaPorte->ubicaciones[$index];
+
+            if ($index == 0) {
+                $distance = 0.0;
+            }
+            else {
+                $distance = $oClientLoc->distanciaRecorrida;
+            }
+            
+            $location["distanciaRecorrida"] = $distance;
+            $totalDistancia += $oClientLoc->distanciaRecorrida;
+        }
+
+        $oCP = $oMongoDocument->oCartaPorte;
+        $oCP["totalDistancia"] = $totalDistancia;
+        $oMongoDocument->oCartaPorte = $oCP;
         
         $sXml = XmlGeneration::generateCartaPorte($oDocument, $oMongoDocument, $oCarrier);
+
         $oDocument->generated_at = date('Y-m-d H:i:s');
         $oDocument->is_processed = true;
 
@@ -504,8 +558,8 @@ class DocumentController extends Controller
         if (is_array($cfdiResponse) || null === $cfdiResponse) {
             if ($cfdiResponse != null) {
                 $log = new MSignLog();
-                $log->message = $cfdiResponse[0]["message"];
-                $log->idError = $cfdiResponse[0]["error_code"];
+                $log->message = $cfdiResponse["message"];
+                $log->idError = $cfdiResponse["error_code"];
                 $log->mongoDocumentId = $oMongoDocument->id;
                 $log->idDocument = $oDocument->id_document;
                 $log->idUser = \Auth::user()->id;
@@ -547,12 +601,12 @@ class DocumentController extends Controller
         $log->save();
 
         // generar pdf
-        $pdf = CfdiUtils::updatePdf($oMongoDocument->_id, $oMongoDocument->xml_cfdi);
+        $pdf = CfdiUtils::updatePdf($oMongoDocument->_id, $oMongoDocument->xml_cfdi, $oDocument->carrier_id);
         // enviar correo
         $mails = MailUtils::getMails();
         $comercial_name = MailUtils::getComercialName();
-        foreach($mails as $m){
-            Mail::to($m)->send(new SendXmlPdf($oMongoDocument->xml_cfdi, $pdf, $comercial_name, $oMongoDocument->folio, $oMongoDocument->serie));
+        foreach ($mails as $m) {
+            Mail::to($m)->send(new SendXmlPdf($oMongoDocument->xml_cfdi, $pdf, $comercial_name, $oMongoDocument->folio, $oMongoDocument->serie, $oMongoDocument->uuid));
         }
 
         return redirect("documents")->with(['message' => "El documento ha sido timbrado exitosamente", 'icon' => "success"]);
@@ -565,8 +619,8 @@ class DocumentController extends Controller
         if(auth()->user()->isAdmin() || auth()->user()->isClient()){
             abort_unless(CfdiUtils::remisionistaCanEdit($oDocument->carrier_id), 401);
         }
-        $oMongoDocument = MDocument::find($oDocument->mongo_document_id);
 
+        $oMongoDocument = MDocument::find($oDocument->mongo_document_id);
         if (! $oDocument->is_processed) {
             return redirect("documents")->with(['icon' => "error", 'message' => "El documento no ha sido procesado"]);
         }
@@ -575,9 +629,123 @@ class DocumentController extends Controller
             return redirect("documents")->with(['icon' => "error", 'message' => "El documento no ha sido timbrado"]);
         }
 
+        if ($oDocument->is_canceled) {
+            return redirect("documents")->with(['icon' => "error", 'message' => "El documento ya está cancelado"]);
+        }
+
         $oCarrier = Carrier::find($oDocument->carrier_id);
 
+        $oMDocumentRef = null;
+        if (isset($request->ref) && $request->ref > 0) {
+            $oDocRef = Document::find($request->ref);
+            $oMDocumentRef = $oDocRef->mongo_document_id;
+        }
+
+        /**
+         * Validación de cancelación
+         */
+        $responseValidation = SATCore::validateCfdi($oMongoDocument->emisor["rfcEmisor"], 
+                                                    $oMongoDocument->receptor["rfcReceptor"], 
+                                                    $oMongoDocument->total, 
+                                                    $oMongoDocument->uuid);
+
+        if ($responseValidation->EsCancelable == "" || $responseValidation->Estado == "No encontrado." || 
+            ($responseValidation->EsCancelable != "Cancelable sin aceptación" && $responseValidation->EsCancelable != "Cancelable con aceptación")) {
+            $log = new MSignLog();
+            $log->message = $responseValidation->CodigoEstatus." - ".$responseValidation->Estado." - ".$responseValidation->EstatusCancelacion.' - '.$responseValidation->EsCancelable;
+            $log->idError = $responseValidation->CodigoEstatus;
+            $log->mongoDocumentId = $oMongoDocument->id;
+            $log->idDocument = $oDocument->id_document;
+            $log->idUser = \Auth::user()->id;
+            $log->save();
+
+            return redirect()->back()->with(['icon' => "error", 'message' => $log->idError."-".$log->message]);
+        }
+
+        // Motivo de cancelación
+        $oReason = \DB::table('f_documents_cancel_reasons')->where('id_reason', $request->reason)->first();
+        if ($oReason == null) {
+            $log = new MSignLog();
+            $log->message = 'No se encontró la razon de cancelación';
+            $log->idError = "-1";
+            $log->mongoDocumentId = $oMongoDocument->id;
+            $log->idDocument = $oDocument->id_document;
+            $log->idUser = \Auth::user()->id;
+            $log->save();
+
+            return redirect()->back()->with(['icon' => "error", 'message' => $log->idError."-".$log->message]);
+        }
+
+        // Documento de referencia
+        $folioRef = "";
+        if ($oReason->with_reference) {
+            if ($oMDocumentRef == null) {
+                $log = new MSignLog();
+                $log->message = 'No se encontró el documento de referencia';
+                $log->idError = "-2";
+                $log->mongoDocumentId = $oMongoDocument->id;
+                $log->idDocument = $oDocument->id_document;
+                $log->idUser = \Auth::user()->id;
+                $log->save();
+
+                return redirect()->back()->with(['icon' => "error", 'message' => $log->idError."-".$log->message]);
+            }
+
+            $folioRef = $oMDocumentRef->uuid;
+        }
+
         // cancelar cfdi
-        $cfdiResponse = FinkokCore::cancelCfdi($oMongoDocument, $oCarrier);
+        $cfdiResponse = FinkokCore::cancelCfdi($oMongoDocument, $oCarrier, $oReason, $oMDocumentRef);
+
+        if ($cfdiResponse['success']) {
+            $oResponse = $cfdiResponse['data'];
+
+            // Cancelable con aceptación
+            if ($responseValidation->EsCancelable == "Cancelable con aceptación") {
+                $oMongoDocument->cancel_status = "pendiente";
+            }
+            else {
+                // Cancelable sin aceptación
+                $oMongoDocument->is_canceled = true;
+                $oMongoDocument->cancel_status = "cancelado";
+                $oMongoDocument->canceled_at = $oResponse->date;
+                $oMongoDocument->cancellation_acknowledgment = $oResponse->acuse;   
+            }
+
+            $oMongoDocument->save();
+
+            if ($responseValidation->EsCancelable == "Cancelable con aceptación") {
+                $oDocument->cancel_status = "pendiente";
+            }
+            else {
+                $oDocument->is_canceled = true;
+                $oDocument->cancel_status = "cancelado";
+                $oDocument->canceled_at = Carbon::parse($oResponse->date)->toDateTimeString();
+            }
+            
+            $oDocument->usr_can_id = \Auth::user()->id;
+            $oDocument->save();
+
+            // Guardar registro de timbre en la base de datos
+            $oDocStamp = new DocumentStamp();
+            $oDocStamp->dt_stamp = date('Y-m-d H:i:s');
+            $oDocStamp->stamp_type = "cancelacion";
+            $oDocStamp->document_id = $oDocument->id_document;
+            $oDocStamp->usr_new_id = \Auth::user()->id;
+            $oDocStamp->save();
+
+            return redirect("documents")->with(['message' => "El documento ha sido cancelado exitosamente", 'icon' => "success"]);
+        }
+        else {
+            $log = new MSignLog();
+            $log->message = $cfdiResponse["message"];
+            $log->idError = $cfdiResponse["error_code"];
+            $log->mongoDocumentId = $oMongoDocument->id;
+            $log->idDocument = $oDocument->id_document;
+            $log->idUser = \Auth::user()->id;
+            $log->save();
+
+            return redirect()->back()->with(['icon' => "error", 'message' => $log->idError."-".$log->message]);
+        }
     }
 }

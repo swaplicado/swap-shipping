@@ -1,4 +1,4 @@
-<div class="row" v-for="oLocation in oData.oCartaPorte.ubicaciones">
+<div class="row" v-for="(oLocation, i) in oData.oCartaPorte.ubicaciones">
     <div style="border-radius: 15px; margin-left: 0%" class="row border border-info">
         <label>@{{ oLocation.tipoUbicacion }}</label>
         <div class="row">
@@ -8,7 +8,7 @@
             </div>
             <div class="col-md-3">
                 <label>Distancia recorrida (KM)</label>
-                <input style="text-align: right" type="text" class="form-control" :value="formatNumber(oLocation.distanciaRecorrida, 4)" readonly>
+                <input :id="'distanceId' + i" style="text-align: right" type="number" class="form-control" v-on:keyup="onChangeDistance()" :readonly="i == 0" v-model="oLocation.distanciaRecorrida">
             </div>
             <div class="col-md-3">
                 <label>Fecha-Hora</label>

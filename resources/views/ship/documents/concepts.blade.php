@@ -2,7 +2,7 @@
     <div style="border-radius: 15px" class="row border border-primary">
         <div class="row" style="background-color: lightgray; border-radius: 15px; width: 90%; margin-left: 5%;">
             <div class="col-11">
-                <label class="form-label">@{{ oConcept.numIndentificacion }}</label>
+                <label class="form-label">@{{ "Concepto " + (itemObjKey + 1 + "").padStart(3, '0') }}</label>
             </div>
             <div class="col-1">
                 <button title="Eliminar concepto" class="btn btn-danger btn-sm"><i class='bx bxs-message-square-x bx-sm'></i></button>
@@ -19,7 +19,8 @@
             </div>
             <div class="col-md-3">
                 <label for="num_id" class="form-label">No Identificacion</label>
-                <input type="text" class="form-control" id="num_id" :value="oConcept.numIndentificacion" readonly>
+                <input type="text" class="form-control" id="num_id" v-model="oConcept.numIndentificacion">
+                <small class="text-muted">De 1 hasta 100 caracteres alfanuméricos.</small>
             </div>
         </div>
         <div class="row">
