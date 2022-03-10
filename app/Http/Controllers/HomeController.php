@@ -29,6 +29,9 @@ class HomeController extends Controller
         // return redirect()->route('documents', 1);
 
         $showPanel = false;
+        $pendingDocuments = 0;
+        $processedDocuments = 0;
+        $stampedDocuments = 0;
         if (auth()->user()->isCarrier() || auth()->user()->isDriver()) {
             $showPanel = true;
             $idCarrier = 0;
