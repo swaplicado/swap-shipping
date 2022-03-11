@@ -36,7 +36,6 @@
                 <th>Clave permiso SCT</th>
                 <th>Permiso SCT</th>
                 <th>Núm. permiso SCT</th>
-                <th>Reg. tributario</th>
                 <th>Póliza resp. civ.</th>
                 <th>Aseguradora</th>
                 <th>Clave conf. vehicular</th>
@@ -57,7 +56,6 @@
                 <td>{{$d->LicenceSct->key_code}}</td>
                 <td>{{$d->LicenceSct->description}}</td>
                 <td>{{$d->license_sct_num}}</td>
-                <td>{{$d->drvr_reg_trib}}</td>
                 <td>{{$d->policy}}</td>
                 <td>{{$d->Insurance->full_name}}</td>
                 <td>{{$d->VehicleConfig->key_code}}</td>

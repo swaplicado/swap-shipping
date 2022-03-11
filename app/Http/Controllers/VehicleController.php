@@ -117,7 +117,6 @@ class VehicleController extends Controller
                     'plates' => strtoupper($request->plates),
                     'year_model' => $request->year_model,
                     'license_sct_num' => strtoupper($request->license_sct_num),
-                    'drvr_reg_trib' => strtoupper($request->drvr_reg_trib),
                     'policy' => strtoupper($request->policy),
                     'license_sct_id' => $request->license_sct_id,
                     'veh_cfg_id' => $request->veh_cfg_id,
@@ -215,7 +214,6 @@ class VehicleController extends Controller
                 $Vehicle->plates = strtoupper($request->plates);
                 $Vehicle->year_model = $request->year_model;
                 $Vehicle->license_sct_num = strtoupper($request->license_sct_num);
-                $Vehicle->drvr_reg_trib = strtoupper($request->drvr_reg_trib);
                 $Vehicle->policy = strtoupper($request->policy);
                 $Vehicle->license_sct_id = $request->license_sct_id;
                 $Vehicle->veh_cfg_id = $request->veh_cfg_id;

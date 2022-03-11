@@ -13,7 +13,6 @@ class Vehicle extends Model
         'plates',
         'year_model',
         'license_sct_num',
-        'drvr_reg_trib',
         'policy',
         'license_sct_id',
         'veh_cfg_id',

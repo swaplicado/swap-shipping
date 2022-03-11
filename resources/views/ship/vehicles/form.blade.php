@@ -42,13 +42,6 @@
         <span class="text-danger">{{ $message }}</span>
     @enderror
 </div>
-<div class="form-group">
-    <label for="drvr_reg_trib" class="form-label">Reg. trib</label>
-    <input name="drvr_reg_trib" type="text" class="form-control uppercase" value="{{ old('drvr_reg_trib', $data->drvr_reg_trib ?? '') }}" required>
-    @error('drvr_reg_trib')
-        <span class="text-danger">{{ $message }}</span>
-    @enderror
-</div>
 {!! $data->id_vehicle == null ? (session()->has('form') ? session('form') : "") : "" !!}
 @if(!auth()->user()->isCarrier())
     <div class="form-group">
