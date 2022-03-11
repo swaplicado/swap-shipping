@@ -3,9 +3,11 @@
         this.idDocument = <?php echo json_encode($idDocument) ?>;
         this.oData = <?php echo json_encode($oObjData) ?>;
         this.lVehicles = <?php echo json_encode($lVehicles) ?>;
+        this.lVehicleKeys = <?php echo json_encode($lVehicleKeys) ?>;
         this.lTrailers = <?php echo json_encode($lTrailers) ?>;
         this.lFigures = <?php echo json_encode($lFigures) ?>;
         this.oVehicle = <?php echo json_encode($oVehicle) ?>;
+        this.bShipCfg = <?php echo json_encode(env('WITH_CFG_ORIGIN')) ?>;
         this.oFigure = <?php echo json_encode($oFigure) ?>;
         this.lPayMethods = <?php echo json_encode($lPayMethods) ?>;
         this.lPayForms = <?php echo json_encode($lPayForms) ?>;

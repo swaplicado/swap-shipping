@@ -69,6 +69,12 @@ class RequestCore {
         $oObjData->emisor = $oEmisor;
 
         /**
+         * Documento, datos internos
+         */
+        $oObjData->shipType = "F";
+        $oObjData->vehKeyId = 0;
+
+        /**
          * Determinación de retenciones y traslados
          */
         $sDate = $oDate->format('Y-m-d');
@@ -306,9 +312,7 @@ class RequestCore {
                             ->selectRaw('key_code, CONCAT(key_code, " - ", description) AS _description')
                             ->pluck('_description', 'key_code');
 
-        $lStates = \DB::table('sat_states')
-                            ->selectRaw('key_code, CONCAT(key_code, " - ", state_name) AS _description')
-                            ->pluck('_description', 'key_code');
+        $lStates = \DB::table('sat_states')->get()->keyBy('key_code');
 
         $lMunicipies = \DB::table('sat_municipalities AS m')
                             ->join('sat_states AS s', 's.id', '=', 'm.state_id');
@@ -316,7 +320,8 @@ class RequestCore {
         $index = 100;
         foreach ($oObjData->oCartaPorte->ubicaciones as $location) {
             $location->domicilio->paisName = $lCountries[$location->domicilio->pais];
-            $location->domicilio->estadoName = $lStates[$location->domicilio->estado];
+            $location->domicilio->estadoName = $lStates[$location->domicilio->estado]->state_name;
+            $location->domicilio->estadoId = $lStates[$location->domicilio->estado]->id;
 
             $lMun = clone $lMunicipies;
             $municipio = $lMun->where('s.key_code', $location->domicilio->estado)
@@ -337,7 +342,10 @@ class RequestCore {
                 $startId = "DE";
             }
 
-            $location->IDUbicacion = $startId.$location->domicilio->municipio.$index;
+            $location->IDUbicacion = $startId.
+                                    "1".
+                                    str_pad($location->domicilio->estadoId, 2, "0", STR_PAD_LEFT).
+                                    $location->domicilio->municipio;
 
             $index++;
         }

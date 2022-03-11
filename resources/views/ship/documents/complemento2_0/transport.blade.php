@@ -2,7 +2,7 @@
     <div class="col-md-12">
         <div class="form-group">
             <label for="autotransporte">Autotransporte*</label>
-            <select class="form-select" id="autotransporte" v-model="oVehicle">
+            <select class="form-select" id="autotransporte" v-model="oVehicle" v-on:change="onVehicleKeyChange()">
                 <option v-for="vehicle in lVehicles" :value="vehicle">@{{ vehicle.alias }}</option>
             </select>
         </div>
@@ -39,6 +39,19 @@
     <div class="col-md-7">
         <label>Cfg. vehicular</label>
         <input type="text" class="form-control" :title="oVehicle.vcfg_description" :value="oVehicle.vcfg_description" readonly>
+    </div>
+</div>
+<br>
+<div class="row">
+    <div class="col-md-12">
+        <div class="form-group">
+            <label for="vehicle_key">Clave de transporte</label>
+            <select class="form-select" id="vehicle_key" v-on:change="onVehicleKeyChange()" v-model="oVehicle.veh_key_id">
+                <option v-for="vehicleKey in lVehicleKeys" :value="vehicleKey.id_key">
+                    @{{ vehicleKey.key_code + ' - ' + vehicleKey.description }}
+                </option>
+            </select>
+        </div>
     </div>
 </div>
 <br>

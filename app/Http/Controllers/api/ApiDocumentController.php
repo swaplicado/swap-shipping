@@ -32,6 +32,7 @@ class ApiDocumentController extends Controller
             $oDoc = new Document();
             $oDoc->serie = "";
             $oDoc->folio = "";
+            $oDoc->ship_type = "F";
             $oDoc->requested_at = date('Y-m-d H:i:s');
             $oDoc->generated_at = date('Y-m-d H:i:s');
             $oDoc->comp_version = $oConfigurations->cfdi4_0->cartaPorteVersion;
@@ -42,6 +43,7 @@ class ApiDocumentController extends Controller
             $oDoc->is_deleted = false;
             $oDoc->mongo_document_id = $oMongoDocument->id;
             $oDoc->carrier_id = $oCarrier->id_carrier;
+            $oDoc->veh_key_id = 1;
             $oDoc->usr_gen_id = 1;
             $oDoc->usr_sign_id = 1;
             $oDoc->usr_can_id = 1;

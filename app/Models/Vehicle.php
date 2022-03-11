@@ -17,6 +17,7 @@ class Vehicle extends Model
         'policy',
         'license_sct_id',
         'veh_cfg_id',
+        'veh_key_id',
         'carrier_id',
         'insurance_id',
         'is_deleted',
@@ -30,6 +31,10 @@ class Vehicle extends Model
 
     public function VehicleConfig(){
         return $this->hasOne('App\Models\Sat\VehicleConfig', 'id', 'veh_cfg_id');
+    }
+
+    public function VehicleKey(){
+        return $this->hasOne('App\Models\VehicleKey', 'id_key', 'veh_key_id');
     }
 
     public function Carrier(){

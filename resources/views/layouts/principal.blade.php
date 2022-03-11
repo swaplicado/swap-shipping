@@ -28,7 +28,7 @@
 </head>
 <style>
     .dataTables_wrapper {
-        font-size: 0.8em;
+        font-size: 0.7em;
     }
 
 </style>

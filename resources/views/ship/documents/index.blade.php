@@ -86,6 +86,10 @@
                 <th>Version carta porte</th> --}}
                 <th>RFC emisor</th>
                 <th>Nombre emisor</th>
+                <th>Tipo</th>
+                <th>Veh</th>
+                <th>Origen</th>
+                <th>Destino</th>
                 <th>Serie</th>
                 <th>Folio</th>
                 <th>Embarque</th>
@@ -112,6 +116,10 @@
                 <td>{{ $doc->comp_version }}</td> --}}
                 <td>{{ $doc->fiscal_id }}</td>
                 <td>{{ $doc->fullname }}</td>
+                <td>{{ $doc->ship_type }}</td>
+                <td title="{{ $doc->veh_key_description }}">{{ $doc->veh_key_code }}</td>
+                <td title="{{ isset($doc->srcAddress) ? $doc->srcAddress->estadoName.' / '.$doc->srcAddress->municipioName : "" }}">{{ $doc->idLocSrc }}</td>
+                <td title="{{ isset($doc->destAddress) ? $doc->destAddress->estadoName.' / '.$doc->destAddress->municipioName : "" }}">{{ $doc->idLocDest }}</td>
                 <td>{{ $doc->serie }}</td>
                 <td>{{ str_pad($doc->folio, 6, "0", STR_PAD_LEFT) }}</td>
                 <td>{{ str_pad($doc->shipping_folio, 6, "0", STR_PAD_LEFT) }}</td>

@@ -114,5 +114,20 @@
         <span class="text-danger">{{$message}}</span>
     @enderror
 </div>
+<div class="form-group">
+    <label for="veh_key_id" class="form-label">Clave del vehículo</label>
+    <select class="form-select" name="veh_key_id">
+            @foreach ($lVehicleKeys as $item)
+                @if($data->veh_key_id == $item->id_key)
+                    <option selected value='{{ $item->id_key }}'>{{ $item->key_code.' - '.$item->description }}</option>
+                @else
+                    <option value='{{ $item->id_key }}'>{{ $item->key_code.' - '.$item->description }}</option>
+                @endif
+            @endforeach
+    </select>
+    @error('veh_key_id')
+        <span class="text-danger">{{$message}}</span>
+    @enderror
+</div>
 <br>
 <button type="submit" class="btn btn-primary">Guardar</button>

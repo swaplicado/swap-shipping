@@ -8,6 +8,7 @@ use App\Models\DocumentStamp;
 use App\Models\M\MDocument;
 use App\Models\M\MSignLog;
 use App\Models\Carrier;
+use App\Models\VehicleKey;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use App\Http\Controllers\Controller;
@@ -27,7 +28,12 @@ class DocumentController extends Controller
         // Comienza la declaración de la obtención de los documentos
         $lDocuments = \DB::table('f_documents')
                             ->join('f_carriers', 'f_carriers.id_carrier', '=', 'f_documents.carrier_id')
-                            ->join('users', 'users.id', '=', 'f_documents.usr_gen_id');
+                            ->join('f_vehicles_keys', 'f_vehicles_keys.id_key', '=', 'f_documents.veh_key_id')
+                            ->join('users', 'users.id', '=', 'f_documents.usr_gen_id')
+                            ->select('f_documents.*', 
+                                    'f_carriers.*', 
+                                    'f_vehicles_keys.key_code AS veh_key_code', 
+                                    'f_vehicles_keys.description AS veh_key_description');
 
         $withCarrierFilter = false;
         $carriers = [];
@@ -132,15 +138,34 @@ class DocumentController extends Controller
         // Se obtienen los montos de los documentos
         $enableTotales = false;
         if (auth()->user()->hasAnyRole(['Admin', 'Carrier', 'user', 'driverT1', 'driverT2'])) {
-            if (!is_null($lDocuments)) {
+            if (!is_null($lDocuments) && count($lDocuments) > 0) {
                 foreach ($lDocuments as $ld) {
                     $mdocument = MDocument::where('_id', $ld->mongo_document_id)->select('subTotal', 'total',
-                        'totalImpuestosTrasladados', 'totalImpuestosRetenidos', 'discounts')->first();
+                        'totalImpuestosTrasladados', 'totalImpuestosRetenidos', 'discounts', 'oCartaPorte')->first();
                     $ld->discounts = SFormats::formatMoney($mdocument->discounts);
                     $ld->totalImpuestosRetenidos = SFormats::formatMoney($mdocument->totalImpuestosRetenidos);
                     $ld->totalImpuestosTrasladados = SFormats::formatMoney($mdocument->totalImpuestosTrasladados);
                     $ld->subTotal = SFormats::formatMoney($mdocument->subTotal);
                     $ld->total = SFormats::formatMoney($mdocument->total);
+
+                    $ld->idLocSrc = "";
+                    $ld->idLocDest = "";
+                    if (isset($mdocument->oCartaPorte)) {
+                        if (count($mdocument->oCartaPorte["ubicaciones"]) > 0) {
+                            if (isset($mdocument->oCartaPorte["ubicaciones"][0]["IDUbicacion"])) {
+                                $ld->idLocSrc = $mdocument->oCartaPorte["ubicaciones"][0]["IDUbicacion"];
+                                if (isset($mdocument->oCartaPorte["ubicaciones"][0]["domicilio"])) {
+                                    $ld->srcAddress = (object) $mdocument->oCartaPorte["ubicaciones"][0]["domicilio"]; 
+                                }
+                            }
+                            if (isset($mdocument->oCartaPorte["ubicaciones"][count($mdocument->oCartaPorte["ubicaciones"]) - 1]["IDUbicacion"])) {
+                                $ld->idLocDest = $mdocument->oCartaPorte["ubicaciones"][count($mdocument->oCartaPorte["ubicaciones"]) - 1]["IDUbicacion"];
+                                if (isset($mdocument->oCartaPorte["ubicaciones"][count($mdocument->oCartaPorte["ubicaciones"]) - 1]["domicilio"])) {
+                                    $ld->destAddress = (object) $mdocument->oCartaPorte["ubicaciones"][count($mdocument->oCartaPorte["ubicaciones"]) - 1]["domicilio"]; 
+                                }
+                            }
+                        }
+                    }
                 }
             }
 
@@ -193,6 +218,7 @@ class DocumentController extends Controller
         $lCurrenciesQuery = \DB::table('sat_currencies AS cur')
                             ->where('cur.is_active', true);
 
+        $iVehKeyId = 0;
         if ($oDocument->is_processed) {
             $oObjData = clone $oMongoDocument;
             $oObjData->id = 0;
@@ -234,6 +260,7 @@ class DocumentController extends Controller
                                 'v.is_deleted',
                                 'v.license_sct_id',
                                 'v.veh_cfg_id',
+                                'v.veh_key_id',
                                 'v.carrier_id',
                                 'vcfg.key_code AS vcfg_key_code',
                                 'vcfg.description AS vcfg_description',
@@ -244,6 +271,8 @@ class DocumentController extends Controller
                             ->where('v.carrier_id', $oCarrier->id_carrier)
                             ->where('v.is_deleted', false)
                             ->get();
+
+        $lVehicleKeys = VehicleKey::get();
 
         $lTrailers = \DB::table('f_trailers AS t')
                             ->join('sat_trailer_subtypes AS ts', 't.trailer_subtype_id', '=', 'ts.id')
@@ -307,6 +336,7 @@ class DocumentController extends Controller
                     'lTrailers' => $lTrailers,
                     'lFigures' => $lFigures,
                     'oVehicle' => $oVehicle,
+                    'lVehicleKeys' => $lVehicleKeys,
                     'oFigure' => $oFigure,
                     'lPayMethods' => $lPayMethods,
                     'lPayForms' => $lPayForms,
@@ -385,6 +415,8 @@ class DocumentController extends Controller
             $oDocument->folio = $oCfdiData->oData->folio;
         }
 
+        $oMongoDocument->shipType = $oCfdiData->oData->shipType;
+        $oDocument->ship_type = $oCfdiData->oData->shipType;
         $oMongoDocument->formaPago = $oCfdiData->oData->formaPago;
         $oMongoDocument->metodoPago = $oCfdiData->oData->metodoPago;
         $oMongoDocument->currency = $oCfdiData->oData->currency;
@@ -485,6 +517,8 @@ class DocumentController extends Controller
 
         // Carta Porte
         $oMongoDocument->oVehicle = json_decode(json_encode($oCfdiData->oVehicle), true);
+        $oMongoDocument->vehKeyId = $oCfdiData->oVehicle->veh_key_id;
+        $oDocument->veh_key_id = $oCfdiData->oVehicle->veh_key_id;
         $oMongoDocument->oFigure = json_decode(json_encode($oCfdiData->oFigure), true);
         $oMongoDocument->lTrailers = isset($oCfdiData->lTrailers) && count($oCfdiData->lTrailers) > 0 ? json_decode(json_encode($oCfdiData->lTrailers), true) : [];
 
@@ -501,6 +535,7 @@ class DocumentController extends Controller
 
         // Ubicaciones
         $totalDistancia = 0.0;
+        $locations = [];
         foreach ($oMongoDocument->oCartaPorte["ubicaciones"] as $index => $location) {
             $oClientLoc = $oCfdiData->oData->oCartaPorte->ubicaciones[$index];
 
@@ -512,11 +547,14 @@ class DocumentController extends Controller
             }
             
             $location["distanciaRecorrida"] = $distance;
+            $location["IDUbicacion"] = $oClientLoc->IDUbicacion;
+            $locations[] = $location;
             $totalDistancia += $oClientLoc->distanciaRecorrida;
         }
 
         $oCP = $oMongoDocument->oCartaPorte;
         $oCP["totalDistancia"] = $totalDistancia;
+        $oCP["ubicaciones"] = $locations;
         $oMongoDocument->oCartaPorte = $oCP;
         
         $sXml = XmlGeneration::generateCartaPorte($oDocument, $oMongoDocument, $oCarrier);

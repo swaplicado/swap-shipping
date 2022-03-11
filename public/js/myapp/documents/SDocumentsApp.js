@@ -40,6 +40,7 @@ var app = new Vue({
         iFolio: oServerData.oData.folio,
         oData: oServerData.oData,
         lVehicles: oServerData.lVehicles,
+        lVehicleKeys: oServerData.lVehicleKeys,
         lTrailers: oServerData.lTrailers,
         lFigures: oServerData.lFigures,
         lPayMethods: oServerData.lPayMethods,
@@ -47,12 +48,18 @@ var app = new Vue({
         lCurrencies: oServerData.lCurrencies,
         lCarrierSeries: oServerData.lCarrierSeries,
         oVehicle: oServerData.oVehicle,
+        bShipCfg: oServerData.bShipCfg,
+        sShipType: oServerData.oData.shipType,
         oFigure: oServerData.oFigure,
         lSelectedTrailers: oServerData.oData.lTrailers != undefined && oServerData.oData.lTrailers.lenght > 0 ? oServerData.oData.lTrailers : [],
         oCfdiData: {}
     },
     mounted() {
+        if (this.oData.vehKeyId > 0) {
+            this.oVehicle.veh_key_id = this.oData.vehKeyId;
+        }
         this.changeSerie(this.oData.serie);
+        this.setLocationsIds();
     },
     methods: {
         addConcept() {
@@ -118,6 +125,7 @@ var app = new Vue({
             oCfdiData.lTrailers = this.lSelectedTrailers;
             oCfdiData.oData = this.oData;
             oCfdiData.idDocument = this.idDocument;
+            oCfdiData.oData.shipType = this.sShipType;
 
             let sDta = JSON.stringify(oCfdiData);
             $("#the_cfdi_data").val(sDta);
@@ -196,6 +204,24 @@ var app = new Vue({
             this.oData.oCartaPorte.totalDistancia = 0.0;
             for (const oLocation of this.oData.oCartaPorte.ubicaciones) {
                 this.oData.oCartaPorte.totalDistancia += parseFloat(oLocation.distanciaRecorrida);
+            }
+        },
+        changeShipType() {
+            this.setLocationsIds();
+        },
+        onVehicleKeyChange() {
+            this.setLocationsIds();
+        },
+        setLocationsIds() {
+            let shipDigit = 0;
+            for (const oVehKey of this.lVehicleKeys) {
+                if (oVehKey.id_key == this.oVehicle.veh_key_id) {
+                    shipDigit = this.sShipType == "F" ? oVehKey.foreign_digit : oVehKey.local_digit;
+                    break;
+                }
+            }
+            for (let oLocation of this.oData.oCartaPorte.ubicaciones) {
+                oLocation.IDUbicacion = oLocation.IDUbicacion.slice(0, 2) + shipDigit + oLocation.IDUbicacion.slice(3);
             }
         },
         validateAll() {

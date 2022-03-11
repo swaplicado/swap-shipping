@@ -8,6 +8,7 @@ use App\Models\Insurances;
 use App\Models\Sat\LicenceSct;
 use App\Models\Sat\VehicleConfig;
 use App\Models\Carrier;
+use App\Models\VehicleKey;
 use Illuminate\Http\Request;
 use Illuminate\Database\QueryException;
 use App\Utils\messagesErros;
@@ -34,6 +35,7 @@ class VehicleController extends Controller
         $data->each(function ($data) {
             $data->LicenceSct;
             $data->VehicleConfig;
+            $data->VehicleKey;
             $data->Insurance;
         });
 
@@ -58,6 +60,8 @@ class VehicleController extends Controller
         
         $LicenceSct = LicenceSct::selectRaw('CONCAT(key_code, " - ", description) AS kd, id')->pluck('id', 'kd');
         $VehicleConfig = VehicleConfig::selectRaw('CONCAT(key_code, " - ", description) AS kd, id')->pluck('id', 'kd');
+        $lVehicleKeys = VehicleKey::get();
+
         if(auth()->user()->isCarrier()){
             $Insurances = Insurances::where('carrier_id', auth()->user()->carrier()->first()->id_carrier)->pluck('id_insurance', 'full_name');
         } else if (auth()->user()->isAdmin() || auth()->user()->isClient()){
@@ -67,8 +71,14 @@ class VehicleController extends Controller
         
         $carriers = Carrier::where('is_deleted', 0)->orderBy('fullname', 'ASC')->pluck('id_carrier', 'fullname');
 
-        return view('ship/vehicles/create', ['data' => $data, 'LicenceSct' => $LicenceSct, 
-            'VehicleConfig' => $VehicleConfig, 'insurances' => $Insurances, 'carriers' => $carriers]);
+        return view('ship/vehicles/create', [
+                        'data' => $data, 
+                        'LicenceSct' => $LicenceSct, 
+                        'VehicleConfig' => $VehicleConfig, 
+                        'insurances' => $Insurances, 
+                        'carriers' => $carriers,
+                        'lVehicleKeys' => $lVehicleKeys
+                    ]);
     }
 
     /**
@@ -92,6 +102,7 @@ class VehicleController extends Controller
             'license_sct_num' => 'required',
             'license_sct_id' => 'required|not_in:0',
             'veh_cfg_id' => 'required|not_in:0',
+            'veh_key_id' => 'required|not_in:0',
             'carrier' => 'required|not_in:0',
             'insurance' => 'required|not_in:0'
         ]);
@@ -110,6 +121,7 @@ class VehicleController extends Controller
                     'policy' => strtoupper($request->policy),
                     'license_sct_id' => $request->license_sct_id,
                     'veh_cfg_id' => $request->veh_cfg_id,
+                    'veh_key_id' => $request->veh_key_id,
                     'carrier_id' => $request->carrier,
                     'insurance_id' => $request->insurance,
                     'usr_new_id' => $user_id,
@@ -163,10 +175,11 @@ class VehicleController extends Controller
         
         $LicenceSct = LicenceSct::selectRaw('CONCAT(key_code, " - ", description) AS kd, id')->pluck('id', 'kd');
         $VehicleConfig = VehicleConfig::selectRaw('CONCAT(key_code, " - ", description) AS kd, id')->pluck('id', 'kd');
+        $lVehicleKeys = VehicleKey::get();
         $Insurances = Insurances::where('carrier_id', $data->carrier_id)->pluck('id_insurance', 'full_name');
         
         return view('ship/vehicles/edit', ['data' => $data, 'LicenceSct' => $LicenceSct, 
-            'VehicleConfig' => $VehicleConfig, 'insurances' => $Insurances ]);
+            'VehicleConfig' => $VehicleConfig, 'insurances' => $Insurances, 'lVehicleKeys' => $lVehicleKeys ]);
     }
 
     /**
@@ -187,7 +200,8 @@ class VehicleController extends Controller
             'plates' => 'required',
             'license_sct_num' => 'required',
             'license_sct_id' => 'required',
-            'veh_cfg_id' => 'required'
+            'veh_cfg_id' => 'required',
+            'veh_key_id' => 'required'
         ]);
 
         $validator->validate();
@@ -205,6 +219,7 @@ class VehicleController extends Controller
                 $Vehicle->policy = strtoupper($request->policy);
                 $Vehicle->license_sct_id = $request->license_sct_id;
                 $Vehicle->veh_cfg_id = $request->veh_cfg_id;
+                $Vehicle->veh_key_id = $request->veh_key_id;
                 $Vehicle->usr_upd_id = $user_id;
 
                 $Vehicle->update();

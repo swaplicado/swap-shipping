@@ -41,6 +41,7 @@
                 <th>Aseguradora</th>
                 <th>Clave conf. vehicular</th>
                 <th>Conf. vehicular</th>
+                <th>Clave vehicular</th>
                 <th>Transportista</th>
             </tr>
         </thead>
@@ -61,6 +62,7 @@
                 <td>{{$d->Insurance->full_name}}</td>
                 <td>{{$d->VehicleConfig->key_code}}</td>
                 <td>{{$d->VehicleConfig->description}}</td>
+                <td>{{$d->VehicleKey->key_code ." - ".$d->VehicleKey->description}}</td>
                 <td>{{$d->Carrier->fullname}}</td>
             </tr>
             @endforeach
