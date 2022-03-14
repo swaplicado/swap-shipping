@@ -9,15 +9,19 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\SXml\XmlGeneration;
 use App\SXml\verifyDocument;
+use App\SXml\transformJson;
 
 class ApiDocumentController extends Controller
 {
     public function store(Request $request)
     {
+        $data = json_decode(file_get_contents('php://input'), true);
+        $json = transformJson::transfom($data);
         $oConfigurations = \App\Utils\Configuration::getConfigurations();
-        $oObjData = (object) $request->info;
-
+        // $oObjData = (object) $request->info;
+        $oObjData = (object) $json;
         $verify = verifyDocument::verifyJson($oObjData);
+        
         if($verify->code == 200) {
             $oCarrier = Carrier::where('fiscal_id', $oObjData->rfcTransportista)
                                 ->where('is_deleted', false)

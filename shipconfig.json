@@ -5,6 +5,8 @@
     "tarifaBase": "10000",
     "tarifaBaseEscala": "1000",
     "distanciaMinima": "35.00",
+    "formaPago": "04",
+    "metodoPago": "PUE",
     "cfdi4_0": {
         "cfdiVersion": "4.0",
         "cartaPorteVersion": "2.0",
