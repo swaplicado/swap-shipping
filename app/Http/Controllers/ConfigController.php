@@ -16,12 +16,29 @@ use App\Models\Sat\Units;
 use App\Models\Sat\Tax_regimes;
 use App\Models\Sat\UsoCFDI;
 use App\Models\Sat\Taxes;
+use App\Models\Sat\Payment_forms;
+use App\Models\Sat\Payment_methods;
 use App\Models\Certificate;
 use App\Models\Carrier;
 use App\Utils\SFormats;
 
 class ConfigController extends Controller
 {
+    private $attributeNames = array(
+        'email' => 'Email',
+        'localCurrency' => 'Moneda local',
+        'prod_serv' => 'Producto/servicio',
+        'units' => 'Unidad',
+        'rfc' => 'RFC',
+        'nombreReceptor' => 'Nombre del receptor',
+        'domicilioFiscalReceptor' => 'Código postal del domicilio fiscal',
+        'tax_regimes' => 'Régimen fiscal',
+        'usoCFDI' => 'Uso CFDI',
+        'payForm' => 'Forma de pago',
+        'payMethod' => 'Método de pago',
+        'taxes' => 'Impuesto'
+    );
+
     /**
      * Display a listing of the resource.
      *
@@ -86,6 +103,8 @@ class ConfigController extends Controller
         $data->regimen = Tax_regimes::where('key_code', $data->cfdi4_0->regimenFiscalReceptor)->selectRaw('CONCAT(key_code, " - ", description) AS kd, id')->value('kd');
         $data->usoCFDI = UsoCFDI::where('key_code', $data->cfdi4_0->usoCFDI)->selectRaw('CONCAT(key_code, " - ", description) AS kd, id')->value('kd');
         $data->impuesto = Taxes::where('key_code', $data->cfdi4_0->objetoImp)->selectRaw('CONCAT(key_code, " - ", description) AS kd, id')->value('kd');
+        $data->payForm = Payment_forms::where('key_code', $data->formaPago)->selectRaw('CONCAT(key_code, " - ", description) AS kd, id')->value('kd');
+        $data->payMethod = Payment_methods::where('key_code', $data->metodoPago)->selectRaw('CONCAT(key_code, " - ", description) AS kd, id')->value('kd');
 
         $currencies = Currencies::where('is_active', 1)->selectRaw('CONCAT(key_code, " - ", description) AS kd, id')->pluck('id', 'kd');
         $prod_serv = ProdServ::where('is_active', 1)->selectRaw('CONCAT(key_code, " - ", description) AS kd, id')->pluck('id', 'kd');
@@ -93,12 +112,13 @@ class ConfigController extends Controller
         $tax_regimes = Tax_regimes::selectRaw('CONCAT(key_code, " - ", description) AS kd, id')->pluck('id', 'kd');
         $usoCFDI = UsoCFDI::selectRaw('CONCAT(key_code, " - ", description) AS kd, id')->pluck('id', 'kd');
         $taxes = Taxes::selectRaw('CONCAT(key_code, " - ", description) AS kd, id')->pluck('id', 'kd');
-        
+        $payForm = Payment_forms::selectRaw('CONCAT(key_code, " - ", description) AS kd, id')->pluck('id', 'kd');
+        $payMethod = Payment_methods::selectRaw('CONCAT(key_code, " - ", description) AS kd, id')->pluck('id', 'kd');
 
         return view('sys/config/edit', ['data' => $data, 'currencies' => $currencies,
             'prod_serv' => $prod_serv, 'currencies' => $currencies, 'units' => $units,
             'usoCFDI' => $usoCFDI, 'tax_regimes' => $tax_regimes,
-            'taxes' => $taxes]);
+            'taxes' => $taxes, 'payForm' => $payForm, 'payMethod' => $payMethod]);
     }
 
     /**
@@ -115,11 +135,20 @@ class ConfigController extends Controller
         $error = "0";
 
         $validator = Validator::make($request->all(), [
+            'email' => 'required',
             'localCurrency' => 'required',
-            'tarifaBase' => 'required',
-            'tarifaBaseEscala' => 'required',
-            'distanciaMinima' => 'required'
+            'prod_serv' => 'required',
+            'units' => 'required',
+            'rfc' => 'required',
+            'nombreReceptor' => 'required',
+            'domicilioFiscalReceptor' => 'required',
+            'tax_regimes' => 'required',
+            'usoCFDI' => 'required',
+            'payForm' => 'required',
+            'payMethod' => 'required',
+            'taxes' => 'required'
         ]);
+        $validator->setAttributeNames($this->attributeNames);
         $validator->validate();
         
         $data = Configuration::getConfigurations();

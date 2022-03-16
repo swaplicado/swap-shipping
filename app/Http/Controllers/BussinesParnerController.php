@@ -19,6 +19,13 @@ use Auth;
 
 class BussinesParnerController extends Controller
 {
+    private $attributeNames = array(
+        'email' => 'Email',
+        'password' => 'Contraseña',
+        'fullname' => 'Nombre completo',
+        'carrier' => 'RFC'
+    );
+
     /**
      * Display a listing of the resource.
      *
@@ -69,7 +76,7 @@ class BussinesParnerController extends Controller
             'fullname' => 'required',
             'carrier' => 'required|not_in:0'
         ]);
-
+        $validator->setAttributeNames($this->attributeNames);
         $validator->validate();
         
         $user_id = (auth()->check()) ? auth()->user()->id : null;

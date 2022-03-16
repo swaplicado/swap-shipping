@@ -17,7 +17,8 @@
                     <span>Nueva aseguradora</span>
                 </div>
                 <div class="card-body">
-                    <form action="{{ route('guardar_insurance') }}" method="POST">
+                    <form onSubmit="document.getElementById('save').disabled=true; wait();"
+                    action="{{ route('guardar_insurance') }}" method="POST">
                         @csrf
                         @include('catalogos.insurances.form')
                     </form>

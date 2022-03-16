@@ -6,25 +6,29 @@
     @enderror
 </div> --}}
 <div class="form-group">
-    <label for="full_name" class="form-label">Nombre completo</label>
-    <input name="full_name" type="text" class="form-control uppercase" value="{{ old('full_name', $data->full_name ?? '') }}">
+    <p>Los campos marcados con un * son obligatorios.</p>
+</div>
+<br>
+<div class="form-group">
+    <label for="full_name" class="form-label">Nombre completo *</label>
+    <input name="full_name" type="text" class="form-control uppercase" value="{{ old('full_name', $data->full_name ?? '') }}" required>
     @error('full_name')
         <span class="text-danger">{{ $message }}</span>
     @enderror
 </div>
 @if(!is_null($data))
 <div class="form-group">
-    <label for="email" class="form-label">Email</label>
+    <label for="email" class="form-label">Email *</label>
     <input id="editEmail" name="editEmail" type="checkbox">
-    <input id="email" name="email" type="text" class="form-control" value="{{ old('email', $data->email ?? '') }}" readonly>
+    <input id="email" name="email" type="text" class="form-control" value="{{ old('email', $data->email ?? '') }}" readonly required>
     @error('email')
         <span class="text-danger">{{ $message }}</span>
     @enderror
 </div>
 @else
 <div class="form-group">
-    <label for="email" class="form-label">Email</label>
-    <input id="email" name="email" type="text" class="form-control" value="{{ old('email', $data->email ?? '') }}">
+    <label for="email" class="form-label">Email *</label>
+    <input id="email" name="email" type="text" class="form-control" value="{{ old('email', $data->email ?? '') }}" required>
     @error('email')
         <span class="text-danger">{{ $message }}</span>
     @enderror

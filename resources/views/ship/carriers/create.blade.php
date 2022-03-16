@@ -17,7 +17,8 @@
                     <span>Nuevo transportista</span>
                 </div>
                 <div class="card-body">
-                    <form action="{{ route('guardar_carrier') }}" method="POST">
+                    <form onSubmit="document.getElementById('save').disabled=true; wait();"
+                    action="{{ route('guardar_carrier') }}" method="POST">
                         @csrf
                         @include('ship.carriers.form')
                     </form>

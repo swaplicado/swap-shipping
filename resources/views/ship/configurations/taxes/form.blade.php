@@ -134,4 +134,4 @@
 </div>
 {!! Auth::user()->isAdmin() ? (session()->has('form') ? session('form') : "") : "" !!}
 <br>
-<button type="submit" class="btn btn-primary">Guardar</button>
+<button id="save" type="submit" class="btn btn-primary">Guardar</button>

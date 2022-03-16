@@ -17,7 +17,8 @@
                     <span>Nuevo trailer</span>
                 </div>
                 <div class="card-body">
-                    <form action="{{ route('guardar_trailer')}}" method="POST">
+                    <form onSubmit="document.getElementById('save').disabled=true; wait();"
+                    action="{{ route('guardar_trailer')}}" method="POST">
                         @csrf
                         @include('ship.trailers.form')
                     </form>

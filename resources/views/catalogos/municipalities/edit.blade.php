@@ -17,7 +17,8 @@
                     <span>Editar Municipio</span>
                 </div>
                 <div class="card-body">
-                    <form action="{{ route('actualizar_municipalitie', ['id' => $data->id]) }}" method="POST">
+                    <form onSubmit="document.getElementById('save').disabled=true; wait();"
+                    action="{{ route('actualizar_municipalitie', ['id' => $data->id]) }}" method="POST">
                         @csrf @method("put")
                         @include('catalogos.municipalities.form')
                     </form>

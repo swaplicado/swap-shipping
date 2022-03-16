@@ -14,6 +14,15 @@ use Validator;
 
 class ProfileController extends Controller
 {
+    private $attributeNames = array(
+        'fullname' => 'Nombre completo',
+        'email' => 'Email',
+        'contact1' => 'Contacto 1',
+        'telephone1' => 'teléfono 1',
+        'new_password' => 'Nueva contraseña',
+        'password_confirm' => 'Confirmar contraseña'
+    );
+
     /**
      * Display a listing of the resource.
      *
@@ -33,7 +42,7 @@ class ProfileController extends Controller
         $validator = Validator::make($request->all(), [
             'fullname' => 'required'
         ]);
-
+        $validator->setAttributeNames($this->attributeNames);
         $validator->validate();
 
         if(!is_null($request->newPassword)){
@@ -41,7 +50,7 @@ class ProfileController extends Controller
                 'new_password' => 'required|min:8',
                 'password_confirm' => 'required|same:new_password'
             ]);
-
+            $validator->setAttributeNames($this->attributeNames);
             $validator->validate();
         }
 
@@ -49,7 +58,7 @@ class ProfileController extends Controller
             $validator = Validator::make($request->all(), [
                 'email' => ['required', 'string', 'email', 'max:255', 'unique:users']
             ]);
-            
+            $validator->setAttributeNames($this->attributeNames);
             $validator->validate();
         }
 
@@ -103,7 +112,7 @@ class ProfileController extends Controller
         $validator = Validator::make($request->all(), [
             'fullname' => 'required'
         ]);
-
+        $validator->setAttributeNames($this->attributeNames);
         $validator->validate();
 
         if(!is_null($request->newPassword)){
@@ -111,7 +120,7 @@ class ProfileController extends Controller
                 'new_password' => 'required|min:8',
                 'password_confirm' => 'required|same:new_password'
             ]);
-
+            $validator->setAttributeNames($this->attributeNames);
             $validator->validate();
         }
 
@@ -119,7 +128,7 @@ class ProfileController extends Controller
             $validator = Validator::make($request->all(), [
                 'email' => ['required', 'string', 'email', 'max:255', 'unique:users']
             ]);
-            
+            $validator->setAttributeNames($this->attributeNames);
             $validator->validate();
         }
 
@@ -172,7 +181,7 @@ class ProfileController extends Controller
             'contact1' => 'required',
             'telephone1' => 'required'
         ]);
-
+        $validator->setAttributeNames($this->attributeNames);
         $validator->validate();
 
         if(!is_null($request->newPassword)){
@@ -180,7 +189,7 @@ class ProfileController extends Controller
                 'new_password' => 'required|min:8',
                 'password_confirm' => 'required|same:new_password'
             ]);
-
+            $validator->setAttributeNames($this->attributeNames);
             $validator->validate();
         }
 
@@ -191,7 +200,7 @@ class ProfileController extends Controller
                 'contact1' => 'required',
                 'telephone1' => 'required'
             ]);
-            
+            $validator->setAttributeNames($this->attributeNames);
             $validator->validate();
         }
 
@@ -267,7 +276,7 @@ class ProfileController extends Controller
             'zip_code' => 'required',
             'state' => 'required|not_in:0'
         ]);
-
+        $validator->setAttributeNames($this->attributeNames);
         $validator->validate();
 
         if(!is_null($request->newPassword)){
@@ -275,7 +284,7 @@ class ProfileController extends Controller
                 'new_password' => 'required|min:8',
                 'password_confirm' => 'required|same:new_password'
             ]);
-
+            $validator->setAttributeNames($this->attributeNames);
             $validator->validate();
         }
 
@@ -283,7 +292,7 @@ class ProfileController extends Controller
             $validator = Validator::make($request->all(), [
                 'email' => ['required', 'string', 'email', 'max:255', 'unique:users']
             ]);
-            
+            $validator->setAttributeNames($this->attributeNames);
             $validator->validate();
         }
 

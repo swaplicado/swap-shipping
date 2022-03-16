@@ -17,7 +17,8 @@
                     <span>Nueva Serie</span>
                 </div>
                 <div class="card-body">
-                    <form action="{{ route('guardar_serie') }}" method="POST">
+                    <form onSubmit="document.getElementById('save').disabled=true; wait();"
+                    action="{{ route('guardar_serie') }}" method="POST">
                         @csrf
                         @include('catalogos.series.form')
                     </form>

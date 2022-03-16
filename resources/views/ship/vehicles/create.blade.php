@@ -17,7 +17,8 @@
                     <span>Nuevo vehículo</span>
                 </div>
                 <div class="card-body">
-                    <form action="{{ route('guardar_vehicle') }}" method="POST">
+                    <form onSubmit="document.getElementById('save').disabled=true; wait();" 
+                    action="{{ route('guardar_vehicle') }}" method="POST">
                         @csrf
                         @include('ship.vehicles.form')
                     </form>

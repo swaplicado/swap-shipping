@@ -13,6 +13,11 @@ use App\Utils\messagesErros;
 
 class InsurancesController extends Controller
 {
+    private $attributeNames = array(
+        'fullname' => 'Nombre',
+        'carrier' => 'Transportista'
+    );
+
     /**
      * Display a listing of the resource.
      *
@@ -67,7 +72,7 @@ class InsurancesController extends Controller
             'fullname' => 'required',
             'carrier' => 'required|not_in:0'
         ]);
-
+        $validator->setAttributeNames($this->attributeNames);
         $validator->validate();
 
         $resp_civ = 0;
@@ -141,7 +146,7 @@ class InsurancesController extends Controller
         $validator = Validator::make($request->all(), [
             'fullname' => 'required'
         ]);
-
+        $validator->setAttributeNames($this->attributeNames);
         $validator->validate();
 
         $resp_civ = 0;

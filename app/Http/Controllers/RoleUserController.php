@@ -10,9 +10,15 @@ use App\Permission;
 use App\RolePermission;
 use Illuminate\Database\QueryException;
 use App\Utils\messagesErros;
+use Validator;
 
 class RoleUserController extends Controller
 {
+    private $attributeNames = array(
+        'name' => 'Nombre',
+        'description' => 'Decripción'
+    );
+
     /**
      * Display a listing of the resource.
      *
@@ -52,6 +58,15 @@ class RoleUserController extends Controller
      */
     public function store(Request $request)
     {
+
+        $validator = Validator::make($request->all(), [
+            'name' => 'required',
+            'description' => 'required'
+        ]);
+
+        $validator->setAttributeNames($this->attributeNames);
+        $validator->validate();
+
         auth()->user()->authorizePermission(['612']);
         $success = true;
         $jsonObj = json_decode($request->checkboxes);

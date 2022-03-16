@@ -24,6 +24,7 @@
     <script src="{{ asset('js/sweetalert2/dist/sweetalert2.all.min.js') }}"></script>
     <script src="{{ asset('js/moment/moment.min.js') }}"></script>
     <script src="{{ asset('js/daterangepicker/daterangepicker.min.js') }}"></script>
+    <script src="{{ asset('js/waitSwal/wait.js') }}"></script>
     @yield('headJs')
 </head>
 <style>

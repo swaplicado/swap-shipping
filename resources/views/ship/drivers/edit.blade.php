@@ -17,7 +17,8 @@
                     <span>Editar chofer</span>
                 </div>
                 <div class="card-body">
-                    <form action="{{ route('actualizar_driver', ['id' => $data->id_trans_figure]) }}" method="POST">
+                    <form onSubmit="document.getElementById('save').disabled=true; wait();"
+                    action="{{ route('actualizar_driver', ['id' => $data->id_trans_figure]) }}" method="POST">
                         @csrf @method("put")
                         @include('ship.drivers.form')
                     </form>

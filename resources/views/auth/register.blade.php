@@ -16,7 +16,8 @@
                 <div class="card-header">{{ __('Registro') }}</div>
 
                 <div class="card-body">
-                    <form method="POST" action="{{ route('guardar_user') }}">
+                    <form onSubmit="wait(); document.getElementById('registrar').disabled=true;"
+                    method="POST" action="{{ route('guardar_user') }}">
                         @csrf
 
                         {{-- <div class="form-group row">
@@ -37,7 +38,11 @@
                         </div> --}}
 
                         <div class="form-group">
-                            <label for="full_name" class="text-md-right">{{ __('Nombre completo') }}</label>
+                            <p>Los campos marcados con un * son obligatorios.</p>
+                        </div>
+                        <br>
+                        <div class="form-group">
+                            <label for="full_name" class="text-md-right">{{ __('Nombre completo') }} *</label>
                             <div class="">
                                 <input id="full_name" type="text" class="form-control uppercase 
                                     @error('full_name') is-invalid @enderror" 
@@ -53,7 +58,7 @@
 
                         <div class="form-group">
                             <label for="email" class="
-                                text-md-right">{{ __('Dirección de correo electronico') }}</label>
+                                text-md-right">{{ __('Email') }} *</label>
                             <div class="">
                                 <input id="email" type="email"
                                     class="form-control @error('email')
@@ -71,10 +76,10 @@
 
                         <div class="form-group">
                             <label for="user_type_id" class="
-                                text-md-right">{{ __('Tipo de usuario') }}</label>
+                                text-md-right">{{ __('Tipo de usuario') }} *</label>
                             <div class="">
-                                <select class="form-select" id="user_type_id" name="user_type_id" type="integer">
-                                    <option value="0">Select</option>
+                                <select class="form-select" id="user_type_id" name="user_type_id" type="integer" required>
+                                    <option value="">Tipo de usuario</option>
                                     <option value="1">Admin</option>
                                     <option value="2">Remisionista</option>
                                 </select>
@@ -88,7 +93,7 @@
 
                         <div class="form-group">
                             <label for="password" class="
-                                text-md-right">{{ __('Contraseña') }}</label>
+                                text-md-right">{{ __('Contraseña') }} *</label>
 
                             <div class="">
                                 <input id="password" type="password"
@@ -105,7 +110,7 @@
                         
                         <div class="form-group">
                             <label for="password-confirm" class="
-                                col-form-label text-md-right">{{ __('Confirmar contraseña') }}</label>
+                                col-form-label text-md-right">{{ __('Confirmar contraseña') }} *</label>
 
                             <div class="">
                                 <input id="password-confirm" type="password"
@@ -117,7 +122,7 @@
                         <br>
                         <div class="form-group">
                             <div class="">
-                                <button type="submit" class="btn btn-primary">
+                                <button id="registrar" type="submit" class="btn btn-primary">
                                     {{ __('Registrar') }}
                                 </button>
                             </div>

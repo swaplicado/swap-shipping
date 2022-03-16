@@ -48,6 +48,8 @@
                 <th>Domicilio fiscal receptor</th>
                 <th>Régimen fiscal receptor</th>
                 <th>Uso CFDI</th>
+                <th>Forma pago</th>
+                <th>Método pago</th>
                 <th>Lugar expedición</th>
                 <th>Objeto impuesto</th>
             </tr>
@@ -72,6 +74,8 @@
                 <td>{{$data->cfdi4_0->domicilioFiscalReceptor}}</td>
                 <td>{{$data->cfdi4_0->regimenFiscalReceptor}}</td>
                 <td>{{$data->cfdi4_0->usoCFDI}}</td>
+                <td>{{$data->formaPago}}</td>
+                <td>{{$data->metodoPago}}</td>
                 <td>{{$data->cfdi4_0->lugarExpedicion}}</td>
                 <td>{{$data->cfdi4_0->objetoImp}}</td>
             </tr>

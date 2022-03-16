@@ -13,6 +13,12 @@ use Validator;
 
 class TrailerController extends Controller
 {
+    private $attributeNames = array(
+        'plates' => 'Placas',
+        'trailer_subtype_id' => 'Subtipo de trailer',
+        'carrier' => 'Transportista'
+    );
+
     /**
      * Display a listing of the resource.
      *
@@ -74,9 +80,10 @@ class TrailerController extends Controller
         $validator = Validator::make($request->all(), [
             'plates' => 'required',
             'carrier' => 'required|not_in:0',
-            'trailer_subtype_id' => 'required'
+            'trailer_subtype_id' => 'required|not_in:0'
         ]);
 
+        $validator->setAttributeNames($this->attributeNames);
         $validator->validate();
         
         $user_id = (auth()->check()) ? auth()->user()->id : null;
@@ -155,9 +162,9 @@ class TrailerController extends Controller
 
         $validator = Validator::make($request->all(), [
             'plates' => 'required',
-            'trailer_subtype_id' => 'required'
+            'trailer_subtype_id' => 'required|not_in:0'
         ]);
-
+        $validator->setAttributeNames($this->attributeNames);
         $validator->validate();
         
         $user_id = (auth()->check()) ? auth()->user()->id : null;

@@ -18,7 +18,8 @@
                 </div>
                 <div class="card-body">
                     @foreach($data as $data)
-                    <form action="{{ route('actualizar_user', ['id' => $data->id]) }}" method="POST">
+                    <form onSubmit="document.getElementById('submit').disabled=true; wait();"
+                    action="{{ route('actualizar_user', ['id' => $data->id]) }}" method="POST">
                         @csrf @method("put")
                         @include('sys.users.form')
                     </form>

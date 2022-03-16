@@ -28,19 +28,23 @@
                     <span>Editar mis datos fiscales</span>
                 </div>
                 <div class="card-body">
-                    <form action="{{ route('actualizar_carrierFiscalData', ['id' => $data->id_carrier]) }}" method="POST">
+                    <form onSubmit="document.getElementById('save').disabled=true; wait();"
+                    action="{{ route('actualizar_carrierFiscalData', ['id' => $data->id_carrier]) }}" method="POST">
                         @csrf @method("put")
                         <div class="form-group">
-                            <label for="RFC" class="form-label">RFC</label>
-                            <input name="RFC" type="text" class="form-control" value="{{ old('RFC', $data->fiscal_id ?? '') }}">
+                            <p>Los campos marcados con un * son obligatorios.</p>
+                        </div>
+                        <div class="form-group">
+                            <label for="RFC" class="form-label">RFC *</label>
+                            <input name="RFC" type="text" class="form-control" value="{{ old('RFC', $data->fiscal_id ?? '') }}" required>
                             @error('RFC')
                                 <span class="text-danger">{{ $message }}</span>
                             @enderror
                         </div>
                         <div class="form-group">
-                            <label for="tax_regimes" class="form-label">Régimen fiscal</label>
-                            <select class="form-select" name="tax_regimes">
-                                <option value="0" selected>Régimen fiscal</option>
+                            <label for="tax_regimes" class="form-label">Régimen fiscal *</label>
+                            <select class="form-select" name="tax_regimes" required>
+                                <option value="" selected>Régimen fiscal</option>
                                 @foreach($tax_regimes as $tr => $index)
                                     @if($data->tax_regime->id == $index)
                                         <option selected value='{"id":"{{$index}}","name":"{{$tr}}"}'>{{$tr}}</option>
@@ -54,9 +58,9 @@
                             @enderror
                         </div>
                         <div class="form-group">
-                            <label for="prod_serv" class="form-label">Concepto</label>
-                            <select class="form-select" name="prod_serv">
-                                <option value="0" selected>Concepto</option>
+                            <label for="prod_serv" class="form-label">Concepto *</label>
+                            <select class="form-select" name="prod_serv" required>
+                                <option value="" selected>Concepto</option>
                                 @foreach($prod_serv as $ps => $index)
                                     @if($data->prod_serv->id == $index)
                                         <option selected value='{"id":"{{$index}}","name":"{{$ps}}"}'>{{$ps}}</option>
@@ -70,7 +74,7 @@
                             @enderror
                         </div>
                         <br>
-                        <label for="prod_serv" class="form-label" style="color: red;">Delegación de timbrados:</label>
+                        <label for="prod_serv" class="form-label" style="color: red;">Delegación de timbrados: *</label>
                         <div class="form-group">
                             <input name="delega_CFDI" class="form-check-input" type="radio" value="1" id="delega_CFDI1">
                             <label class="form-check-label" for="delega_CFDI1">
@@ -95,7 +99,7 @@
                         <div class="row">
                             <div class="col-10"></div>
                             <div class="col-2">
-                                <button type="submit" class="btn btn-primary">Guardar</button>
+                                <button id="save" type="submit" class="btn btn-primary">Guardar</button>
                             </div>
                         </div>
                     </form>
@@ -109,7 +113,8 @@
                             <span>Configuración de certificados</span>
                         </div>
                         <div class="card-body">
-                            <form id="regForm" action="{{ route('config.certificates.store') }}" method="POST" enctype="multipart/form-data">
+                            <form id="regForm" onSubmit="document.getElementById('registrar').disabled=true; wait();"
+                            action="{{ route('config.certificates.store') }}" method="POST" enctype="multipart/form-data">
                                 @csrf
                                 <div class="form-group">
                                     <label for="pc">Archivo .cer</label>
@@ -134,7 +139,7 @@
                                 <div class="row">
                                     <div class="col-10"></div>
                                     <div class="col-2">
-                                        <button class="btn btn-primary" type="submit">Registrar</button>
+                                        <button id="registrar" class="btn btn-primary" type="submit">Registrar</button>
                                     </div>
                                 </div>
                             </form>

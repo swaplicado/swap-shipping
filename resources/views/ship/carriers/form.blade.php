@@ -1,5 +1,9 @@
 <div class="form-group">
-    <label for="fullname" class="form-label">Nombre completo</label>
+    <p>Los campos marcados con un * son obligatorios.</p>
+</div>
+<br>
+<div class="form-group">
+    <label for="fullname" class="form-label">Nombre completo *</label>
     <input name="fullname" type="text" class="form-control uppercase" value="{{ old('fullname', $data->fullname ?? '') }}" required>
     @error('fullname')
         <span class="text-danger">{{ $message }}</span>
@@ -14,7 +18,7 @@
 </div>
 @if(!is_null($data->users))
 <div class="form-group">
-    <label for="email" class="form-label">Email</label>
+    <label for="email" class="form-label">Email *</label>
     <input id="editEmail" name="editEmail" type="checkbox">
     <input id="email" name="email" type="text" class="form-control" value="{{ old('email', $data->users->email ?? '') }}" readonly required>
     @error('email')
@@ -23,7 +27,7 @@
 </div>
 @else
 <div class="form-group">
-    <label for="email" class="form-label">Email</label>
+    <label for="email" class="form-label">Email *</label>
     <input id="email" name="email" type="text" class="form-control" value="{{ old('email', $data->users->email ?? '') }}" required>
     @error('email')
         <span class="text-danger">{{ $message }}</span>
@@ -31,16 +35,16 @@
 </div>
 @endif
 <div class="form-group">
-    <label for="RFC" class="form-label">RFC</label>
+    <label for="RFC" class="form-label">RFC *</label>
     <input name="RFC" type="text" class="form-control uppercase" value="{{ old('RFC', $data->fiscal_id ?? '') }}" required>
     @error('RFC')
         <span class="text-danger">{{ $message }}</span>
     @enderror
 </div>
 <div class="form-group">
-    <label for="tax_regimes" class="form-label">Régimen fiscal</label>
-    <select class="form-select" name="tax_regimes">
-        <option value="0" selected>Régimen fiscal</option>
+    <label for="tax_regimes" class="form-label">Régimen fiscal *</label>
+    <select class="form-select" name="tax_regimes" required>
+        <option value="" selected>Régimen fiscal</option>
         @foreach($tax_regimes as $tr => $index)
             @if($data->tax_regime->id == $index)
                 <option selected value='{"id":"{{$index}}","name":"{{$tr}}"}'>{{$tr}}</option>
@@ -54,9 +58,9 @@
     @enderror
 </div>
 <div class="form-group">
-    <label for="prod_serv" class="form-label">Concepto</label>
-    <select class="form-select" name="prod_serv">
-        <option value="0" selected>Concepto</option>
+    <label for="prod_serv" class="form-label">Concepto *</label>
+    <select class="form-select" name="prod_serv" required>
+        <option value="" selected>Concepto</option>
         @foreach($prod_serv as $ps => $index)
             @if($data->prod_serv->id == $index)
                 <option selected value='{"id":"{{$index}}","name":"{{$ps}}"}'>{{$ps}}</option>
@@ -70,14 +74,14 @@
     @enderror
 </div>
 <div class="form-group">
-    <label for="contact1" class="form-label">Nombre de contacto 1</label>
+    <label for="contact1" class="form-label">Nombre de contacto 1 *</label>
     <input name="contact1" type="text" class="form-control uppercase" value="{{ old('contact1', $data->contact1 ?? '') }}" required>
     @error('contact1')
         <span class="text-danger">{{ $message }}</span>
     @enderror
 </div>
 <div class="form-group">
-    <label for="telephone1" class="form-label">Teléfono de contacto 1</label>
+    <label for="telephone1" class="form-label">Teléfono de contacto 1 *</label>
     <input name="telephone1" type="text" class="form-control uppercase" value="{{ old('telephone1', $data->telephone1 ?? '') }}" required>
     @error('telephone1')
         <span class="text-danger">{{ $message }}</span>
@@ -109,7 +113,7 @@
 </div>
 <br>
 <div class="form-group">
-    <label for="password" class="form-label">{{ __('Password') }}</label>
+    <label for="password" class="form-label">{{ __('Contraseña') }} *</label>
     <input id="password" type="password"
         class="form-control @error('password')
         is-invalid @enderror" name="password"
@@ -121,7 +125,7 @@
     @enderror
 </div>
 <div class="form-group">
-    <label for="password-confirm" class="form-label">{{ __('ConfirmPassword') }}</label>
+    <label for="password-confirm" class="form-label">{{ __('Confirmar contraseña') }} *</label>
     <input id="password-confirm" type="password"
         class="form-control"
         name="password_confirmation" required
@@ -129,4 +133,4 @@
 </div>
 @endif
 <br>
-<button type="submit" class="btn btn-primary">Guardar</button>
+<button id="save" type="submit" class="btn btn-primary">Guardar</button>

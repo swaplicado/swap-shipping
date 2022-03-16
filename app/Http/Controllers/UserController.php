@@ -16,6 +16,13 @@ use Validator;
 
 class UserController extends Controller
 {
+    private $attributeNames = array(
+        'full_name' => 'Nombre completo',
+        'email' => 'Email',
+        'password' => 'Contraseña',
+        'user_type_id' => 'Tipo de usuario'
+    );
+
     /**
      * Display a listing of the resource.
      *
@@ -58,6 +65,7 @@ class UserController extends Controller
             'user_type_id' => 'required|not_in:0'
         ]);
 
+        $validator->setAttributeNames($this->attributeNames);
         $validator->validate();
 
         $success = true;
@@ -141,6 +149,7 @@ class UserController extends Controller
             'full_name' => 'required'
         ]);
 
+        $validator->setAttributeNames($this->attributeNames);
         $validator->validate();
 
         if(!is_null($request->editEmail)){
@@ -148,6 +157,7 @@ class UserController extends Controller
                 'email' => ['required', 'string', 'email', 'max:255', 'unique:users']
             ]);
             
+            $validator->setAttributeNames($this->attributeNames);
             $validator->validate();
         }
         

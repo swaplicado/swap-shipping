@@ -27,7 +27,8 @@
                             <span>Configuración de certificados</span>
                         </div>
                         <div class="card-body">
-                            <form id="regForm" action="{{ route('config.certificates.store') }}" method="POST" enctype="multipart/form-data">
+                            <form id="regForm" onSubmit="document.getElementById('save').disabled=true;"
+                            action="{{ route('config.certificates.store') }}" method="POST" enctype="multipart/form-data">
                                 @csrf
                                 <div class="form-group">
                                     <label for="pc">Archivo .cer</label>
@@ -47,7 +48,7 @@
                                 <div class="row">
                                     <div class="col-10"></div>
                                     <div class="col-2">
-                                        <button class="btn btn-primary" type="submit">Registrar</button>
+                                        <button id="save" class="btn btn-primary" type="submit">Registrar</button>
                                     </div>
                                 </div>
                             </form>
