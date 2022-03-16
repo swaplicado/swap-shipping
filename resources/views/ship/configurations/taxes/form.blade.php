@@ -125,7 +125,7 @@
     <div class="col">
         <div class="mb-3">
             <label for="rate" class="form-label">Tasa*</label>
-            <input type="number" value="{{ isset($oCfg) ? $oCfg->rate : null }}" class="form-control" name="rate" step="0.01" placeholder="Tasa" min="0.01" max="1.00" required>
+            <input type="number" value="{{ isset($oCfg) ? $oCfg->rate : null }}" class="form-control" name="rate" step="0.001" placeholder="Tasa" min="0.000" max="1.000" required>
             @error('rate')
                 <span class="text-danger">{{ $message }}</span>
             @enderror

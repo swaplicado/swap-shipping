@@ -28,6 +28,7 @@
             <tr>
                 <th>id</th>
                 <th>is deleted</th>
+                <th>-</th>
                 <th>Tipo</th>
                 <th>T. persona emisor</th>
                 <th>T. persona receptor</th>
@@ -42,6 +43,7 @@
             <tr>
                 <td>{{ $cfg->id_config }}</td>
                 <td>{{ $cfg->is_deleted }}</td>
+                <td></td>
                 <td>{{ strtoupper($cfg->config_type) }}</td>
                 <td>{{ $cfg->person_type_emisor == null ? "TODOS" : strtoupper($cfg->person_type_emisor) }}</td>
                 <td>{{ $cfg->person_type_receptor == null ? "TODOS" : strtoupper($cfg->person_type_receptor) }}</td>
