@@ -56,6 +56,21 @@
                             })
                         </script>
                     @endif
+                    @if(session('notification') || isset($notification))
+                        <script>
+                            msg = "<?php echo !is_null(session('notification')) ? session('notification') : $notification; ?>";
+                            Swal.fire({
+                                position: 'top-end',
+                                title: msg,
+                                icon: 'info',
+                                showConfirmButton: true,
+                                allowOutsideClick: false
+                            })
+                        </script>
+                        @php
+                            session()->forget('notification');
+                        @endphp
+                    @endif
                     @yield('content')
                 </div>
             </main>

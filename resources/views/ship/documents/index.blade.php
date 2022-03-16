@@ -44,7 +44,7 @@
         ],
         'moreFilters' => [
             '
-            <div class="'.($withCarrierFilter ? 'col-md-12' : 'col-md-7').'">
+            <div class="'.($withCarrierFilter ? 'col-md-10' : 'col-md-5').'" style="float: right">
                 <form action="'.(route('documents', $viewType)).'" class="form-inline">
                     <div class="row" >
                         '.($withCarrierFilter ? $carrierFilter : '')
