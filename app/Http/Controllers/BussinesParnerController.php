@@ -84,10 +84,10 @@ class BussinesParnerController extends Controller
         try {
             DB::transaction(function () use ($request, $user_id) {
                 $user = User::create([
-                    'username' => strtoupper($request->fullname),
+                    'username' => mb_strtoupper($request->fullname, 'UTF-8'),
                     'email' => $request->email,
                     'password' => Hash::make($request->password),
-                    'full_name' => strtoupper($request->fullname),
+                    'full_name' => mb_strtoupper($request->fullname, 'UTF-8'),
                     'user_type_id' => 3
                 ]);
 
@@ -179,8 +179,8 @@ class BussinesParnerController extends Controller
             DB::transaction(function () use ($request, $user_id, $id) {
                 $User = User::findOrFail($id);
 
-                $User->username = strtoupper($request->fullname);
-                $User->full_name = strtoupper($request->fullname);
+                $User->username = mb_strtoupper($request->fullname, 'UTF-8');
+                $User->full_name = mb_strtoupper($request->fullname, 'UTF-8');
                 if(!is_null($request->editEmail)){
                     if($user->email != $request->email){
                         $user->email = $request->email;

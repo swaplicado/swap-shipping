@@ -66,8 +66,8 @@ class ProfileController extends Controller
             DB::transaction(function () use ($request){
                 $user = User::findOrFail(auth()->user()->id);
 
-                $user->username = strtoupper($request->fullname);
-                $user->full_name = strtoupper($request->fullname);
+                $user->username = mb_strtoupper($request->fullname, 'UTF-8');
+                $user->full_name = mb_strtoupper($request->fullname, 'UTF-8');
                 if(!is_null($request->editEmail)){
                     if($user->email != $request->email){
                         $user->email = $request->email;
@@ -136,8 +136,8 @@ class ProfileController extends Controller
             DB::transaction(function () use ($request){
                 $user = User::findOrFail(auth()->user()->id);
 
-                $user->username = strtoupper($request->fullname);
-                $user->full_name = strtoupper($request->fullname);
+                $user->username = mb_strtoupper($request->fullname, 'UTF-8');
+                $user->full_name = mb_strtoupper($request->fullname, 'UTF-8');
                 if(!is_null($request->editEmail)){
                     if($user->email != $request->email){
                         $user->email = $request->email;
@@ -218,8 +218,8 @@ class ProfileController extends Controller
                 $user = User::findOrFail(auth()->user()->id);
                 $carrier = Carrier::findOrFail(auth()->user()->carrier()->first()->id_carrier);
 
-                $user->username = strtoupper($request->fullname);
-                $user->full_name = strtoupper($request->fullname);
+                $user->username = mb_strtoupper($request->fullname, 'UTF-8');
+                $user->full_name = mb_strtoupper($request->fullname, 'UTF-8');
                 if(!is_null($request->editEmail)){
                     if($user->email != $request->email){
                         $user->email = $request->email;
@@ -230,11 +230,11 @@ class ProfileController extends Controller
                     $user->password = \Hash::make($request->new_password);
                 }
 
-                $carrier->fullname = strtoupper($request->fullname);
-                $carrier->comercial_name = strtoupper($request->comercial_name);
-                $carrier->contact1 = strtoupper($request->contact1);
+                $carrier->fullname = mb_strtoupper($request->fullname, 'UTF-8');
+                $carrier->comercial_name = mb_strtoupper($request->comercial_name, 'UTF-8');
+                $carrier->contact1 = mb_strtoupper($request->contact1, 'UTF-8');
                 $carrier->telephone1 = $request->telephone1;
-                $carrier->contact2 = strtoupper($request->contact2);
+                $carrier->contact2 = mb_strtoupper($request->contact2, 'UTF-8');
                 $carrier->telephone2 = $request->telephone2;
                 $carrier->logo = $logo_name;
                 
@@ -306,8 +306,8 @@ class ProfileController extends Controller
                 $driver = Driver::findOrFail(auth()->user()->driver()->first()->id_trans_figure);
                 $address = FAddress::where('trans_figure_id', $driver->id_trans_figure)->firstOrFail();
 
-                $user->username = strtoupper($request->fullname);
-                $user->full_name = strtoupper($request->fullname);
+                $user->username = mb_strtoupper($request->fullname, 'UTF-8');
+                $user->full_name = mb_strtoupper($request->fullname, 'UTF-8');
                 if(!is_null($request->editEmail)){
                     if($user->email != $request->email){
                         $user->email = $request->email;
@@ -318,17 +318,17 @@ class ProfileController extends Controller
                     $user->password = \Hash::make($request->new_password);
                 }
                 
-                $driver->fullname = strtoupper($request->fullname);
-                $driver->fiscal_id = strtoupper($request->RFC);
-                $driver->fiscal_fgr_id = strtoupper($request->RFC_ex);
-                $driver->driver_lic = strtoupper($request->licence);
+                $driver->fullname = mb_strtoupper($request->fullname, 'UTF-8');
+                $driver->fiscal_id = mb_strtoupper($request->RFC, 'UTF-8');
+                $driver->fiscal_fgr_id = mb_strtoupper($request->RFC_ex, 'UTF-8');
+                $driver->driver_lic = mb_strtoupper($request->licence, 'UTF-8');
                 $driver->fis_address_id = $request->country;
 
                 $address->telephone = $request->telephone;
-                $address->street = strtoupper($request->street);
+                $address->street = mb_strtoupper($request->street, 'UTF-8');
                 $address->street_num_ext = $request->street_num_ext;
                 $address->street_num_int = $request->street_num_int;
-                $address->neighborhood = strtoupper($request->neighborhood);
+                $address->neighborhood = mb_strtoupper($request->neighborhood, 'UTF-8');
                 $address->reference = $request->reference;
                 $address->locality = $request->locality;
                 $address->state = $sta_name;

@@ -126,10 +126,10 @@ class CarrierController extends Controller
         try {
             DB::transaction(function () use ($request, $user_id, $tr_id, $ps_id) {
                 $user = User::create([
-                    'username' => strtoupper($request->fullname),
+                    'username' => mb_strtoupper($request->fullname, 'UTF-8'),
                     'email' => $request->email,
                     'password' => Hash::make($request->password),
-                    'full_name' => strtoupper($request->fullname),
+                    'full_name' => mb_strtoupper($request->fullname, 'UTF-8'),
                     'user_type_id' => 3,
                     'is_carrier' => 1
                 ]);
@@ -139,13 +139,13 @@ class CarrierController extends Controller
                 
                 is_null($request->carrier_stamp) ? $request->carrier_stamp = 0 : "";
                 $carrier = Carrier::create([
-                    'fullname' => strtoupper($request->fullname),
-                    'comercial_name' => strtoupper($request->comercial_name),
-                    'fiscal_id' => strtoupper($request->RFC),
+                    'fullname' => mb_strtoupper($request->fullname, 'UTF-8'),
+                    'comercial_name' => mb_strtoupper($request->comercial_name, 'UTF-8'),
+                    'fiscal_id' => mb_strtoupper($request->RFC, 'UTF-8'),
                     'tax_regimes_id' => $tr_id,
-                    'contact1' => strtoupper($request->contact1),
+                    'contact1' => mb_strtoupper($request->contact1, 'UTF-8'),
                     'telephone1' => $request->telephone1,
-                    'contact2' => strtoupper($request->contact2),
+                    'contact2' => mb_strtoupper($request->contact2, 'UTF-8'),
                     'telephone2' => $request->telephone2,
                     'prod_serv_id' => $ps_id,
                     'usr_new_id' => $user_id,
@@ -259,15 +259,15 @@ class CarrierController extends Controller
                 $carrier = Carrier::findOrFail($id);
                 $user = User::findOrFail($carrier->users()->first()->id);
 
-                $carrier->fullname = strtoupper($request->fullname);
-                $carrier->comercial_name = strtoupper($request->comercial_name);
-                $carrier->fiscal_id = strtoupper($request->RFC);
+                $carrier->fullname = mb_strtoupper($request->fullname, 'UTF-8');
+                $carrier->comercial_name = mb_strtoupper($request->comercial_name, 'UTF-8');
+                $carrier->fiscal_id = mb_strtoupper($request->RFC, 'UTF-8');
                 $carrier->tax_regimes_id = $tr_id;
                 $carrier->prod_serv_id = $ps_id;
                 $carrier->usr_upd_id = $user_id;
 
-                $user->username = strtoupper($request->fullname);
-                $user->full_name = strtoupper($request->fullname);
+                $user->username = mb_strtoupper($request->fullname, 'UTF-8');
+                $user->full_name = mb_strtoupper($request->fullname, 'UTF-8');
                 if(!is_null($request->editEmail)){
                     if($user->email != $request->email){
                         $user->email = $request->email;
@@ -447,7 +447,7 @@ class CarrierController extends Controller
             DB::transaction(function () use ($request, $user_id, $id, $tr_id, $ps_id) {
                 $carrier = Carrier::findOrFail($id);
                 
-                $carrier->fiscal_id = strtoupper($request->RFC);
+                $carrier->fiscal_id = mb_strtoupper($request->RFC, 'UTF-8');
                 $carrier->tax_regimes_id = $tr_id;
                 $carrier->prod_serv_id = $ps_id;
                 $carrier->usr_upd_id = $user_id;

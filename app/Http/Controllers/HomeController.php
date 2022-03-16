@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Document;
+use App\Models\Manifest;
 
 class HomeController extends Controller
 {
@@ -58,6 +59,13 @@ class HomeController extends Controller
                                     ->where('is_signed', true)
                                     ->where('is_deleted', false)
                                     ->get())->count();
+        }
+
+        if(auth()->user()->isCarrier()){
+            $bManifestSigned = Manifest::where('carrier_id', auth()->user()->carrier()->value('id_carrier'))->where('is_signed', true)->count() > 0;
+            if(!$bManifestSigned){
+                \Session::flash('notification', 'No has firmado tu carta manifiesto');
+            }
         }
 
         return view('home')->with([

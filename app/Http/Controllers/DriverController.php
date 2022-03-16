@@ -139,10 +139,10 @@ class DriverController extends Controller
             DB::transaction(function () use ($sta_id, $sta_name, $user_id, $request) {
                 if ($request->is_with_user == 'on') {
                     $user = User::create([
-                        'username' => strtoupper($request->fullname),
+                        'username' => mb_strtoupper($request->fullname, 'UTF-8'),
                         'email' => $request->email,
                         'password' => Hash::make($request->password),
-                        'full_name' => strtoupper($request->fullname),
+                        'full_name' => mb_strtoupper($request->fullname, 'UTF-8'),
                         'user_type_id' => 4
                     ]);
 
@@ -167,10 +167,10 @@ class DriverController extends Controller
                 }
 
                 $Driver = Driver::create([
-                    'fullname' => strtoupper($request->fullname),
-                    'fiscal_id' => strtoupper($request->RFC),
-                    'fiscal_fgr_id' => strtoupper($request->RFC_ex),
-                    'driver_lic' => strtoupper($request->licence),
+                    'fullname' => mb_strtoupper($request->fullname, 'UTF-8'),
+                    'fiscal_id' => mb_strtoupper($request->RFC, 'UTF-8'),
+                    'fiscal_fgr_id' => mb_strtoupper($request->RFC_ex, 'UTF-8'),
+                    'driver_lic' => mb_strtoupper($request->licence, 'UTF-8'),
                     'tp_figure_id' => $request->tp_figure,
                     'fis_address_id' => $request->country,
                     'carrier_id' => $request->carrier,
@@ -180,10 +180,10 @@ class DriverController extends Controller
 
                 $address = FAddress::create([
                     'telephone' => $request->telephone,
-                    'street' => strtoupper($request->street),
+                    'street' => mb_strtoupper($request->street, 'UTF-8'),
                     'street_num_ext' => $request->street_num_ext,
                     'street_num_int' => $request->street_num_int,
-                    'neighborhood' => strtoupper($request->neighborhood),
+                    'neighborhood' => mb_strtoupper($request->neighborhood, 'UTF-8'),
                     'reference' => $request->reference,
                     'locality' => $request->locality,
                     'state' => $sta_name,
@@ -303,19 +303,19 @@ class DriverController extends Controller
                 auth()->user()->carrierAutorization($Driver->carrier_id);
                 $address = FAddress::where('trans_figure_id', $id)->firstOrFail();
 
-                $Driver->fullname = strtoupper($request->fullname);
-                $Driver->fiscal_id = strtoupper($request->RFC);
-                $Driver->fiscal_fgr_id = strtoupper($request->RFC_ex);
-                $Driver->driver_lic = strtoupper($request->licence);
+                $Driver->fullname = mb_strtoupper($request->fullname, 'UTF-8');
+                $Driver->fiscal_id = mb_strtoupper($request->RFC, 'UTF-8');
+                $Driver->fiscal_fgr_id = mb_strtoupper($request->RFC_ex, 'UTF-8');
+                $Driver->driver_lic = mb_strtoupper($request->licence, 'UTF-8');
                 $Driver->tp_figure_id = $request->tp_figure;
                 $Driver->fis_address_id = $request->country;
                 $Driver->usr_upd_id = $user_id;
 
                 $address->telephone = $request->telephone;
-                $address->street = strtoupper($request->street);
+                $address->street = mb_strtoupper($request->street, 'UTF-8');
                 $address->street_num_ext = $request->street_num_ext;
                 $address->street_num_int = $request->street_num_int;
-                $address->neighborhood = strtoupper($request->neighborhood);
+                $address->neighborhood = mb_strtoupper($request->neighborhood, 'UTF-8');
                 $address->reference = $request->reference;
                 $address->locality = $request->locality;
                 $address->state = $sta_name;
@@ -326,8 +326,8 @@ class DriverController extends Controller
 
                 if(!is_null($Driver->UserVsTypes()->first())){
                     $user = User::findOrFail($Driver->users()->first()->id);
-                    $user->username = strtoupper($request->fullname);
-                    $user->full_name = strtoupper($request->fullname);
+                    $user->username = mb_strtoupper($request->fullname, 'UTF-8');
+                    $user->full_name = mb_strtoupper($request->fullname, 'UTF-8');
                     if(!is_null($request->editEmail)){
                         if($user->email != $request->email){
                             $user->email = $request->email;

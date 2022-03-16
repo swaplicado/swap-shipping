@@ -91,7 +91,7 @@ class TrailerController extends Controller
         try {
             DB::transaction(function () use ($request, $user_id) {
                 $trailer = Trailer::create([
-                    'plates' => strtoupper($request->plates),
+                    'plates' => mb_strtoupper($request->plates, 'UTF-8'),
                     'trailer_subtype_id' => $request->trailer_subtype_id,
                     'carrier_id' => $request->carrier,
                     'usr_new_id' => $user_id,
@@ -173,7 +173,7 @@ class TrailerController extends Controller
             DB::transaction(function () use ($request, $user_id, $id) {
                 $trailer = Trailer::findOrFail($id);
                 auth()->user()->carrierAutorization($trailer->carrier_id);
-                $trailer->plates = strtoupper($request->plates);
+                $trailer->plates = mb_strtoupper($request->plates, 'UTF-8');
                 $trailer->trailer_subtype_id = $request->trailer_subtype_id;
                 // $trailer->carrier_id = $request->carrier_id;
                 $trailer->usr_upd_id = $user_id;

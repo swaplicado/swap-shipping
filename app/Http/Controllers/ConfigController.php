@@ -179,8 +179,8 @@ class ConfigController extends Controller
             $json["prodServDescripcion"] = ProdServ::where('id', $request->prod_serv)->value('description');
             $json["claveUnidad"] = Units::where('id', $request->units)->value('key_code');
             $json["simboloUnidad"] = Units::where('id', $request->units)->value('symbol');
-            $json["rfc"] = strtoupper($request->rfc);
-            $json["nombreReceptor"] = strtoupper($request->nombreReceptor);
+            $json["rfc"] = mb_strtoupper($request->rfc, 'UTF-8');
+            $json["nombreReceptor"] = mb_strtoupper($request->nombreReceptor, 'UTF-8');
             $json["domicilioFiscalReceptor"] = $request->domicilioFiscalReceptor;
             $json["regimenFiscalReceptor"] = Tax_regimes::where('id', $request->tax_regimes)->value('key_code');
             $json["usoCFDI"] = usoCFDI::where('id', $request->usoCFDI)->value('key_code');

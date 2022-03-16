@@ -124,10 +124,10 @@ class VehicleController extends Controller
             DB::transaction(function () use ($request, $user_id) {
                 $vehicle = Vehicle::create([
                     'alias' => $request->alias,                    
-                    'plates' => strtoupper($request->plates),
+                    'plates' => mb_strtoupper($request->plates, 'UTF-8'),
                     'year_model' => $request->year_model,
-                    'license_sct_num' => strtoupper($request->license_sct_num),
-                    'policy' => strtoupper($request->policy),
+                    'license_sct_num' => mb_strtoupper($request->license_sct_num, 'UTF-8'),
+                    'policy' => mb_strtoupper($request->policy, 'UTF-8'),
                     'license_sct_id' => $request->license_sct_id,
                     'veh_cfg_id' => $request->veh_cfg_id,
                     'veh_key_id' => $request->veh_key_id,
@@ -222,10 +222,10 @@ class VehicleController extends Controller
                 $Vehicle = Vehicle::findOrFail($id);
                 auth()->user()->carrierAutorization($Vehicle->carrier_id);
                 $Vehicle->alias = $request->alias;
-                $Vehicle->plates = strtoupper($request->plates);
+                $Vehicle->plates = mb_strtoupper($request->plates, 'UTF-8');
                 $Vehicle->year_model = $request->year_model;
-                $Vehicle->license_sct_num = strtoupper($request->license_sct_num);
-                $Vehicle->policy = strtoupper($request->policy);
+                $Vehicle->license_sct_num = mb_strtoupper($request->license_sct_num, 'UTF-8');
+                $Vehicle->policy = mb_strtoupper($request->policy, 'UTF-8');
                 $Vehicle->license_sct_id = $request->license_sct_id;
                 $Vehicle->veh_cfg_id = $request->veh_cfg_id;
                 $Vehicle->veh_key_id = $request->veh_key_id;

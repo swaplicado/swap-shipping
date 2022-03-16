@@ -73,10 +73,10 @@ class UserController extends Controller
         try {
             DB::transaction(function () use ($request) {
                 $user = User::create([
-                    'username' => $request->full_name,
+                    'username' => mb_strtoupper($request->full_name, 'UTF-8'),
                     'email' => $request->email,
                     'password' => Hash::make($request->password),
-                    'full_name' => $request->full_name,
+                    'full_name' => mb_strtoupper($request->full_name, 'UTF-8'),
                     'user_type_id' => $request->user_type_id
                 ]);
         
@@ -169,8 +169,8 @@ class UserController extends Controller
             DB::transaction(function () use ($request, $user_id, $id, $jsonObj) {
                 $User = User::findOrFail($id);
 
-                $User->username = $request->full_name;
-                $User->full_name = $request->full_name;
+                $User->username = mb_strtoupper($request->full_name, 'UTF-8');
+                $User->full_name = mb_strtoupper($request->full_name, 'UTF-8');
                 if(!is_null($request->editEmail)){
                     if($user->email != $request->email){
                         $user->email = $request->email;

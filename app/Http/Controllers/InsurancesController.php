@@ -84,7 +84,7 @@ class InsurancesController extends Controller
         try {
             DB::transaction(function () use ($request, $user_id, $resp_civ, $ambiental, $carga) {
                 $Insurance = Insurances::create([
-                    'full_name' => strtoupper($request->fullname),
+                    'full_name' => mb_strtoupper($request->fullname, 'UTF-8'),
                     'carrier_id' => $request->carrier,
                     'usr_new_id' => $user_id,
                     'usr_upd_id' => $user_id
@@ -159,7 +159,7 @@ class InsurancesController extends Controller
             DB::transaction(function () use ($request, $user_id, $resp_civ, $ambiental, $carga, $id) {
                 $Insurance = Insurances::findOrFail($id);
                 auth()->user()->carrierAutorization($Insurance->carrier_id);
-                $Insurance->full_name = strtoupper($request->fullname);
+                $Insurance->full_name = mb_strtoupper($request->fullname);
                 $Insurance->usr_upd_id = $user_id;
                 
                 $Insurance->update();
