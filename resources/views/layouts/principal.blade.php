@@ -67,6 +67,9 @@
                                 allowOutsideClick: false
                             })
                         </script>
+                        @php
+                            session()->forget('notification');
+                        @endphp
                     @endif
                     @yield('content')
                 </div>

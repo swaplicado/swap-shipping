@@ -246,7 +246,7 @@ class VehicleController extends Controller
             $icon = "error";
         }
 
-        return redirect('vehicles')->with(['message' => $msg, 'icon' => $icon, 'notification' => 'esta es una notificacion']);
+        return redirect('vehicles')->with(['message' => $msg, 'icon' => $icon]);
 
     }
 
