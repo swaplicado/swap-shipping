@@ -38,7 +38,7 @@ class RequestCore {
         $oObjData->usoCfdi = $oConfigurations->cfdi4_0->usoCFDI;
         $oObjData->formaPago = $oConfigurations->formaPago;
         $oObjData->metodoPago = $oConfigurations->metodoPago;
-        $oObjData->currency = $oRequest->moneda;
+        $oObjData->currency = $oConfigurations->localCurrency;
         $oObjData->tipoCambio = isset($oRequest->tipoCambio) && $oRequest->tipoCambio > 1 ? $oRequest->tipoCambio : 1;
         $oObjData->subTotal = 0;
         $oObjData->discounts = 0;
