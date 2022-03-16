@@ -114,6 +114,7 @@ class transformJson
                     'claveUnidad' => $m->claveUnidad,
                     'valorMercancia' => $m->valorMercancia,
                     'moneda' => $m->moneda,
+                    'pesoEnKg' => $m->pesoEnKg,
                 );
 
                 array_push($mercancias, $uMercancias);

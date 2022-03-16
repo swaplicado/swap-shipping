@@ -21,6 +21,7 @@ use Illuminate\Support\Facades\Hash;
 use App\Utils\messagesErros;
 use App\Utils\CfdUtils;
 use App\Models\Certificate;
+use App\Models\Manifest;
 use Illuminate\Validation\Rule;
 
 class CarrierController extends Controller
@@ -384,12 +385,16 @@ class CarrierController extends Controller
 
         $tax_regimes = Tax_regimes::selectRaw('CONCAT(key_code, " - ", description) AS kd, id')->pluck('id', 'kd');
         $prod_serv = ProdServ::where('is_active', 1)->selectRaw('CONCAT(key_code, " - ", description) AS kd, id')->pluck('id', 'kd');
+
+        $bManifestSigned = Manifest::where('carrier_id', $id)->where('is_signed', true)->count() > 0;
         
         return view('ship/carriers/fiscalData', [
                                                     'data' => $data, 
                                                     'tax_regimes' => $tax_regimes, 
                                                     'prod_serv' => $prod_serv,
-                                                    'certificates' => $certificates
+                                                    'certificates' => $certificates,
+                                                    'id' => $id,
+                                                    'bManifestSigned' => $bManifestSigned
                                                 ]);
     }
 
@@ -477,7 +482,7 @@ class CarrierController extends Controller
         $filePathPc = $filePc->getRealPath();
         $destinationPath = env('DEST_PATH');
 
-        $carrier = Carrier::findOrFail($request->carrier);
+        $carrier = Carrier::find($request->carrier);
 
         $urlPc = Storage::putFileAs($destinationPath, new File($filePathPc), $carrier->fiscal_id.'_.cer');
 
@@ -541,5 +546,34 @@ class CarrierController extends Controller
         Storage::disk('local')->delete($urlPv);
 
         return redirect(route('editar_carrierFiscalData', ['id' => $oCarrier->id_carrier]))->with(['message' => $response['message'], 'icon' => 'success']);
+    }
+
+    public function signManifest(Request $request)
+    {
+        $oCarrier = Carrier::find($request->id_carrier);
+
+        if ($oCarrier == null) {
+            return redirect()->back()->with(['message' => 'No se encontró el transportista', 'icon' => 'error']);
+        }
+
+        if (! isset($request->is_signed) || $request->is_signed == null) {
+            return redirect()->back()->with(['message' => 'No se confirmó la firma de manifiesto', 'icon' => 'error']);
+        }
+
+        $oSignManifest = new Manifest();
+        $oSignManifest->is_signed = true;
+        $oSignManifest->signed_at = date('Y-m-d H:i:s');
+        $oSignManifest->signed_by = auth()->user()->id;
+        $oSignManifest->carrier_id = $oCarrier->id_carrier;
+
+        $oSignManifest->save();
+
+        return redirect(route('editar_carrierFiscalData', ['id' => $oCarrier->id_carrier]))
+                    ->with(
+                        [
+                            'message' => 'El manifiesto fue firmado correctamente', 
+                            'icon' => 'success'
+                        ]
+                    );
     }
 }

@@ -13,6 +13,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use App\Http\Controllers\Controller;
 use App\SXml\XmlGeneration;
+use App\SXml\transformJson;
 use App\Core\RequestCore;
 use App\Core\FinkokCore;
 use App\Utils\CfdiUtils;
@@ -195,7 +196,7 @@ class DocumentController extends Controller
     {
         $oDocument = Document::find($idDocument);
 
-        if(auth()->user()->isAdmin() || auth()->user()->isClient()){
+        if(auth()->user()->isAdmin() || auth()->user()->isClient()) {
             abort_unless(CfdiUtils::remisionistaCanEdit($oDocument->carrier_id), 401);
         }
 
@@ -226,13 +227,13 @@ class DocumentController extends Controller
             $oFigure = $oObjData->oFigure;
         }
         else {
-            $oJson = json_decode($oMongoDocument->body_request);
-
+            $aJson = json_decode($oMongoDocument->body_request);
+            $oJson = transformJson::transfom($aJson);
             $lCurs = clone $lCurrenciesQuery;
             $lCurs = $lCurs->selectRaw('cur.*, CONCAT(cur.key_code, " - ", cur.description) AS _description')
                             ->pluck('_description', 'key_code');
 
-            $oObjData = RequestCore::requestToJson($oDocument, $oJson, $lCurs);
+            $oObjData = RequestCore::requestToJson($oDocument, (object) $oJson['json'], $lCurs);
             $array = json_decode(json_encode(clone $oObjData), true);
             foreach ($array as $key => $value) {
                 $oMongoDocument->$key = $value;
@@ -255,7 +256,6 @@ class DocumentController extends Controller
                                 'v.plates',
                                 'v.year_model',
                                 'v.license_sct_num',
-                                'v.drvr_reg_trib',
                                 'v.policy',
                                 'v.is_deleted',
                                 'v.license_sct_id',

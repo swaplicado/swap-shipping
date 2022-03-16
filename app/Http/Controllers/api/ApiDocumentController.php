@@ -28,7 +28,7 @@ class ApiDocumentController extends Controller
                                     ->first();
     
                 $oMongoDocument = new MDocument();
-                $oMongoDocument->body_request = json_encode($oObjData);
+                $oMongoDocument->body_request = json_encode($data);
                 $oMongoDocument->xml_cfdi = null;
                 $oMongoDocument->carrier_id = $oCarrier->id_carrier;
                 $oMongoDocument->save();
@@ -59,7 +59,7 @@ class ApiDocumentController extends Controller
                 return json_encode(['code' => $verify->code, 'message' => 'Documento guardado correctamente', 'data' => $verify], JSON_PRETTY_PRINT);
             }
             else {
-                return json_encode(['code' => $verify->code, 'message' => 'Error al guardar el documento', 'data' => $verify], JSON_PRETTY_PRINT);
+                return json_encode(['code' => $verify->code, 'message' => $verify->message, 'data' => $verify], JSON_PRETTY_PRINT);
             }
         }else{
             return json_encode(['code' => $arr['code'], 'message' => $arr['msg'], 'data' => $data], JSON_PRETTY_PRINT);

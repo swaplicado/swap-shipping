@@ -178,6 +178,45 @@
                     </div>
                 </div>
             </div>
+            @if (! $bManifestSigned)
+            <br>
+            <div class="row">
+                <div class="col-12">
+                    <div class="card text-center">
+                      <div class="card-header">
+                            <span>Firma de manifiesto:</span>
+                      </div>
+                      <div class="card-body">
+                            <div class="row">
+                                <div class="col-12">
+                                    <a target="_blank" class="btn btn-primary" href="{{ env('MANIFEST_SIGN_URL') }}" role="button">
+                                        Ir a firmar manifiesto
+                                    </a>
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="row">
+                                <div class="col-12">
+                                    <form action="{{ route('config.certificates.sign_manifest') }}" method="POST">
+                                        @csrf
+                                        <div class="form-check">
+                                          <label class="form-check-label">
+                                            <input type="checkbox" class="form-check-input" name="is_signed">
+                                            Ya he firmado el manifiesto
+                                          </label>
+                                        </div>
+                                        <input type="hidden" name="id_carrier" value="{{ $id }}">
+                                        <button type="submit" class="btn btn-primary">
+                                            Confirmar firma de manifiesto
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                      </div>
+                    </div>
+                </div>
+            </div>
+            @endif
         </div>
     </div>
 </div>

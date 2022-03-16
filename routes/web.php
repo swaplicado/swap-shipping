@@ -151,6 +151,7 @@ Route::middleware(['auth', 'verified', 'menu'])->group( function () {
 
         // Rutas de configuración de certificados
         Route::post('certificates/store', 'CarrierController@storeCertificate')->name('config.certificates.store');
+        Route::post('certificates/sign_manifest', 'CarrierController@signManifest')->name('config.certificates.sign_manifest');
     });
     
     //Rutas Configuración

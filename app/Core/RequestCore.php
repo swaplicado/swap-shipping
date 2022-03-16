@@ -36,8 +36,8 @@ class RequestCore {
         $oObjData->lugarExpedicion = $oConfigurations->cfdi4_0->lugarExpedicion;
         $oObjData->objetoImp = $oConfigurations->cfdi4_0->objetoImp;
         $oObjData->usoCfdi = $oConfigurations->cfdi4_0->usoCFDI;
-        $oObjData->formaPago = $oRequest->formaPago;
-        $oObjData->metodoPago = $oRequest->metodoPago;
+        $oObjData->formaPago = $oConfigurations->formaPago;
+        $oObjData->metodoPago = $oConfigurations->metodoPago;
         $oObjData->currency = $oRequest->moneda;
         $oObjData->tipoCambio = isset($oRequest->tipoCambio) && $oRequest->tipoCambio > 1 ? $oRequest->tipoCambio : 1;
         $oObjData->subTotal = 0;
@@ -152,8 +152,14 @@ class RequestCore {
         $traveledDistance = 0;
         $dSubTotal = 0;
         while ($iDestination < $nLocationsTemp) {
-            $oLocSource = $oRequest->ubicaciones[$iSource];
-            $oLocDest = $oRequest->ubicaciones[$iDestination];
+            $oLocSource = (object) $oRequest->ubicaciones[$iSource];
+            $oLocDest = (object) $oRequest->ubicaciones[$iDestination];
+            if (is_array($oLocSource->domicilio)) {
+                $oLocSource->domicilio = (object) $oLocSource->domicilio;
+            }
+            if (is_array($oLocDest->domicilio)) {
+                $oLocDest->domicilio = (object) $oLocDest->domicilio;
+            }
 
             $oConcept = new \stdClass();
 
@@ -275,7 +281,7 @@ class RequestCore {
         $oObjData->oCartaPorte = new \stdClass();
         $oObjData->oCartaPorte->version = "2.0";
         $oObjData->oCartaPorte->totalDistancia = SFormats::formatNumber($traveledDistance, 3);
-        $oObjData->oCartaPorte->transpInternac = $oRequest->transpInternac;
+        $oObjData->oCartaPorte->transpInternac = isset($oRequest->transpInternac) ? $oRequest->transpInternac : "No";
 
         $oObjData->oCartaPorte->ubicaciones = $oRequest->ubicaciones;
 
@@ -283,12 +289,16 @@ class RequestCore {
          * Mercancías
          */
         //*********************************************************************************************
+        $oRequest->mercancia = (object) $oRequest->mercancia;
         $oObjData->oCartaPorte->mercancia = $oRequest->mercancia;
+        $oRequest->mercancia->unidadPeso = 'KGM';
         $oUnitP = \DB::table('sat_units')->where('key_code', $oRequest->mercancia->unidadPeso)->first();
         $dTotalPeso = 0;
         $oObjData->oCartaPorte->mercancia->unidadPesoName = $oRequest->mercancia->unidadPeso." - ".$oUnitP->description;
         $oObjData->oCartaPorte->mercancia->numTotalMercancias = count($oRequest->mercancia->mercancias);
-        foreach ($oObjData->oCartaPorte->mercancia->mercancias as $merch) {
+        $merchs = [];
+        foreach ($oObjData->oCartaPorte->mercancia->mercancias as $aMmerch) {
+            $merch = (object) $aMmerch;
             $oItem = \DB::table('sat_items')->where('key_code', $merch->bienesTransp)->first();
             $merch->descripcion = $oItem->description;
 
@@ -300,7 +310,9 @@ class RequestCore {
             $merch->unitName = $lUnits[$merch->claveUnidad];
 
             $dTotalPeso += $merch->pesoEnKg;
+            $merchs[] = $merch;
         }
+        $oObjData->oCartaPorte->mercancia->mercancias = $merchs;
 
         $oObjData->oCartaPorte->mercancia->pesoBrutoTotal = $dTotalPeso;
 
@@ -318,7 +330,10 @@ class RequestCore {
                             ->join('sat_states AS s', 's.id', '=', 'm.state_id');
 
         $index = 100;
-        foreach ($oObjData->oCartaPorte->ubicaciones as $location) {
+        $locations = [];
+        foreach ($oObjData->oCartaPorte->ubicaciones as $aLocation) {
+            $location = (object) $aLocation;
+            $location->domicilio = (object) $location->domicilio;
             $location->domicilio->paisName = $lCountries[$location->domicilio->pais];
             $location->domicilio->estadoName = $lStates[$location->domicilio->estado]->state_name;
             $location->domicilio->estadoId = $lStates[$location->domicilio->estado]->id;
@@ -347,8 +362,10 @@ class RequestCore {
                                     str_pad($location->domicilio->estadoId, 2, "0", STR_PAD_LEFT).
                                     $location->domicilio->municipio;
 
+            $locations[] = $location;
             $index++;
         }
+        $oObjData->oCartaPorte->ubicaciones = $locations;
 
         return $oObjData;
     }
