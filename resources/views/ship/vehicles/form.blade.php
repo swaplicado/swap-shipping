@@ -1,4 +1,8 @@
 <div class="form-group">
+    <p>Los campos marcados con un * son obligatorios.</p>
+</div>
+<br>
+<div class="form-group">
     <label for="alias" class="form-label">Alias (nombre identificador)</label>
     <input name="alias" type="text" class="form-control" value="{{ old('alias', $data->alias ?? '') }}">
     @error('alias')
@@ -6,23 +10,23 @@
     @enderror
 </div>
 <div class="form-group">
-    <label for="plates" class="form-label">Placas</label>
+    <label for="plates" class="form-label">Placas *</label>
     <input name="plates" type="text" class="form-control uppercase" value="{{ old('plates', $data->plates ?? '') }}" required>
     @error('plates')
         <span class="text-danger">{{ $message }}</span>
     @enderror
 </div>
 <div class="form-group">
-    <label for="year_model" class="form-label">Modelo (año)</label>
+    <label for="year_model" class="form-label">Modelo (año) *</label>
     <input name="year_model" type="number" class="form-control uppercase" value="{{ old('year_model', $data->year_model ?? '') }}" required>
     @error('year_model')
         <span class="text-danger">{{ $message }}</span>
     @enderror
 </div>
 <div class="form-group">
-    <label for="license_sct_id" class="form-label">Permiso SCT</label>
-    <select class="form-select" name="license_sct_id">
-        <option value="0" selected>Select permiso</option>
+    <label for="license_sct_id" class="form-label">Permiso SCT *</label>
+    <select class="form-select" name="license_sct_id" required>
+        <option value="" selected>Permiso SCT</option>
         @foreach($LicenceSct as $lsct => $index)
             @if($data->license_sct_id == $index)
                 <option selected value='{{$index}}'>{{$lsct}}</option>
@@ -36,7 +40,7 @@
     @enderror
 </div>
 <div class="form-group">
-    <label for="license_sct_num" class="form-label">Número de permiso SCT</label>
+    <label for="license_sct_num" class="form-label">Número de permiso SCT *</label>
     <input name="license_sct_num" type="text" class="form-control uppercase" value="{{ old('license_sct_num', $data->license_sct_num ?? '') }}" required>
     @error('license_sct_num')
         <span class="text-danger">{{ $message }}</span>
@@ -45,11 +49,11 @@
 {!! $data->id_vehicle == null ? (session()->has('form') ? session('form') : "") : "" !!}
 @if(!auth()->user()->isCarrier())
     <div class="form-group">
-        <label for="insurance" class="form-label">Aseguradora</label>
+        <label for="insurance" class="form-label">Aseguradora *</label>
         <div id="sel_insurances">
             @if(!is_null($data->id_vehicle))
-            <select class="form-select" name="insurance">
-                <option value="0" selected>Select Aseguradora</option>
+            <select class="form-select" name="insurance" required>
+                <option value="" selected>Aseguradora</option>
                 @foreach($insurances as $ins => $index)
                     @if($data->insurance_id == $index)
                         <option selected value='{{$index}}'>{{$ins}}</option>
@@ -66,10 +70,10 @@
     </div>
 @else
 <div class="form-group">
-    <label for="insurance" class="form-label">Aseguradora</label>
+    <label for="insurance" class="form-label">Aseguradora *</label>
     <div id="sel_insurances">
-        <select class="form-select" name="insurance">
-            <option value="0" selected>Select Aseguradora</option>
+        <select class="form-select" name="insurance" required>
+            <option value="" selected>Aseguradora</option>
             @foreach($insurances as $ins => $index)
                 @if($data->insurance_id == $index)
                     <option selected value='{{$index}}'>{{$ins}}</option>
@@ -85,16 +89,16 @@
 </div>
 @endif
 <div class="form-group">
-    <label for="policy" class="form-label">Póliza responsabilidad civil</label>
+    <label for="policy" class="form-label">Póliza responsabilidad civil *</label>
     <input name="policy" type="text" class="form-control uppercase" value="{{ old('policy', $data->policy ?? '') }}" required>
     @error('policy')
         <span class="text-danger">{{ $message }}</span>
     @enderror
 </div>
 <div class="form-group">
-    <label for="veh_cfg_id" class="form-label">Configuración del vehículo</label>
-    <select class="form-select" name="veh_cfg_id">
-        <option value="0" selected>Select configuración</option>
+    <label for="veh_cfg_id" class="form-label">Configuración del vehículo *</label>
+    <select class="form-select" name="veh_cfg_id" required>
+        <option value="" selected>Configuración del vehículo</option>
         @foreach($VehicleConfig as $vcfg => $index)
             @if($data->veh_cfg_id == $index)
                 <option selected value='{{$index}}'>{{$vcfg}}</option>
@@ -123,4 +127,4 @@
     @enderror
 </div>
 <br>
-<button type="submit" class="btn btn-primary">Guardar</button>
+<button id="save" type="submit" class="btn btn-primary">Guardar</button>

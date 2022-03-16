@@ -17,7 +17,8 @@
                     <span>Editar remolque</span>
                 </div>
                 <div class="card-body">
-                    <form action="{{ route('actualizar_trailer', ['id' => $data->id_trailer]) }}" method="POST">
+                    <form onSubmit="document.getElementById('save').disabled=true; wait();"
+                    action="{{ route('actualizar_trailer', ['id' => $data->id_trailer]) }}" method="POST">
                         @csrf @method("put")
                         @include('ship.trailers.form')
                     </form>

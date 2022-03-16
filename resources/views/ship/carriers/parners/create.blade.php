@@ -17,7 +17,8 @@
                     <span>Nuevo administrador</span>
                 </div>
                 <div class="card-body">
-                    <form action="{{ route('guardar_parner') }}" method="POST">
+                    <form onSubmit="document.getElementById('save').disabled=true; wait();"
+                    action="{{ route('guardar_parner') }}" method="POST">
                         @csrf
                         @include('ship.carriers.parners.form')
                     </form>

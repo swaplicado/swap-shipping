@@ -1,5 +1,5 @@
 <div class="form-group">
-    <label for="fullname" class="form-label">Nombre completo</label>
+    <label for="fullname" class="form-label">Nombre completo *</label>
     <input name="fullname" type="text" class="form-control" value="{{ old('fullname', $data->full_name ?? '') }}" required>
     @error('fullname')
         <span class="text-danger">{{ $message }}</span>

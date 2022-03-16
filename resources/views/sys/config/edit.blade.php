@@ -17,7 +17,8 @@
                     <span>Editar configuración</span>
                 </div>
                 <div class="card-body">
-                    <form action="{{ route('actualizar_config', [1]) }}" method="POST" enctype="multipart/form-data">
+                    <form onSubmit="document.getElementById('save').disabled=true; wait();"
+                    action="{{ route('actualizar_config', [1]) }}" method="POST" enctype="multipart/form-data">
                         @csrf @method("put")
                         @include('sys.config.form')
                     </form>

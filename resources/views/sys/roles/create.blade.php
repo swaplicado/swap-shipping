@@ -17,7 +17,8 @@
                     <span>Nuevo rol</span>
                 </div>
                 <div class="card-body">
-                    <form action="{{ route('guardar_role') }}" method="POST">
+                    <form onSubmit="document.getElementById('submit').disabled=true; wait();"
+                    action="{{ route('guardar_role') }}" method="POST">
                         @csrf
                         @include('sys.roles.form')
                     </form>

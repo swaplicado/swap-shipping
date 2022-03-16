@@ -25,6 +25,19 @@ use Illuminate\Validation\Rule;
 
 class CarrierController extends Controller
 {
+    private $attributeNames = array(
+        'email' => 'Email',
+        'password' => 'Contraseña',
+        'tax_regimes' => 'Régimen fiscal',
+        'fullname' => 'Nombre completo',
+        'RFC' => 'RFC',
+        'contact1' => 'Contacto 1',
+        'telephone1' => 'Teléfono',
+        'prod_serv' => 'Concepto',
+        'delega_CFDI' => 'delegación del CFDI'
+    );
+
+
     /**
      * Display a listing of the resource.
      *
@@ -84,7 +97,8 @@ class CarrierController extends Controller
         // auth()->user()->authorizeRoles(['user', 'admin']);
         auth()->user()->authorizePermission(['212']);
         $success = true;
-        $error = "0";
+        $error = "0"; 
+
         $validator = Validator::make($request->all(), [
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
@@ -96,6 +110,7 @@ class CarrierController extends Controller
             'prod_serv' => 'required|not_in:0'
         ]);
 
+        $validator->setAttributeNames($this->attributeNames);
         $validator->validate();
 
         $values = json_decode($request->post('tax_regimes'));
@@ -216,13 +231,14 @@ class CarrierController extends Controller
             'prod_serv' => 'required|not_in:0'
         ]);
 
+        $validator->setAttributeNames($this->attributeNames);
         $validator->validate();
 
         if(!is_null($request->editEmail)){
             $validator = Validator::make($request->all(), [
                 'email' => ['required', 'string', 'email', 'max:255', 'unique:users']
             ]);
-            
+            $validator->setAttributeNames($this->attributeNames);
             $validator->validate();
         }
         
@@ -407,6 +423,8 @@ class CarrierController extends Controller
             'prod_serv' => 'required|not_in:0',
             'delega_CFDI' => 'required'
         ]);
+
+        $validator->setAttributeNames($this->attributeNames);
         $validator->validate();
         
         $user_id = (auth()->check()) ? auth()->user()->id : null;

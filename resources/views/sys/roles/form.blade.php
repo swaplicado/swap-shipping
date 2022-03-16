@@ -1,13 +1,17 @@
 <div class="form-group">
-    <label for="name" class="form-label">Nombre del rol</label>
-    <input name="name" type="text" class="form-control uppercase" value="{{ old('name', $data->name ?? '') }}">
+    <p>Los campos marcados con un * son obligatorios.</p>
+</div>
+<br>
+<div class="form-group">
+    <label for="name" class="form-label">Nombre del rol *</label>
+    <input name="name" type="text" class="form-control uppercase" value="{{ old('name', $data->name ?? '') }}" required>
     @error('name')
         <span class="text-danger">{{ $message }}</span>
     @enderror
 </div>
 <div class="form-group">
     <label for="description" class="form-label">Descripción</label>
-    <input name="description" type="text" class="form-control" value="{{ old('description', $data->description ?? '') }}">
+    <input name="description" type="text" class="form-control" value="{{ old('description', $data->description ?? '') }}" required>
     @error('description')
         <span class="text-danger">{{ $message }}</span>
     @enderror

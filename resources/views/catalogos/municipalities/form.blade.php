@@ -1,4 +1,8 @@
 <div class="form-group">
+    <p>Los campos marcados con un * son obligatorios.</p>
+</div>
+<br>
+<div class="form-group">
     <label for="key_code" class="form-label">Código del municipio:</label>
     <input disabled name="key_code" type="number" class="form-control" value="{{ old('key_code', $data->key_code ?? '') }}" disabled>
     @error('key_code')
@@ -20,11 +24,11 @@
     @enderror
 </div>
 <div class="form-group">
-    <label for="distance" class="form-label">Distancia:</label>
-    <input name="distance" type="number" min="1" max="10000" step="1" class="form-control" value="{{ old('distance', $data->distance ?? '') }}">
+    <label for="distance" class="form-label">Distancia: *</label>
+    <input name="distance" type="number" min="1" max="10000" step="1" class="form-control" value="{{ old('distance', $data->distance ?? '') }}" required>
     @error('distance')
         <span class="text-danger">{{ $message }}</span>
     @enderror
 </div>
 <br>
-<button type="submit" class="btn btn-primary">Guardar</button>
+<button id="save" type="submit" class="btn btn-primary">Guardar</button>

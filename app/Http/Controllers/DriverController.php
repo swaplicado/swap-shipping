@@ -22,6 +22,19 @@ use Illuminate\Validation\Rule;
 
 class DriverController extends Controller
 {
+    private $attributeNames = array(
+        'fullname' => 'Nombre completo',
+        'email' => 'Email',
+        'RFC' => 'RFC',
+        'licence' => 'Licencia',
+        'tp_figure' => 'Tipo de figura de transporte',
+        'country' => 'País',
+        'zip_code' => 'Código postal',
+        'state' => 'Estado',
+        'carrier' => 'Transportista',
+        'rol' => 'Rol del chofer',
+        'password' => 'Contraseña'
+    );
 
     /**
      * Display a listing of the resource.
@@ -88,20 +101,33 @@ class DriverController extends Controller
         $success = true;
         $error = "0";
 
-        $validator = Validator::make($request->all(), [
-            'fullname' => 'required',
-            'email' => ['required', 'string', 'email', 'max:255', $request->is_with_user == 'on' ? 'unique:users' : ''],
-            'RFC' => 'required',
-            'licence' => 'required',
-            'tp_figure' => 'required|not_in:0',
-            'country' => 'required|not_in:0',
-            'zip_code' => 'required',
-            'state' => 'required|not_in:0',
-            'carrier' => 'required|not_in:0',
-            'rol' => 'required',
-            'password' => ['required', 'string', 'min:8', 'confirmed']
-        ]);
-
+        if ($request->is_with_user == 'on') {
+            $validator = Validator::make($request->all(), [
+                'fullname' => 'required',
+                'email' => ['required', 'string', 'email', 'max:255', $request->is_with_user == 'on' ? 'unique:users' : ''],
+                'RFC' => 'required',
+                'licence' => 'required',
+                'tp_figure' => 'required|not_in:0',
+                'country' => 'required|not_in:0',
+                'zip_code' => 'required',
+                'state' => 'required|not_in:0',
+                'carrier' => 'required|not_in:0',
+                'rol' => 'required',
+                'password' => ['required', 'string', 'min:8', 'confirmed']
+            ]);
+        } else{
+            $validator = Validator::make($request->all(), [
+                'fullname' => 'required',
+                'RFC' => 'required',
+                'licence' => 'required',
+                'tp_figure' => 'required|not_in:0',
+                'country' => 'required|not_in:0',
+                'zip_code' => 'required',
+                'state' => 'required|not_in:0',
+                'carrier' => 'required|not_in:0'
+            ]);
+        }
+        $validator->setAttributeNames($this->attributeNames);
         $validator->validate();
         $user_id = (auth()->check()) ? auth()->user()->id : null;
 
@@ -253,14 +279,14 @@ class DriverController extends Controller
             'zip_code' => 'required',
             'state' => 'required|not_in:0'
         ]);
-
+        $validator->setAttributeNames($this->attributeNames);
         $validator->validate();
 
         if(!is_null($request->editEmail)){
             $validator = Validator::make($request->all(), [
                 'email' => ['required', 'string', 'email', 'max:255', 'unique:users']
             ]);
-            
+            $validator->setAttributeNames($this->attributeNames);
             $validator->validate();
         }
 

@@ -17,7 +17,8 @@
                     <span>Editar Transportista</span>
                 </div>
                 <div class="card-body">
-                    <form action="{{ route('actualizar_carrier', ['id' => $data->id_carrier]) }}" method="POST">
+                    <form onSubmit="document.getElementById('save').disabled=true; wait();"
+                    action="{{ route('actualizar_carrier', ['id' => $data->id_carrier]) }}" method="POST">
                         @csrf @method("put")
                         @include('ship.carriers.form')
                     </form>

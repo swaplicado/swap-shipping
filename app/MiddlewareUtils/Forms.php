@@ -21,9 +21,9 @@ class Forms {
         if($oUser->isAdmin() || $oUser->isClient()){
             $form = '
                 <div class="form-group">
-                    <label for="carrier" class="form-label">Transportista</label>
-                    <select id="select_carrier" class="form-select" name="carrier">
-                        <option value="0" selected>Transportista</option>'.$option.'
+                    <label for="carrier" class="form-label">Transportista *</label>
+                    <select id="select_carrier" class="form-select" name="carrier" required>
+                        <option value="" selected>Transportista</option>'.$option.'
                     </select>
                 </div>
             ';
@@ -42,11 +42,11 @@ class Forms {
                 <input name="comercial_name" type="text" class="form-control uppercase" value='.$carrier->comercial_name.'>
             </div>
             <div class="form-group">
-                <label for="contact1" class="form-label">Contacto 1</label>
+                <label for="contact1" class="form-label">Contacto 1 *</label>
                 <input name="contact1" type="text" class="form-control" value='.$carrier->contact1.' required>
             </div>
             <div class="form-group">
-                <label for="telephone1" class="form-label">Teléfono 1</label>
+                <label for="telephone1" class="form-label">Teléfono 1 *</label>
                 <input name="telephone1" type="text" class="form-control" value='.$carrier->telephone1.' required>
             </div>
             <div class="form-group">
@@ -92,7 +92,7 @@ class Forms {
 
             $form = '
             <div class="form-group">
-                <label for="RFC" class="form-label">RFC</label>
+                <label for="RFC" class="form-label">RFC *</label>
                 <input name="RFC" type="text" class="form-control" value='.$driver->fiscal_id.' required>
             </div>
             <div class="form-group">
@@ -100,24 +100,24 @@ class Forms {
                 <input name="RFC_ex" type="text" class="form-control" value='.$driver->fiscal_fgr_id.'>
             </div>
             <div class="form-group">
-                <label for="licence" class="form-label">Licencia</label>
+                <label for="licence" class="form-label">Licencia *</label>
                 <input name="licence" type="text" class="form-control" value='.$driver->driver_lic.' required>
             </div>
             <div class="form-group">
-                <label for="country" class="form-label">País</label>
+                <label for="country" class="form-label">País *</label>
                 <select class="form-select" name="country" required>
-                    <option value="0" selected>País</option>
+                    <option value="" selected>País</option>
                     '.$optionsCty.'
                 </select>
             </div>
             <div class="form-group">
-                <label for="zip_code" class="form-label">Código postal</label>
+                <label for="zip_code" class="form-label">Código postal *</label>
                 <input name="zip_code" type="text" class="form-control" value='.$driver->FAddress->zip_code.' required>
             </div>
             <div class="form-group">
-                <label for="state" class="form-label">Estado</label>
+                <label for="state" class="form-label">Estado *</label>
                 <select class="form-select" name="state" required>
-                    <option value="0" selected>Estado</option>
+                    <option value="" selected>Estado</option>
                     '.$optionsSt.'
                 </select>
             </div>

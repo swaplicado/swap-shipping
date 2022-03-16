@@ -17,7 +17,8 @@
                     <span>Editar aseguradora</span>
                 </div>
                 <div class="card-body">
-                    <form action="{{ route('actualizar_insurance', ['id' => $data->id_insurance]) }}" method="POST">
+                    <form onSubmit="document.getElementById('save').disabled=true; wait();"
+                    action="{{ route('actualizar_insurance', ['id' => $data->id_insurance]) }}" method="POST">
                         @csrf @method("put")
                         @include('catalogos.insurances.form')
                     </form>

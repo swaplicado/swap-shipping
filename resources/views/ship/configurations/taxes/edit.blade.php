@@ -17,7 +17,8 @@
                     <span>Editar configuración de impuesto</span>
                 </div>
                 <div class="card-body">
-                    <form action="{{ route('config.taxes.update', $oCfg->id_config) }}" method="POST">
+                    <form onSubmit="wait(); document.getElementById('save').disabled=true;"
+                    action="{{ route('config.taxes.update', $oCfg->id_config) }}" method="POST">
                         @csrf @method("put")
                         @include('ship.configurations.taxes.form')
                     </form>

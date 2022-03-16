@@ -25,9 +25,9 @@
                     <span class="sr-only">Mi perfil</span>
                     <span class="nav-user-img">
                         <picture><source
-                                srcset="{{ asset('img/avatar/avatar-illustrated-02.webp') }}"
+                                srcset="{{ asset('img/avatar/profile2.png') }}"
                                 type="image/webp"><img
-                                src="{{ asset('img/avatar/avatar-illustrated-02.webp') }}"
+                                src="{{ asset('img/avatar/profile2.png') }}"
                                 alt="User
                                 name"></picture>
                     </span>

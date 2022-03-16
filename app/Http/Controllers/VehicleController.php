@@ -17,6 +17,16 @@ use Auth;
 
 class VehicleController extends Controller
 {
+    private $attributeNames = array(
+        'plates' => 'Placas',
+        'license_sct_num' => 'Número de permiso SCT',
+        'license_sct_id' => 'Permiso SCT',
+        'veh_cfg_id' => 'Configuración del vehículo',
+        'veh_key_id' => 'Clave del vehículo',
+        'insurance' => 'Aseguradora',
+        'carrier' => 'Transportista'
+    );
+
     /**
      * Display a listing of the resource.
      *
@@ -106,7 +116,7 @@ class VehicleController extends Controller
             'carrier' => 'required|not_in:0',
             'insurance' => 'required|not_in:0'
         ]);
-
+        $validator->setAttributeNames($this->attributeNames);
         $validator->validate();
         
         $user_id = (auth()->check()) ? auth()->user()->id : null;
@@ -202,7 +212,7 @@ class VehicleController extends Controller
             'veh_cfg_id' => 'required',
             'veh_key_id' => 'required'
         ]);
-
+        $validator->setAttributeNames($this->attributeNames);
         $validator->validate();
         
         $user_id = (auth()->check()) ? auth()->user()->id : null;
@@ -211,6 +221,7 @@ class VehicleController extends Controller
             DB::transaction(function () use ($request, $user_id, $id) {
                 $Vehicle = Vehicle::findOrFail($id);
                 auth()->user()->carrierAutorization($Vehicle->carrier_id);
+                $Vehicle->alias = $request->alias;
                 $Vehicle->plates = strtoupper($request->plates);
                 $Vehicle->year_model = $request->year_model;
                 $Vehicle->license_sct_num = strtoupper($request->license_sct_num);

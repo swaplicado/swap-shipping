@@ -13,6 +13,13 @@ use App\Utils\messagesErros;
 
 class SeriesController extends Controller
 {
+    private $attributeNames = array(
+        'serie_name' => 'Nombre de la serie',
+        'prefix' => 'Prefijo',
+        'initial_number' => 'Número inicial',
+        'description' => 'Descripción'
+    );
+
     /**
      * Display a listing of the resource.
      *
@@ -69,6 +76,7 @@ class SeriesController extends Controller
             'description' => 'required'
         ]);
 
+        $validator->setAttributeNames($this->attributeNames);
         $validator->validate();
         $user_id = (auth()->check()) ? auth()->user()->id : null;
         try {
@@ -146,6 +154,7 @@ class SeriesController extends Controller
             'description' => 'required'
         ]);
 
+        $validator->setAttributeNames($this->attributeNames);
         $validator->validate();
         
         $user_id = (auth()->check()) ? auth()->user()->id : null;

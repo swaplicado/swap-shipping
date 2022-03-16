@@ -17,7 +17,8 @@
                     <span>Editar serie</span>
                 </div>
                 <div class="card-body">
-                    <form action="{{ route('actualizar_serie', ['id' => $data->id_serie]) }}" method="POST">
+                    <form onSubmit="document.getElementById('save').disabled=true; wait();"
+                    action="{{ route('actualizar_serie', ['id' => $data->id_serie]) }}" method="POST">
                         @csrf @method("put")
                         @include('catalogos.series.form')
                     </form>

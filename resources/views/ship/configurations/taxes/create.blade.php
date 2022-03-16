@@ -17,7 +17,8 @@
                     <span>Nueva configuración</span>
                 </div>
                 <div class="card-body">
-                    <form action="{{ route('config.taxes.store') }}" method="POST">
+                    <form onSubmit="wait(); document.getElementById('save').disabled=true;"
+                    action="{{ route('config.taxes.store') }}" method="POST">
                         @csrf
                         @include('ship.configurations.taxes.form')
                     </form>
