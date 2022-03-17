@@ -305,9 +305,21 @@ var app = new Vue({
             }
 
             for (let index = 0; index < this.oData.oCartaPorte.ubicaciones.length; index++) {
-                if (index > 0 && this.oData.oCartaPorte.ubicaciones[index].distanciaRecorrida <= 0) {
+                let loc = this.oData.oCartaPorte.ubicaciones[index];
+                if (index > 0 && loc.distanciaRecorrida <= 0) {
                     SGui.showError("La distancia recorrida en la ubicación " + (index + 1) + " es inválida");
                     this.clickAndFocus("btnLocations", "distanceId" + index);
+                    return false;
+                }
+                if (loc.fechaHoraSalidaLlegada == null || loc.fechaHoraSalidaLlegada == "") {
+                    SGui.showError("La fecha y hora de salida/llegada en la ubicación " + (index + 1) + " es inválida");
+                    this.clickAndFocus("btnLocations", "dateTimeLocId" + index);
+                    return false;
+                }
+                let oDate = moment(loc.fechaHoraSalidaLlegada, "YYYY-MM-DDTHH:mm:ss");
+                if (oDate.year() < 2000 || oDate.year() > 3000) {
+                    SGui.showError("La fecha y hora de salida/llegada en la ubicación " + (index + 1) + " es inválida");
+                    this.clickAndFocus("btnLocations", "dateTimeLocId" + index);
                     return false;
                 }
             }

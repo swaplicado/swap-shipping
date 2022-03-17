@@ -152,27 +152,26 @@ class RequestCore {
         $traveledDistance = 0;
         $dSubTotal = 0;
         while ($iDestination < $nLocationsTemp) {
-            $oLocSource = (object) $oRequest->ubicaciones[$iSource];
-            $oLocDest = (object) $oRequest->ubicaciones[$iDestination];
-            if (is_array($oLocSource->domicilio)) {
-                $oLocSource->domicilio = (object) $oLocSource->domicilio;
-            }
-            if (is_array($oLocDest->domicilio)) {
-                $oLocDest->domicilio = (object) $oLocDest->domicilio;
-            }
+            $oLocSource = $oRequest->ubicaciones[$iSource];
+            $oLocDest = $oRequest->ubicaciones[$iDestination];
 
             $oConcept = new \stdClass();
 
             $oConcept->quantity = 1;
             $oConcept->discount = 0;
-            $oConcept->claveProdServ = $oConfigurations->cfdi4_0->claveServicio;
-            $oConcept->claveUnidad = $oCarrier->prod_serv->key_code;
+            $oConcept->claveProdServ = $oCarrier->prod_serv->key_code;
+            $oConcept->claveUnidad = $oConfigurations->cfdi4_0->claveUnidad;
             $oConcept->simboloUnidad = $oConfigurations->cfdi4_0->simboloUnidad;
             $oConcept->unidad = $lUnits[$oConfigurations->cfdi4_0->claveUnidad];
             $oConcept->numIndentificacion = (date('YmdHis').''.(random_int(100, 999)));
 
             $oState = \DB::table('sat_states')
                             ->where('key_code', $oLocDest->domicilio->estado)
+                            ->first();
+
+            $oMun = \DB::table('sat_municipalities')
+                            ->where('key_code', $oLocDest->domicilio->municipio)
+                            ->where('state_id', $oState->id)
                             ->first();
 
             // En caso de que haya un error al obtener el estado, se asigna el estado por default
@@ -233,14 +232,14 @@ class RequestCore {
              */
             if ($oLocSource->tipoUbicacion == "Origen") {
                 $oLocSource->distanciaRecorrida = SFormats::formatNumber(0, 3);
-                $oLocDest->distanciaRecorrida = SFormats::formatNumber($oState->distance, 3);
+                $oLocDest->distanciaRecorrida = SFormats::formatNumber($oMun->distance, 3);
             }
             else {
-                if ($oLocSource->domicilio->estado == $oLocDest->domicilio->estado) {
+                if ($oLocSource->domicilio->municipio == $oLocDest->domicilio->municipio) {
                     $oLocDest->distanciaRecorrida = SFormats::formatNumber($oConfigurations->distanciaMinima, 3);
                 }
                 else {
-                    $oLocDest->distanciaRecorrida = SFormats::formatNumber($oState->distance > $traveledDistance ? $oState->distance - $traveledDistance : 0, 3);
+                    $oLocDest->distanciaRecorrida = SFormats::formatNumber($oMun->distance > $traveledDistance ? $oMun->distance - $traveledDistance : 0, 3);
                 }
             }
 
@@ -289,16 +288,13 @@ class RequestCore {
          * Mercancías
          */
         //*********************************************************************************************
-        $oRequest->mercancia = (object) $oRequest->mercancia;
         $oObjData->oCartaPorte->mercancia = $oRequest->mercancia;
         $oRequest->mercancia->unidadPeso = 'KGM';
         $oUnitP = \DB::table('sat_units')->where('key_code', $oRequest->mercancia->unidadPeso)->first();
         $dTotalPeso = 0;
         $oObjData->oCartaPorte->mercancia->unidadPesoName = $oRequest->mercancia->unidadPeso." - ".$oUnitP->description;
         $oObjData->oCartaPorte->mercancia->numTotalMercancias = count($oRequest->mercancia->mercancias);
-        $merchs = [];
-        foreach ($oObjData->oCartaPorte->mercancia->mercancias as $aMmerch) {
-            $merch = (object) $aMmerch;
+        foreach ($oObjData->oCartaPorte->mercancia->mercancias as $merch) {
             $oItem = \DB::table('sat_items')->where('key_code', $merch->bienesTransp)->first();
             $merch->descripcion = $oItem->description;
 
@@ -310,9 +306,7 @@ class RequestCore {
             $merch->unitName = $lUnits[$merch->claveUnidad];
 
             $dTotalPeso += $merch->pesoEnKg;
-            $merchs[] = $merch;
         }
-        $oObjData->oCartaPorte->mercancia->mercancias = $merchs;
 
         $oObjData->oCartaPorte->mercancia->pesoBrutoTotal = $dTotalPeso;
 
@@ -330,10 +324,8 @@ class RequestCore {
                             ->join('sat_states AS s', 's.id', '=', 'm.state_id');
 
         $index = 100;
-        $locations = [];
-        foreach ($oObjData->oCartaPorte->ubicaciones as $aLocation) {
-            $location = (object) $aLocation;
-            $location->domicilio = (object) $location->domicilio;
+        foreach ($oObjData->oCartaPorte->ubicaciones as $location) {
+            $location->domicilio = $location->domicilio;
             $location->domicilio->paisName = $lCountries[$location->domicilio->pais];
             $location->domicilio->estadoName = $lStates[$location->domicilio->estado]->state_name;
             $location->domicilio->estadoId = $lStates[$location->domicilio->estado]->id;
@@ -357,15 +349,16 @@ class RequestCore {
                 $startId = "DE";
             }
 
+            // Fecha-hora salida-llegada
+            $oDate = Carbon::now();
+            $location->fechaHoraSalidaLlegada = $oDate->format('Y-m-d').'T'.$oDate->format('H:i:s');
+
             $location->IDUbicacion = $startId.
                                     "1".
                                     str_pad($location->domicilio->estadoId, 2, "0", STR_PAD_LEFT).
                                     $location->domicilio->municipio;
-
-            $locations[] = $location;
             $index++;
         }
-        $oObjData->oCartaPorte->ubicaciones = $locations;
 
         return $oObjData;
     }

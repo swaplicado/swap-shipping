@@ -32,9 +32,9 @@
                 <label>Distancia recorrida (KM)</label>
                 <input :id="'distanceId' + i" style="text-align: right" type="number" class="form-control" v-on:keyup="onChangeDistance()" :readonly="i == 0" v-model="oLocation.distanciaRecorrida">
             </div>
-            <div class="col-md-3">
-                <label>Fecha-Hora</label>
-                <input style="text-align: right" type="text" class="form-control" :value="oLocation.fechaHoraSalidaLlegada" readonly>
+            <div class="col-md-4">
+                <label>Fecha-hora @{{ i == 0 ? 'salida' : 'llegada' }}</label>
+                <input :id="'dateTimeLocId' + i" :name="'dateTimeLocName' + i" style="text-align: right" type="datetime-local" class="form-control" v-model="oLocation.fechaHoraSalidaLlegada">
             </div>
             <div class="col-md-3">
                 <label>RFC Rem/Dest</label>

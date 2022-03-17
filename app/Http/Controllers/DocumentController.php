@@ -21,6 +21,7 @@ use App\Utils\SFormats;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\SendXmlPdf;
 use App\Utils\MailUtils;
+use App\Utils\GralUtils;
 
 class DocumentController extends Controller
 {
@@ -233,7 +234,10 @@ class DocumentController extends Controller
             $lCurs = $lCurs->selectRaw('cur.*, CONCAT(cur.key_code, " - ", cur.description) AS _description')
                             ->pluck('_description', 'key_code');
 
-            $oObjData = RequestCore::requestToJson($oDocument, (object) $oJson['json'], $lCurs);
+            $oReqData = GralUtils::arrayToObject($oJson['json']);
+            $oReqData->ubicaciones = (array) $oReqData->ubicaciones;
+            $oReqData->mercancia->mercancias = (array) $oReqData->mercancia->mercancias;
+            $oObjData = RequestCore::requestToJson($oDocument, $oReqData, $lCurs);
             $array = json_decode(json_encode(clone $oObjData), true);
             foreach ($array as $key => $value) {
                 $oMongoDocument->$key = $value;
@@ -526,8 +530,8 @@ class DocumentController extends Controller
         $pesoBrutoTotal = 0.0;
         foreach ($oMongoDocument->oCartaPorte["mercancia"]["mercancias"] as $key => $value) {
             $oClientMerch = $oCfdiData->oData->oCartaPorte->mercancia->mercancias[$key];
-            $value["pesoEnKg"] = $oClientMerch->pesoEnKg;
-            $pesoBrutoTotal += $oClientMerch->pesoEnKg;
+            $value["pesoEnKg"] = round($oClientMerch->pesoEnKg, 3);
+            $pesoBrutoTotal += round($oClientMerch->pesoEnKg, 3);
         }
         $oCP = $oMongoDocument->oCartaPorte;
         $oCP["mercancia"]["pesoBrutoTotal"] = $pesoBrutoTotal;
@@ -546,6 +550,14 @@ class DocumentController extends Controller
                 $distance = $oClientLoc->distanciaRecorrida;
             }
             
+            try {
+                $oDateArriveDep = Carbon::parse($oClientLoc->fechaHoraSalidaLlegada);
+                $location["fechaHoraSalidaLlegada"] = $oDateArriveDep->format('Y-m-d').'T'.$oDateArriveDep->format('H:i:s');
+            }
+            catch (\Throwable $th) {
+                return redirect("documents")->with(['icon' => "error", 'message' => "La fecha de salida/llegada no es válida"]);
+            }
+
             $location["distanciaRecorrida"] = $distance;
             $location["IDUbicacion"] = $oClientLoc->IDUbicacion;
             $locations[] = $location;

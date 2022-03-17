@@ -30,7 +30,7 @@
                     <span>CFDI 4.0 Carta Porte 2.0</span>
                 </div>
                 <div class="card-body" id="cfdi_app">
-                    <form id="theForm">
+                    <form id="theForm" name="theForm">
                         <div>
                             @include('ship.documents.form')
                         </div>
@@ -58,10 +58,11 @@
     @include('ship.documents.edit_js')
     <script>
         function onSave() {
-            let isValid = document.querySelector('#theForm').reportValidity();
-            if (! isValid) {
-                return;
-            }
+            // Se comenta funcionalidad para ver el funcionamiento de datetime-local
+            // let isValid = document.querySelector('#theForm').reportValidity();
+            // if (! isValid) {
+            //     return;
+            // }
 
             let allValid = app.validateAll();
             if (! allValid) {
