@@ -3,6 +3,7 @@
 use App\Models\Carrier;
 use Carbon\Carbon;
 use App\Utils\SFormats;
+use App\Utils\GralUtils;
 
 class RequestCore {
 
@@ -71,7 +72,6 @@ class RequestCore {
         /**
          * Documento, datos internos
          */
-        $oObjData->shipType = "F";
         $oObjData->vehKeyId = 0;
 
         /**
@@ -247,6 +247,8 @@ class RequestCore {
             $iSource++;
             $iDestination++;
         }
+
+        $oObjData->shipType = GralUtils::getShipType($oState->id, $oMun->id, $oLocDest->domicilio->codigoPostal);
 
         $oObjData->conceptos = $lConcepts;
 
