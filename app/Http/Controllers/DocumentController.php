@@ -269,20 +269,24 @@ class DocumentController extends Controller
             $lCurs = clone $lCurrenciesQuery;
             $lCurs = $lCurs->selectRaw('cur.*, CONCAT(cur.key_code, " - ", cur.description) AS _description')
                             ->pluck('_description', 'key_code');
+
             $oRequestObj = RequestCore::adaptRequest($oJson);
-            $oObjData = RequestCore::requestToCfdiObject($oDocument, $oRequestObj, $lCurs);
+
+            $oVehicle = $lVehicles->where('plates', $oRequestObj->placaTransporte)
+                                    ->where('carrier_id', $oCarrier->id_carrier)
+                                    ->first();
+
+            $oObjData = RequestCore::requestToCfdiObject($oDocument, $oRequestObj, $lCurs, $oVehicle);
             $array = json_decode(json_encode(clone $oObjData), true);
             foreach ($array as $key => $value) {
                 $oMongoDocument->$key = $value;
             }
     
             $oMongoDocument->save();
-
-            $oVehicle = $lVehicles->where('plates', $oRequestObj->placaTransporte)->first();
+            
             if ($oVehicle == null) {
                 $oVehicle = new \stdClass(); 
             }
-
             $oFigure = new \stdClass();
         }
 

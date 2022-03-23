@@ -70,7 +70,17 @@ class RequestCore {
         return $oRequest;
     }
 
-    public static function requestToCfdiObject($oDocument, $oRequest, $lCurrencies)
+    /**
+     * Transforma un objeto Request a un objeto stdClass MongoDB para su edición
+     *
+     * @param Document $oDocument
+     * @param StdClass $oRequest
+     * @param array $lCurrencies
+     * @param Vehicle $oVehicle puede ser null
+     * 
+     * @return stdClass
+     */
+    public static function requestToCfdiObject($oDocument, $oRequest, $lCurrencies, $oVehicle)
     {
         $oConfigurations = \App\Utils\Configuration::getConfigurations();
         $lUnits = \DB::table('sat_units AS u')
