@@ -272,8 +272,8 @@ class DocumentController extends Controller
 
             $oRequestObj = RequestCore::adaptRequest($oJson);
 
-            $oVehicle = $lVehicles->where('plates', $oRequestObj->placaTransporte)
-                                    ->where('carrier_id', $oCarrier->id_carrier)
+            $oVehicle = $lVehicles->where('v.plates', $oRequestObj->placaTransporte)
+                                    ->where('v.carrier_id', $oCarrier->id_carrier)
                                     ->first();
 
             $oObjData = RequestCore::requestToCfdiObject($oDocument, $oRequestObj, $lCurs, $oVehicle);
