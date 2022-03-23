@@ -184,16 +184,34 @@ class XmlGeneration {
                 $nodeUbicacion->setAttribute('RFCRemitenteDestinatario', $aUbicacion["rFCRemitenteDestinatario"]);
                 $oDateU = Carbon::parse($aUbicacion["fechaHoraSalidaLlegada"]);
                 $nodeUbicacion->setAttribute('FechaHoraSalidaLlegada', $oDateU->format('Y-m-d').'T'.$oDateU->format('H:i:s'));
-                // $nodeUbicacion->setAttribute('DistanciaRecorrida', SFormats::formatNumber(0, 3));
                 $nodeUbicaciones->appendChild($nodeUbicacion);
 
                 // Domicilio
                 $nodeDomicilio = $dom->createElement('cartaporte20:Domicilio');
-                // $nodeDomicilio->setAttribute('Localidad', "09");
-                // $nodeDomicilio->setAttribute('Municipio', $ubicacion["domicilio"]["municipio"]);
+                if ($aUbicacion["domicilio"]["numeroExterior"] != null && strlen($aUbicacion["domicilio"]["numeroExterior"]) > 0) {
+                    $nodeDomicilio->setAttribute('NumeroExterior', $aUbicacion["domicilio"]["numeroExterior"]);
+                }
+                if ($aUbicacion["domicilio"]["numeroInterior"] != null && strlen($aUbicacion["domicilio"]["numeroInterior"]) > 0) {
+                    $nodeDomicilio->setAttribute('NumeroInterior', $aUbicacion["domicilio"]["numeroInterior"]);
+                }
+                if ($aUbicacion["domicilio"]["calle"] != null && strlen($aUbicacion["domicilio"]["calle"]) > 0) {
+                    $nodeDomicilio->setAttribute('Calle', $aUbicacion["domicilio"]["calle"]);
+                }
+                if ($aUbicacion["domicilio"]["colonia"] != null && strlen($aUbicacion["domicilio"]["colonia"]) > 0) {
+                    $nodeDomicilio->setAttribute('Colonia', $aUbicacion["domicilio"]["colonia"]);
+                }
+                if ($aUbicacion["domicilio"]["localidad"] != null && strlen($aUbicacion["domicilio"]["localidad"]) > 0) {
+                    $nodeDomicilio->setAttribute('Localidad', $aUbicacion["domicilio"]["localidad"]);
+                }
+                if ($aUbicacion["domicilio"]["referencia"] != null && strlen($aUbicacion["domicilio"]["referencia"]) > 0) {
+                    $nodeDomicilio->setAttribute('Referencia', $aUbicacion["domicilio"]["referencia"]);
+                }
+                if ($aUbicacion["domicilio"]["municipio"] != null && strlen($aUbicacion["domicilio"]["municipio"]) > 0) {
+                    $nodeDomicilio->setAttribute('Municipio', $aUbicacion["domicilio"]["municipio"]);
+                }
                 $nodeDomicilio->setAttribute('Estado', $aUbicacion["domicilio"]["estado"]);
                 $nodeDomicilio->setAttribute('Pais', $aUbicacion["domicilio"]["pais"]);
-                $nodeDomicilio->setAttribute('CodigoPostal', $aUbicacion["domicilio"]["codigoPostal"]);
+                $nodeDomicilio->setAttribute('CodigoPostal', $aUbicacion["domicilio"]["codigoPostal"]);            
                 $nodeUbicacion->appendChild($nodeDomicilio);
 
                 break;

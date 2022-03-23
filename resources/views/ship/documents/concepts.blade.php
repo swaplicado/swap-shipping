@@ -23,6 +23,20 @@
                 <small class="text-muted">De 1 hasta 100 caracteres alfanuméricos.</small>
             </div>
         </div>
+        <div v-if="bCustomAtts" class="row">
+            <div class="col-md-4">
+                <label class="form-label">Folios de embarque</label>
+                <input type="text" class="form-control" v-model="oConcept.oCustomAttributes.shippingOrders">
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Cliente</label>
+                <input type="text" class="form-control" v-model="oConcept.oCustomAttributes.customerName">
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Destino</label>
+                <input type="text" class="form-control" v-model="oConcept.oCustomAttributes.destinyName">
+            </div>
+        </div>
         <div class="row">
             <div class="col-md-2">
                 <label for="quantity" class="form-label">Cantidad</label>

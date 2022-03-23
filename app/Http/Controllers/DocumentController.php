@@ -474,6 +474,9 @@ class DocumentController extends Controller
             $aConcept["description"] = $oClientConcept->description;
             $aConcept["unidad"] = $oClientConcept->unidad;
             $aConcept["numIdentificacion"] = $oClientConcept->numIndentificacion;
+            if (env('WITH_CUSTOM_ATTRIBUTES')) {
+                $aConcept["oCustomAttributes"] = $oClientConcept->oCustomAttributes;
+            }
             
             $lCptTraslados = [];
             foreach ($aConcept["oImpuestos"]["lTraslados"] as $aTraslado) {

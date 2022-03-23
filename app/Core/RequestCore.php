@@ -296,6 +296,16 @@ class RequestCore {
                 $oConcept->oImpuestos->lRetenciones[] = $oRetencion;
             }
 
+            // Atributos del concepto que no se incluyen en el XML
+            if (env('WITH_CUSTOM_ATTRIBUTES')) {
+                $oConcept->oCustomAttributes = new \stdClass();
+                $oConcept->oCustomAttributes->customerName = $oLocDest->nombreRFC;
+                $oConcept->oCustomAttributes->customerFiscalId = $oLocDest->rfcRemitenteDestinatario;
+                $oConcept->oCustomAttributes->shippingOrders = "";
+                $oMunicipality = GralUtils::getMunicipalityByCode($oLocDest->domicilio->estado, $oLocDest->domicilio->municipio);
+                $oConcept->oCustomAttributes->destinyName = $oMunicipality == null ? "" : $oMunicipality->municipality_name;
+            }
+
             $dSubTotal += $oConcept->importe;
             $lConcepts[] = $oConcept;
 
@@ -379,7 +389,8 @@ class RequestCore {
 
             $lMun = clone $lMunicipies;
             $municipio = $lMun->where('s.key_code', $location->domicilio->estado)
-                                ->where('m.key_code', $location->domicilio->municipio)->first();
+                                ->where('m.key_code', $location->domicilio->municipio)
+                                ->first();
 
             if ($municipio != null) {
                 $location->domicilio->municipioName = $location->domicilio->municipio." - ".$municipio->municipality_name;

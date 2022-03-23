@@ -52,4 +52,15 @@ class GralUtils {
       return $shipType;
    }
 
+   public static function getMunicipalityByCode(string $stateCode, string $municipalityCode)
+   {
+      $oMunicipality = \DB::table('sat_municipalities AS m')
+                           ->join('sat_states AS s', 's.id', '=', 'm.state_id')
+                           ->select('m.*')
+                           ->where('s.key_code', $stateCode)
+                           ->where('m.key_code', $municipalityCode)
+                           ->first();
+
+      return $oMunicipality;
+   }
 }

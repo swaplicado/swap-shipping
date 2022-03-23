@@ -8,6 +8,7 @@
         this.lFigures = <?php echo json_encode($lFigures) ?>;
         this.oVehicle = <?php echo json_encode($oVehicle) ?>;
         this.bShipCfg = <?php echo json_encode(env('WITH_CFG_ORIGIN')) ?>;
+        this.bCustomAtts = <?php echo json_encode(env('WITH_CUSTOM_ATTRIBUTES')) ?>;
         this.oFigure = <?php echo json_encode($oFigure) ?>;
         this.lPayMethods = <?php echo json_encode($lPayMethods) ?>;
         this.lPayForms = <?php echo json_encode($lPayForms) ?>;

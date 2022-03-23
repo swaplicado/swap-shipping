@@ -49,6 +49,7 @@ var app = new Vue({
         lCarrierSeries: oServerData.lCarrierSeries,
         oVehicle: oServerData.oVehicle,
         bShipCfg: oServerData.bShipCfg,
+        bCustomAtts: oServerData.bCustomAtts,
         sShipType: oServerData.oData.shipType,
         oFigure: oServerData.oFigure,
         lSelectedTrailers: oServerData.oData.lTrailers != undefined && oServerData.oData.lTrailers.lenght > 0 ? oServerData.oData.lTrailers : [],
