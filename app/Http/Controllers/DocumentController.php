@@ -272,7 +272,8 @@ class DocumentController extends Controller
 
             $oRequestObj = RequestCore::adaptRequest($oJson);
 
-            $oVehicle = $lVehicles->where('v.plates', $oRequestObj->placaTransporte)
+            $lVehs = clone $lVehicles;
+            $oVehicle = $lVehs->where('v.plates', $oRequestObj->placaTransporte)
                                     ->where('v.carrier_id', $oCarrier->id_carrier)
                                     ->first();
 
