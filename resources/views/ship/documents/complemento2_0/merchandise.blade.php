@@ -5,7 +5,7 @@
     </div>
     <div class="col-md-3">
         <label for="peso_bruto">Peso Bruto</label>
-        <input style="text-align: right" type="number" class="form-control" id="peso_bruto" :value="formatNumber(oData.oCartaPorte.mercancia.pesoBrutoTotal, 4)" readonly>
+        <input style="text-align: right" type="number" class="form-control" id="peso_bruto" :value="formatNumber(oData.oCartaPorte.mercancia.pesoBrutoTotal, 3)" readonly>
     </div>
     <div class="col-md-3">
         <label for="num_mercancias">Unidad Peso</label>
@@ -48,6 +48,29 @@
             </div>
         </div>
         <div class="row">
+            <div class="col-12"><label for=""></label></div>
+        </div>
+        <div v-if="oData.oCartaPorte.ubicaciones.length > 2">
+            <div class="row" v-for="(qtyTran, qtyIndex) in merch.cantidadesTransportadas">
+                <div class="col-md-2">
+                    <label class="form-label" for="">ID Origen</label>
+                    <input type="text" class="form-control" :value="oData.oCartaPorte.ubicaciones[0].IDUbicacion" readonly>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label" for="">ID Destino</label>
+                    <input type="text" class="form-control" :value="oData.oCartaPorte.ubicaciones[qtyIndex + 1].IDUbicacion" readonly>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label" for="">Cantidad</label>
+                    <input style="text-align: right" type="text" class="form-control" :value="formatNumber(qtyTran.cantidad, 4)" readonly>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Unidad</label>
+                    <input type="text" class="form-control" :title="merch.unitName" :value="merch.unitName" readonly>
+                </div>
+            </div>
+        </div>
+        <div v-if="oData.oCartaPorte.ubicaciones.length > 2" class="row">
             <div class="col-12"><label for=""></label></div>
         </div>
     </div>

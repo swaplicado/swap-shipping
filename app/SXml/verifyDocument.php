@@ -6,22 +6,28 @@ use App\Models\Carrier;
 use App\Models\Sat\Currencies;
 use App\Models\Sat\FiscalAddress;
 use App\Models\Sat\Items;
-use App\Models\Sat\Payment_forms;
-use App\Models\Sat\Payment_methods;
 use App\Models\Sat\PostalCodes;
 use App\Models\Sat\States;
 use App\Models\Sat\Units;
 
 class verifyDocument
 {
-    public static function verifyJson($object)
+    public static function verifyJson($info)
     {
-        // $file = file_get_contents("./doc/verify.json");
-        // $json = json_decode($file);
-        // $info = $json->info;
-        try{
-            $jobject = json_encode($object);
-            $info = json_decode($jobject);
+        try {
+            $oOriginLocation = \DB::table('f_local_origins')
+                                        ->where('origin_code', $info->idOrigen)
+                                        ->where('is_deleted', false)
+                                        ->first();
+
+            if ($oOriginLocation == null) {
+                $response = new \stdClass();
+                $response->code = 500;
+                $response->message = "NO EXISTE EL ID ORIGEN";
+                $response->checked_values = $info->idOrigen;
+
+                return $response;
+            }
 
             $infoValues = array(
                 "rfcTransportista" => Carrier::where([['fiscal_id', $info->rfcTransportista], ['is_deleted', 0]])->value('fiscal_id'),
@@ -30,16 +36,20 @@ class verifyDocument
 
             $infoUbicaciones = array("ubicaciones" => array());
 
-            $hasOrigen = false;
             $hasDestino = false;
+
+            $infoMercania = array(
+                "mercancias" => array(),
+            );
             foreach ($info->ubicaciones as $u) {
-                $u->tipoUbicacion === "Origen" ? $hasOrigen = true : "";
+                $u = (object) $u;
                 $u->tipoUbicacion === "Destino" ? $hasDestino = true : "";
 
                 $ubicacion = array(
                     "tipoUbicacion" => $u->tipoUbicacion,
                 );
 
+                $u->domicilio = (object) $u->domicilio;
                 $domicilio = array(
                     "estado" => States::where('key_code', $u->domicilio->estado)->value('key_code'),
                     "pais" => FiscalAddress::where('key_code', $u->domicilio->pais)->value('key_code'),
@@ -47,19 +57,16 @@ class verifyDocument
                 );
                 $ubicacion["domicilio"] = $domicilio;
                 array_push($infoUbicaciones["ubicaciones"], $ubicacion);
-            }
 
-            $infoMercania = array(
-                "mercancias" => array(),
-            );
-
-            foreach ($info->mercancia->mercancias as $m) {
-                $mercancia = array(
-                    "bienesTransp" => Items::where('key_code', $m->bienesTransp)->value('key_code'),
-                    "claveUnidad" => Units::where([['key_code', $m->claveUnidad], ['is_deleted', 0]])->value('key_code'),
-                    "moneda" => Currencies::where('key_code', $m->moneda)->value('key_code'),
-                );
-                array_push($infoMercania["mercancias"], $mercancia);
+                foreach ($u->mercancias as $m) {
+                    $m = (object) $m;
+                    $mercancia = array(
+                        "bienesTransp" => Items::where('key_code', $m->bienesTransp)->value('key_code'),
+                        "claveUnidad" => Units::where([['key_code', $m->claveUnidad], ['is_deleted', 0]])->value('key_code'),
+                        "moneda" => Currencies::where('key_code', $m->moneda)->value('key_code'),
+                    );
+                    array_push($infoMercania["mercancias"], $mercancia);
+                }
             }
 
             $infoValues["ubicaciones"] = $infoUbicaciones["ubicaciones"];
@@ -77,7 +84,6 @@ class verifyDocument
             is_null($result->moneda) ? $message = $message . "moneda not found in database. " : "";
 
             if (!is_null($result->ubicaciones)) {
-                $hasOrigen ? "" : $message = $message . "ubicación Origen not found. ";
                 $hasDestino ? "" : $message = $message . "ubicación Destino not found. ";
                 foreach ($result->ubicaciones as $index => $u) {
                     is_null($u->domicilio->estado) ? $message = $message . "estado[" . $index . "] not match with postal code. " : "";
@@ -109,15 +115,18 @@ class verifyDocument
             $response->checked_values = $infoValues;
 
             return $response;
-        } catch (Exception $ex){
+
+        }
+        catch (Exception $ex) {
             $response = new \stdClass();
             $response->code = 500;
-            $response->message = "Error al leer el json";
+            $response->message = "Error al leer el request.";
             return $response;
-        } catch (ErrorException $e){
+        }
+        catch (ErrorException $e) {
             $response = new \stdClass();
             $response->code = 500;
-            $response->message = "Error al leer el json";
+            $response->message = "Error al leer el request.";
             return $response;
         }
     }

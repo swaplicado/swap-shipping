@@ -265,20 +265,19 @@ class XmlGeneration {
             $nodeMercancia->setAttribute('PesoEnKg', SFormats::formatNumber($aMerch["pesoEnKg"], 3));
             $nodeMercancia->setAttribute('ValorMercancia', SFormats::formatNumber($aMerch["valorMercancia"]));
             $nodeMercancia->setAttribute('Moneda', $aMerch["moneda"]);
-            $nodeMercancias->appendChild($nodeMercancia);
     
             // CantidadTransporta
-            // $nodeCantidadTransporta = $dom->createElement('cartaporte20:CantidadTransporta');
-            // $nodeCantidadTransporta->setAttribute('Cantidad', "10.000000");
-            // $nodeCantidadTransporta->setAttribute('IDOrigen', "OR022191");
-            // $nodeCantidadTransporta->setAttribute('IDDestino', "DE000131");
-            // $nodeMercancia->appendChild($nodeCantidadTransporta);
-    
-            // $nodeCantidadTransporta = $dom->createElement('cartaporte20:CantidadTransporta');
-            // $nodeCantidadTransporta->setAttribute('Cantidad', "10.000000");
-            // $nodeCantidadTransporta->setAttribute('IDOrigen', "OR029621");
-            // $nodeCantidadTransporta->setAttribute('IDDestino', "DE000131");
-            // $nodeMercancia->appendChild($nodeCantidadTransporta);
+            if (count($oMongoDocument->oCartaPorte["ubicaciones"]) > 2) {
+                foreach ($aMerch["cantidadesTransportadas"] as $qtyTransporta) {
+                    $nodeCantidadTransporta = $dom->createElement('cartaporte20:CantidadTransporta');
+                    $nodeCantidadTransporta->setAttribute('Cantidad', SFormats::formatNumber($qtyTransporta["cantidad"], 4));
+                    $nodeCantidadTransporta->setAttribute('IDOrigen', $qtyTransporta["idOrigen"]);
+                    $nodeCantidadTransporta->setAttribute('IDDestino', $qtyTransporta["idDestino"]);
+                    $nodeMercancia->appendChild($nodeCantidadTransporta);
+                }
+            }
+
+            $nodeMercancias->appendChild($nodeMercancia);
         }
 
         // Autotransporte

@@ -10,7 +10,67 @@ class RequestCore {
     const MORAL = 12;
     const FISICA = 13;
 
-    public static function requestToJson($oDocument, $oRequest, $lCurrencies)
+    public static function adaptRequest($oRequest)
+    {
+        $mercanciasTodas = [];
+        foreach ($oRequest->ubicaciones as $index => $location) {
+            $location->rFCRemitenteDestinatario = $location->rfcRemitenteDestinatario;
+            foreach ($location->mercancias as $merch) {
+                $merch->index = $index + 1;
+                if (! isset($mercanciasTodas[$merch->bienesTransp])) {
+                    $mercanciasTodas[$merch->bienesTransp] = new \stdClass();
+                    $mercanciasTodas[$merch->bienesTransp]->merchs = [];
+                }
+                $mercanciasTodas[$merch->bienesTransp]->merchs[] = $merch;
+            }
+        }
+
+        foreach ($mercanciasTodas as $cveBien => $oMerch) {
+            $oMerch->cantidad = 0;
+            $oMerch->valorMercancia = 0;
+            $oMerch->pesoEnKg = 0;
+            $oMerch->bienesTransp = $cveBien;
+            $oMerch->claveUnidad = $oMerch->merchs[0]->claveUnidad;
+            $oMerch->moneda = $oMerch->merchs[0]->moneda;
+
+            foreach ($oMerch->merchs as $merch) {
+                $oMerch->cantidad += $merch->cantidad;
+                $oMerch->valorMercancia += $merch->valorMercancia;
+                $oMerch->pesoEnKg += $merch->pesoEnKg;
+            }
+        }
+
+        $oRequest->mercanciasTodas = $mercanciasTodas;
+
+        $oDbLoc = \DB::table('f_local_origins')
+                        ->where('origin_code', $oRequest->idOrigen)
+                        ->first();
+
+        if ($oDbLoc == null) {
+            return null;
+        }
+
+        $oOriginLocation = new \stdClass;
+        $oOriginLocation->tipoUbicacion = "Origen";
+        $oOriginLocation->rFCRemitenteDestinatario = $oDbLoc->rfcRemitenteDestinatario;
+        $oOriginLocation->domicilio = new \stdClass;
+        $oOriginLocation->domicilio->estado = $oDbLoc->estado;
+        $oOriginLocation->domicilio->codigoPostal = $oDbLoc->codigoPostal;
+        $oOriginLocation->domicilio->municipio = $oDbLoc->municipio;
+        $oOriginLocation->domicilio->calle = $oDbLoc->calle;
+        $oOriginLocation->domicilio->numeroExterior = $oDbLoc->numeroExterior;
+        $oOriginLocation->domicilio->localidad = $oDbLoc->localidad;
+        $oOriginLocation->domicilio->numeroInterior = $oDbLoc->numeroInterior;
+        $oOriginLocation->domicilio->referencia = $oDbLoc->referencia;
+        $oOriginLocation->domicilio->colonia = $oDbLoc->colonia;
+        $oOriginLocation->domicilio->pais = $oDbLoc->pais;
+
+        array_unshift($oRequest->ubicaciones, $oOriginLocation);
+
+        return $oRequest;
+    }
+
+    public static function requestToCfdiObject($oDocument, $oRequest, $lCurrencies)
     {
         $oConfigurations = \App\Utils\Configuration::getConfigurations();
         $lUnits = \DB::table('sat_units AS u')
@@ -144,6 +204,7 @@ class RequestCore {
          * Conceptos
          */
         //*********************************************************************************************
+        $lMerchsLocation = [];
         $nLocationsTemp = count($oRequest->ubicaciones);
         $nLocation = ceil($nLocationsTemp);
         $lConcepts = [];
@@ -190,6 +251,7 @@ class RequestCore {
                 $oConcept->valorUnitario = $oConfigurations->tarifaBaseEscala * $oState->rate;
                 $freightType = "Reparto";
             }
+            $oConcept->isOfficialRate = false;
 
             $oConcept->description = $oConfigurations->cfdi4_0->prodServDescripcion." - ".$freightType.
                                             " [".$oLocSource->domicilio->municipio."(".$oLocSource->domicilio->estado.") - ".
@@ -287,32 +349,6 @@ class RequestCore {
         $oObjData->oCartaPorte->ubicaciones = $oRequest->ubicaciones;
 
         /**
-         * Mercancías
-         */
-        //*********************************************************************************************
-        $oObjData->oCartaPorte->mercancia = $oRequest->mercancia;
-        $oRequest->mercancia->unidadPeso = 'KGM';
-        $oUnitP = \DB::table('sat_units')->where('key_code', $oRequest->mercancia->unidadPeso)->first();
-        $dTotalPeso = 0;
-        $oObjData->oCartaPorte->mercancia->unidadPesoName = $oRequest->mercancia->unidadPeso." - ".$oUnitP->description;
-        $oObjData->oCartaPorte->mercancia->numTotalMercancias = count($oRequest->mercancia->mercancias);
-        foreach ($oObjData->oCartaPorte->mercancia->mercancias as $merch) {
-            $oItem = \DB::table('sat_items')->where('key_code', $merch->bienesTransp)->first();
-            $merch->descripcion = $oItem->description;
-
-            $oUnit = \DB::table('sat_units')->where('key_code', $merch->claveUnidad)->first();
-            $merch->simboloUnidad = $oUnit->symbol;
-            $merch->descripcionUnidad = $oUnit->description;
-
-            $merch->currencyName = $lCurrencies[$merch->moneda];
-            $merch->unitName = $lUnits[$merch->claveUnidad];
-
-            $dTotalPeso += $merch->pesoEnKg;
-        }
-
-        $oObjData->oCartaPorte->mercancia->pesoBrutoTotal = $dTotalPeso;
-
-        /**
          * Ubicaciones
          */
         //*********************************************************************************************
@@ -325,7 +361,6 @@ class RequestCore {
         $lMunicipies = \DB::table('sat_municipalities AS m')
                             ->join('sat_states AS s', 's.id', '=', 'm.state_id');
 
-        $index = 100;
         foreach ($oObjData->oCartaPorte->ubicaciones as $location) {
             $location->domicilio = $location->domicilio;
             $location->domicilio->paisName = $lCountries[$location->domicilio->pais];
@@ -359,8 +394,48 @@ class RequestCore {
                                     "1".
                                     str_pad($location->domicilio->estadoId, 2, "0", STR_PAD_LEFT).
                                     $location->domicilio->municipio;
-            $index++;
         }
+
+        /**
+         * Mercancías
+         */
+        //*********************************************************************************************
+        $oObjData->oCartaPorte->mercancia = new \stdClass();
+        $oObjData->oCartaPorte->mercancia->unidadPeso = 'KGM';
+        $oUnitP = \DB::table('sat_units')->where('key_code', $oObjData->oCartaPorte->mercancia->unidadPeso)->first();
+        $dTotalPeso = 0;
+        $oObjData->oCartaPorte->mercancia->unidadPesoName = $oObjData->oCartaPorte->mercancia->unidadPeso." - ".$oUnitP->description;
+        $oObjData->oCartaPorte->mercancia->numTotalMercancias = count($oRequest->mercanciasTodas);
+        $oObjData->oCartaPorte->mercancia->mercancias = $oRequest->mercanciasTodas;
+        foreach ($oObjData->oCartaPorte->mercancia->mercancias as $merch) {
+            $oItem = \DB::table('sat_items')->where('key_code', $merch->bienesTransp)->first();
+            $merch->descripcion = $oItem->description;
+
+            $oUnit = \DB::table('sat_units')->where('key_code', $merch->claveUnidad)->first();
+            $merch->simboloUnidad = $oUnit->symbol;
+            $merch->descripcionUnidad = $oUnit->description;
+
+            $merch->currencyName = $lCurrencies[$merch->moneda];
+            $merch->unitName = $lUnits[$merch->claveUnidad];
+
+            $dTotalPeso += $merch->pesoEnKg;
+
+            // Mercancías Cantidades Transportadas
+            if (count($oObjData->oCartaPorte->ubicaciones) > 2) {
+                $merch->cantidadesTransportadas = [];
+                foreach ($merch->merchs as $merchTransp) {
+                    $oQtyTransp = new \stdClass();
+                    $oQtyTransp->cantidad = $merchTransp->cantidad;
+                    $oQtyTransp->idOrigen = $oObjData->oCartaPorte->ubicaciones[0]->IDUbicacion;
+                    $oQtyTransp->idDestino = $oObjData->oCartaPorte->ubicaciones[$merchTransp->index]->IDUbicacion;
+                    $oQtyTransp->cvesTrasporte = "";
+                    $oQtyTransp->index = $merchTransp->index;
+    
+                    $merch->cantidadesTransportadas[] = $oQtyTransp;
+                }
+            }
+        }
+        $oObjData->oCartaPorte->mercancia->pesoBrutoTotal = $dTotalPeso;
 
         return $oObjData;
     }

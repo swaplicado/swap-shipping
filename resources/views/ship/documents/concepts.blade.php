@@ -36,6 +36,16 @@
                 <label for="unidad" class="form-label">Unidad</label>
                 <input type="text" class="form-control" id="unidad" v-model="oConcept.unidad">
             </div>
+            <div class="col-md-2">
+                <br>
+                <br>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" v-model="oConcept.isOfficialRate" id="official_rate">
+                    <label class="form-check-label" for="official_rate">
+                        Es tarifa oficial
+                    </label>
+                </div>
+            </div>
         </div>
         <div class="row">
             <div class="col-md-4">

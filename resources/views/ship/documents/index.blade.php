@@ -95,10 +95,10 @@
                 <th>Embarque</th>
                 <th>Báscula</th>
                 @if($enableTotales)
+                    <th>Subtotal</th>
                     <th>Total Impuestos Retenidos</th>
                     <th>Total Impuestos Trasladados</th>
                     <th>Descuentos</th>
-                    <th>Subtotal</th>
                     <th>Total</th>
                 @endif
                 <th>Fecha petición</th>
@@ -121,14 +121,14 @@
                 <td title="{{ isset($doc->srcAddress) ? $doc->srcAddress->estadoName.' / '.$doc->srcAddress->municipioName : "" }}">{{ $doc->idLocSrc }}</td>
                 <td title="{{ isset($doc->destAddress) ? $doc->destAddress->estadoName.' / '.$doc->destAddress->municipioName : "" }}">{{ $doc->idLocDest }}</td>
                 <td>{{ $doc->serie }}</td>
-                <td>{{ str_pad($doc->folio, 6, "0", STR_PAD_LEFT) }}</td>
-                <td>{{ str_pad($doc->shipping_folio, 6, "0", STR_PAD_LEFT) }}</td>
-                <td>{{ str_pad($doc->scale_ticket, 6, "0", STR_PAD_LEFT) }}</td>
+                <td>{{ str_pad($doc->folio, 7, "0", STR_PAD_LEFT) }}</td>
+                <td>{{ str_pad($doc->shipping_folio, 7, "0", STR_PAD_LEFT) }}</td>
+                <td>{{ str_pad($doc->scale_ticket, 7, "0", STR_PAD_LEFT) }}</td>
                 @if($enableTotales)
+                    <td>{{ $doc->subTotal }}</td>
                     <td>{{ $doc->totalImpuestosRetenidos }}</td>
                     <td>{{ $doc->totalImpuestosTrasladados }}</td>
                     <td>{{ $doc->discounts }}</td>
-                    <td>{{ $doc->subTotal }}</td>
                     <td>{{ $doc->total }}</td>
                 @endif
                 <td>{{ $doc->requested_at }}</td>

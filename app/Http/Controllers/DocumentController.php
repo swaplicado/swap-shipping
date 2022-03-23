@@ -193,6 +193,14 @@ class DocumentController extends Controller
         ]);
     }
 
+    /**
+     * Muestra la pantalla de captura del CFDI.
+     * Obtiene los datos ya sea del request o del documento almacenado en MongoDB
+     *
+     * @param integer $idDocument
+     * 
+     * @return view
+     */
     public function edit($idDocument)
     {
         $oDocument = Document::find($idDocument);
@@ -215,37 +223,6 @@ class DocumentController extends Controller
 
         if (! $resValidation['isValid']) {
             return redirect()->back()->with(['icon' => "error", 'message' => $resValidation['message']]);
-        }
-
-        $lCurrenciesQuery = \DB::table('sat_currencies AS cur')
-                            ->where('cur.is_active', true);
-
-        $iVehKeyId = 0;
-        if ($oDocument->is_processed) {
-            $oObjData = clone $oMongoDocument;
-            $oObjData->id = 0;
-            $oVehicle = $oObjData->oVehicle;
-            $oFigure = $oObjData->oFigure;
-        }
-        else {
-            $aJson = json_decode($oMongoDocument->body_request);
-            $oJson = transformJson::transfom($aJson);
-            $lCurs = clone $lCurrenciesQuery;
-            $lCurs = $lCurs->selectRaw('cur.*, CONCAT(cur.key_code, " - ", cur.description) AS _description')
-                            ->pluck('_description', 'key_code');
-
-            $oReqData = GralUtils::arrayToObject($oJson['json']);
-            $oReqData->ubicaciones = (array) $oReqData->ubicaciones;
-            $oReqData->mercancia->mercancias = (array) $oReqData->mercancia->mercancias;
-            $oObjData = RequestCore::requestToJson($oDocument, $oReqData, $lCurs);
-            $array = json_decode(json_encode(clone $oObjData), true);
-            foreach ($array as $key => $value) {
-                $oMongoDocument->$key = $value;
-            }
-    
-            $oMongoDocument->save();
-            $oVehicle = new \stdClass();
-            $oFigure = new \stdClass();
         }
 
         $oCarrier = Carrier::find($oDocument->carrier_id);
@@ -273,11 +250,47 @@ class DocumentController extends Controller
                                 'i.full_name AS insurance_full_name'
                             )
                             ->where('v.carrier_id', $oCarrier->id_carrier)
-                            ->where('v.is_deleted', false)
-                            ->get();
+                            ->where('v.is_deleted', false);
+
+        $lCurrenciesQuery = \DB::table('sat_currencies AS cur')
+                            ->where('cur.is_active', true);
+
+        // si el documento ya está procesado obtiene los datos de la base de datos
+        $iVehKeyId = 0;
+        if ($oDocument->is_processed) {
+            $oObjData = clone $oMongoDocument;
+            $oObjData->id = 0;
+            $oVehicle = $oObjData->oVehicle;
+            $oFigure = $oObjData->oFigure;
+        }
+        else {
+            // Si el documento no está procesado obtiene los datos del request
+            $oJson = json_decode($oMongoDocument->body_request);
+            $lCurs = clone $lCurrenciesQuery;
+            $lCurs = $lCurs->selectRaw('cur.*, CONCAT(cur.key_code, " - ", cur.description) AS _description')
+                            ->pluck('_description', 'key_code');
+            $oRequestObj = RequestCore::adaptRequest($oJson);
+            $oObjData = RequestCore::requestToCfdiObject($oDocument, $oRequestObj, $lCurs);
+            $array = json_decode(json_encode(clone $oObjData), true);
+            foreach ($array as $key => $value) {
+                $oMongoDocument->$key = $value;
+            }
+    
+            $oMongoDocument->save();
+
+            $oVehicle = $lVehicles->where('plates', $oRequestObj->placaTransporte)->first();
+            if ($oVehicle == null) {
+                $oVehicle = new \stdClass(); 
+            }
+
+            $oFigure = new \stdClass();
+        }
+
+        $lVehicles = $lVehicles->get();
 
         $lVehicleKeys = VehicleKey::get();
 
+        // Obtiene los remolques que tiene dados de alta el transportista
         $lTrailers = \DB::table('f_trailers AS t')
                             ->join('sat_trailer_subtypes AS ts', 't.trailer_subtype_id', '=', 'ts.id')
                             ->select('t.*', 'ts.description AS trailer_subtype_description', 'ts.key_code AS trailer_subtype_key_code')
@@ -285,6 +298,7 @@ class DocumentController extends Controller
                             ->where('t.carrier_id', $oCarrier->id_carrier)
                             ->get();
 
+        // Obtiene las figuras de transporte que tiene dados de alta el transportista
         $lFigures = \DB::table('f_trans_figures AS f')
                             ->join('sat_figure_types AS ft','f.tp_figure_id', '=', 'ft.id')
                             ->join('sat_fiscal_addresses AS fa','f.fis_address_id', '=', 'fa.id')
@@ -385,6 +399,14 @@ class DocumentController extends Controller
         return ['isValid' => true, 'message' => ''];
     }
 
+    /**
+     * Guarda los datos del documento
+     *
+     * @param Request $request
+     * @param integer $idDocument
+     * 
+     * @return redirect
+     */
     public function update(Request $request, $idDocument)
     {
         $oCfdiData = json_decode($request->the_cfdi_data);
@@ -441,6 +463,7 @@ class DocumentController extends Controller
         foreach ($oMongoDocument->conceptos as $aConcept) {
             $oClientConcept = $oCfdiData->oData->conceptos[$indexConcept];
             $aConcept["valorUnitario"] = round($oClientConcept->valorUnitario, 2);
+            $aConcept["isOfficialRate"] = $oClientConcept->isOfficialRate;
             $aConcept["importe"] = round($aConcept["valorUnitario"] * $aConcept["quantity"], 2);
             $aConcept["discount"] = round($oClientConcept->discount, 2);
             $aConcept["description"] = $oClientConcept->description;
@@ -526,17 +549,6 @@ class DocumentController extends Controller
         $oMongoDocument->oFigure = json_decode(json_encode($oCfdiData->oFigure), true);
         $oMongoDocument->lTrailers = isset($oCfdiData->lTrailers) && count($oCfdiData->lTrailers) > 0 ? json_decode(json_encode($oCfdiData->lTrailers), true) : [];
 
-        // Mercancías
-        $pesoBrutoTotal = 0.0;
-        foreach ($oMongoDocument->oCartaPorte["mercancia"]["mercancias"] as $key => $value) {
-            $oClientMerch = $oCfdiData->oData->oCartaPorte->mercancia->mercancias[$key];
-            $value["pesoEnKg"] = round($oClientMerch->pesoEnKg, 3);
-            $pesoBrutoTotal += round($oClientMerch->pesoEnKg, 3);
-        }
-        $oCP = $oMongoDocument->oCartaPorte;
-        $oCP["mercancia"]["pesoBrutoTotal"] = $pesoBrutoTotal;
-        $oMongoDocument->oCartaPorte = $oCP;
-
         // Ubicaciones
         $totalDistancia = 0.0;
         $locations = [];
@@ -567,8 +579,34 @@ class DocumentController extends Controller
         $oCP = $oMongoDocument->oCartaPorte;
         $oCP["totalDistancia"] = $totalDistancia;
         $oCP["ubicaciones"] = $locations;
+
+        // Mercancías
+        $mercancias = [];
+        $pesoBrutoTotal = 0.0;
+        foreach ($oCP["mercancia"]["mercancias"] as $index => $merch) {
+            $pesoBrutoTotal += round($merch["pesoEnKg"], 3);
+
+            // Cantidades transportadas
+            if (count($locations) > 2) {
+                $cantidadesTransportadas = [];
+                foreach ($merch["cantidadesTransportadas"] as $qtyTransport) {
+                    $qtyTransport["idOrigen"] = $locations[0]["IDUbicacion"];
+                    $qtyTransport["idDestino"] = $locations[$qtyTransport["index"]]["IDUbicacion"];
+                    $cantidadesTransportadas[] = $qtyTransport;
+                }
+
+                $merch["cantidadesTransportadas"] = $cantidadesTransportadas;
+            }
+
+            unset($merch["merchs"]);
+            $mercancias[] = $merch;
+        }
+        $oCP["mercancia"]["mercancias"] = $mercancias;
+        $oCP["mercancia"]["pesoBrutoTotal"] = $pesoBrutoTotal;
+
         $oMongoDocument->oCartaPorte = $oCP;
         
+        // Se genera el XML de la carta porte
         $sXml = XmlGeneration::generateCartaPorte($oDocument, $oMongoDocument, $oCarrier);
 
         $oDocument->generated_at = date('Y-m-d H:i:s');
@@ -579,7 +617,7 @@ class DocumentController extends Controller
         $oMongoDocument->xml_cfdi = $sXml;
         $oMongoDocument->save();
 
-        //Generamos el pdf
+        // Generamos el pdf
         $pdf = CfdiUtils::updatePdf($oMongoDocument->_id, $sXml, $oDocument->carrier_id);
 
         return redirect("documents");
