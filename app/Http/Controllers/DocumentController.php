@@ -626,7 +626,7 @@ class DocumentController extends Controller
         $oMongoDocument->save();
 
         // Generamos el pdf
-        $pdf = CfdiUtils::updatePdf($oMongoDocument->_id, $sXml, $oDocument->carrier_id);
+        $pdf = CfdiUtils::updatePdf($oMongoDocument->_id, $sXml, $oDocument->carrier_id, $oMongoDocument->conceptos);
 
         return redirect("documents");
     }

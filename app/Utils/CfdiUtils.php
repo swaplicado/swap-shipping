@@ -34,9 +34,9 @@ class CfdiUtils
         }
     }
 
-    public static function updatePdf($id, $xml, $carrier_id){
+    public static function updatePdf($id, $xml, $carrier_id, $atributos_concepto){
         $logo_name = Carrier::where('id_carrier',$carrier_id)->value('logo');
-        $pdf = CfdiUtils::generatePDF($xml, $logo_name);
+        $pdf = CfdiUtils::generatePDF($xml, $logo_name, $atributos_concepto);
         DB::transaction( function () use($id, $pdf) {
             $Document = MDocument::findOrFail($id);
             $Document->pdf = $pdf;
@@ -122,7 +122,7 @@ class CfdiUtils
         return $QR;
     }
 
-    public static function generatePDF($xml, $logo_name){
+    public static function generatePDF($xml, $logo_name, $atributos_concepto){
         // $filepath = file_get_contents("./doc/prueba.xml");
         $formatterES = new \NumberFormatter("es", \NumberFormatter::SPELLOUT);
         // $data = Configuration::getConfigurations();
@@ -356,6 +356,7 @@ class CfdiUtils
 
         /*Creación de la tabla partidas */
         $tabla_partidas = '';
+        $index_concepto = 0;
         foreach($Concepto as $c){
             null == $c->searchNode('cfdi:Impuestos', 'cfdi:Traslados', 'cfdi:Traslado') ? $Base = null : $Base = $c->searchNode('cfdi:Impuestos', 'cfdi:Traslados', 'cfdi:Traslado')['Base'];
             $Traslados = $c->searchNodes('cfdi:Impuestos', 'cfdi:Traslados', 'cfdi:Traslado');
@@ -396,6 +397,31 @@ class CfdiUtils
             }
 
             $UnitDescription = Units::where('key_code', $c['ClaveUnidad'])->value('description');
+            $tabla_atributos_concepto = '';
+            if(isset($atributos_concepto[$index_concepto])){
+                if(!is_null($atributos_concepto[$index_concepto]['oCustomAttributes']->shippingOrders)){
+                    if(strlen($atributos_concepto[$index_concepto]['oCustomAttributes']->shippingOrders) != 0){
+                        $tabla_atributos_concepto = '
+                            <tr>
+                                <td colspan = "7">
+                                    <table style = "width: 100%;">
+                                        <tbody>
+                                            <tr>
+                                                <td class = "th3">Orden embarque:</td>
+                                                <td class = "text-c">'.$atributos_concepto[$index_concepto]['oCustomAttributes']->shippingOrders.'</td>
+                                                <td class = "th3">Destino:</td>
+                                                <td class = "text-c">'.$atributos_concepto[$index_concepto]['oCustomAttributes']->destinyName.'</td>
+                                                <td class = "th3">Cliente:</td>
+                                                <td class = "text-c">'.$atributos_concepto[$index_concepto]['oCustomAttributes']->customerName.'</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </td>
+                            </tr>
+                        ';
+                    }
+                }
+            }
 
             $tabla_partidas = $tabla_partidas.
                             '
@@ -409,8 +435,7 @@ class CfdiUtils
                                 <td class="td1 text-r">'.$c['Descuento'].'</td>
                             </tr>
                             <tr>
-                                <td style = "border-bottom: solid 0.03cm black;"></td>
-                                <td colspan = "6" style = "border-bottom: solid 0.03cm black;">
+                                <td colspan = "7">
                                     <table style = "width: 100%;">
                                         <tbody>
                                             <tr>
@@ -419,21 +444,35 @@ class CfdiUtils
                                                 <td class = "th3">Base:</td>
                                                 <td class = "th3">Tipo Factor:</td>
                                                 <td class = "th3">Tasa o cuota:</td>
-                                                <td class = "th3">Importe</td>
+                                                <td class = "th3">Importe:</td>
                                             </tr>
                                             '.$tabla_impuestosT_concepto.'
                                             '.$tabla_impuestosR_concepto.'
                                         </tbody>
                                     </table>
                                 </td>
-                            </tr>
+                            </tr>'.$tabla_atributos_concepto.'
                             ';
+            $index_concepto = $index_concepto + 1;
         }
 
         /*Creación de la tabla Mercania */        
         $tabla_Mercancia='';
         foreach($Mercancia as $m){
             $UnitMercDescription = Units::where('key_code', $m['ClaveUnidad'])->value('description');
+
+            $CantidadTransporta = $m->searchNodes('cartaporte20:CantidadTransporta');
+            $tabla_cantidadTransporta = '';
+            foreach($CantidadTransporta as $ct){
+                $tabla_cantidadTransporta = $tabla_cantidadTransporta.'
+                                <tr>
+                                    <td class="text-r">'.$ct['Cantidad'].'</td>
+                                    <td class="text-r">'.$ct['IDOrigen'].'</td>
+                                    <td class="text-r">'.$ct['IDDestino'].'</td>
+                                </tr>                                    
+                ';    
+            }
+
             $tabla_Mercancia = $tabla_Mercancia.'
                             <tr>
                                 <td class="td1 text-c">'.$m['BienesTransp'].'</td>
@@ -444,7 +483,21 @@ class CfdiUtils
                                 <td class="td1 text-c">'.$m['PesoEnKg'].'</td>
                                 <td class="td1 text-r">'.$m['ValorMercancia'].'</td>
                                 <td class="td1 text-c">'.$m['Moneda'].'</td>
-                            </tr>                                    
+                            </tr>
+                            <tr>
+                                <td colspan = "8">
+                                    <table style = "width: 100%;">
+                                        <tbody>
+                                            <tr>
+                                                <td class = "th3">Cantidad:</td>
+                                                <td class = "th3">ID de origen:</td>
+                                                <td class = "th3">ID de destino:</td>
+                                            </tr>
+                                            '.$tabla_cantidadTransporta.'
+                                        </tbody>
+                                    </table>
+                                </td>
+                            </tr>                             
             ';
         }
 
@@ -675,12 +728,12 @@ class CfdiUtils
                 </tbody>
             </table>
 
-            <table style = "width: 100%">
+            <table style = "width: 100%;">
                 <tbody>
                     <tr>
-                        <td style = "width: 40%;"><b>Importe total con letra:</b></td>
-                        <td style = "width: 20%"><b>Uso CFDI:</b></td>
-                        <td rowspan = "4" style = "border-bottom: 0.03cm solid black; width: 40%">
+                        <td style = "width: 40%; border-top: solid 0.03cm black;"><b>Importe total con letra:</b></td>
+                        <td style = "width: 20%; border-top: solid 0.03cm black;"><b>Uso CFDI:</b></td>
+                        <td rowspan = "4" style = "border-bottom: 0.03cm solid black; width: 40%; border-top: solid 0.03cm black;">
                             <table style = "width: 100%;">
                                 <tbody>
                                     <tr>
@@ -692,7 +745,7 @@ class CfdiUtils
                                         <td class = "text-r">'.(!is_null($Descuento) ? $Descuento : '0.00').' '.$Moneda.'</td>
                                     </tr>
                                     <tr>
-                                        <td class = "text-r"><b>Total impuestos traslados:</b></td>
+                                        <td class = "text-r"><b>Total impuestos trasladados:</b></td>
                                         <td class = "text-r">'.$TotalImpuestosTrasladados.' '.$Moneda.'</td>
                                     </tr>
                                     <tr>
@@ -713,7 +766,7 @@ class CfdiUtils
                     </tr>
                     <tr>
                         <td style = "width: 40%;"><b>Forma pago:</b></td>
-                        <td style = "width: 20%"><b>Metodo pago:</b></td>
+                        <td style = "width: 20%"><b>Método pago:</b></td>
                     </tr>
                     <tr>
                         <td style = "border-bottom: 0.03cm solid black; width: 40%;">'.$FormaPago.'</td>
