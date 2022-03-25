@@ -254,11 +254,15 @@ class RequestCore {
 
             $freightType = "";
             if ($iDestination == $nLocationsTemp - 1) {
-                $oConcept->valorUnitario = $oConfigurations->tarifaBase * $oState->rate;
+                // $oConcept->valorUnitario = $oConfigurations->tarifaBase * $oState->rate;
+                $oConcept->valorUnitario = GralUtils::getRate(1, 'F', $oState->id, $oMun->id, 2, 0);
+                // $oConcept->valorUnitario = GralUtils::getFleteRate(1, $oState->id, $oMun->id, 1);
                 $freightType = "Destino";
             }
             else {
-                $oConcept->valorUnitario = $oConfigurations->tarifaBaseEscala * $oState->rate;
+                // $oConcept->valorUnitario = $oConfigurations->tarifaBaseEscala * $oState->rate;
+                $oConcept->valorUnitario = GralUtils::getRate(1, 'F', $oState->id, $oMun->id, 2, 1);
+                // $oConcept->valorUnitario = GralUtils::getRepartoRate(1, $oState->id, $oMun->id, 1);
                 $freightType = "Reparto";
             }
             $oConcept->isOfficialRate = false;

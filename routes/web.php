@@ -131,6 +131,9 @@ Route::middleware(['auth', 'verified', 'menu'])->group( function () {
     Route::delete('/series/{id}', 'SeriesController@destroy')->name('eliminar_serie');
     Route::put('/series/recover/{id}', 'SeriesController@recover')->name('recuperar_serie');
     
+    //tarifas
+    Route::get('/fletesRates', 'RatesController@indexRateFlete')->name('fletes_rates');
+
     // Rutas Documentos
     Route::get('documents/{id?}', 'DocumentController@index')->name('documents');
     Route::resource('documents', 'DocumentController');

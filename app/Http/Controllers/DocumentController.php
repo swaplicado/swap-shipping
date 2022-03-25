@@ -619,7 +619,8 @@ class DocumentController extends Controller
 
         $oDocument->generated_at = date('Y-m-d H:i:s');
         $oDocument->is_processed = true;
-
+        GralUtils::saveRates($oDocument->carrier_id, $oDocument->ship_type, $oMongoDocument->vehKeyId, $locations, $oMongoDocument->conceptos);
+        dd("ya se guardo");
         $oDocument->save();
 
         $oMongoDocument->xml_cfdi = $sXml;
