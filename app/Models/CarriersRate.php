@@ -10,12 +10,16 @@ class CarriersRate extends Model
     protected $primaryKey = 'id';
 
     protected $fillable = [
-        'rate',
         'carrier_id',
+        'origen_id',
+        'Local_foreign',
         'veh_type_id',
-        'mun_id',
         'state_id',
-        'is_official',
-        'is_reparto'
+        'zone_state_id',
+        'mun_id',
+        'zone_mun_id',
+        'zip_code',
+        'id_rate',
+        'rate'
     ];
 }

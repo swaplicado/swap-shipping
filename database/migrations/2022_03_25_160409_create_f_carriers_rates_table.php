@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateFCarriersRates extends Migration
+class CreateFCarriersRatesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -16,21 +16,17 @@ class CreateFCarriersRates extends Migration
         Schema::create('f_carriers_rates', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->bigInteger('carrier_id')->unsigned();
+            $table->string('origen_id');
+            $table->char('Local_foreign')->nullable();
             $table->bigInteger('veh_type_id')->unsigned();
-            $table->char('ship_type');
-            // $table->Integer('veh_type_id');
-            $table->bigInteger('mun_id')->unsigned();
             $table->bigInteger('state_id')->unsigned();
-            $table->string('id_tarifa')->nullable();
-            $table->float('rate');
-            $table->boolean('is_official')->default(0);
-            $table->boolean('is_reparto')->default(0);
+            $table->bigInteger('zone_state_id')->unsigned()->nullable();
+            $table->bigInteger('mun_id')->unsigned();
+            $table->bigInteger('zone_mun_id')->unsigned()->nullable();
+            $table->string('zip_code')->nullable();
+            $table->string('id_rate')->nullable();
+            $table->float('rate')->unsigned();
             $table->timestamps();
-
-            $table->foreign('carrier_id')->references('id_carrier')->on('f_carriers');
-            $table->foreign('veh_type_id')->references('id_key')->on('f_vehicles_keys');
-            $table->foreign('mun_id')->references('id')->on('sat_municipalities');
-            $table->foreign('state_id')->references('id')->on('sat_states');
         });
     }
 

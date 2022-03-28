@@ -18,44 +18,13 @@ class RatesController extends Controller
      */
     public function indexRateFlete()
     {
-        $carrier_id = auth()->user()->carrier()->first()->id_carrier;
-        // $data = \DB::table('sat_municipalities')
-        //             ->join('sat_states', 'sat_municipalities.state_id', '=', 'sat_states.id')
-        //             ->leftJoin('f_carriers_rate', function ($leftJoin) use($carrier_id) {
-        //                 $leftJoin->on([['f_carriers_rate.state_id','sat_municipalities.state_id'],['f_carriers_rate.mun_id','sat_municipalities.id']])
-        //                       ->where([['f_carriers_rate.carrier_id', $carrier_id],['f_carriers_rate.is_distribution',0]]);
-        //             })
-        //             ->select('sat_municipalities.id','sat_municipalities.municipality_name','sat_municipalities.state_id','sat_states.state_name','f_carriers_rate.rate')
-        //             ->get();
-        // $mun = Municipalities::get();
-
-        // $data = Municipalities::join('sat_states', 'sat_municipalities.state_id', '=', 'sat_states.id')
-        //     ->leftJoin('f_carriers_rates', function ($leftJoin) use($carrier_id) {
-        //         $leftJoin->on([['f_carriers_rates.state_id','sat_municipalities.state_id'],['f_carriers_rates.mun_id','sat_municipalities.id']])
-        //                 ->where([['f_carriers_rates.carrier_id', $carrier_id],['is_official',1],['is_reparto',0]]);
-        //     })
-        //     ->select(
-        //         'sat_municipalities.id',
-        //         'sat_municipalities.municipality_name',
-        //         'sat_municipalities.state_id',
-        //         'sat_states.state_name',
-        //         'f_carriers_rates.veh_type_id',
-        //         'f_carriers_rates.rate'
-        //         )
-        //     ->get();
-
+        $carrier_id = auth()->user()->carrier()->first()->id_carrier;     
+        $rates = CarriersRate::where('carrier_id', $carrier_id)->get();
         $mun = Municipalities::join('sat_states', 'sat_municipalities.state_id', '=', 'sat_states.id')
-                            ->select('sat_municipalities.id','sat_municipalities.municipality_name','sat_municipalities.state_id','sat_states.state_name')
-                            ->get();
-        $rates = CarriersRate::where([['carrier_id', $carrier_id],['is_reparto',0],['is_official',1]])->get();
-        $veh = \DB::table('f_vehicles_keys')->get();
-        foreach($mun as $m){
-            $coll = $rates->where('id',$m->id);
-            $m->rates = $coll;
-        }
-        // // $res = $data->where('id',1238)->where('veh_type_id', 1);
-        // dd($data);
-        return view('catalogos/rates/index', ['mun' => $mun, 'veh' => $veh]);
+        ->select('sat_municipalities.id','sat_municipalities.municipality_name','sat_municipalities.state_id','sat_states.state_name')
+        ->get();
+        $veh_types = \DB::table('f_vehicles_keys')->get();
+        return view('catalogos/rates/index',['rates' => $rates, 'mun' => $mun, 'veh' => $veh_types]);
     }
 
     /**
@@ -68,6 +37,29 @@ class RatesController extends Controller
         //
     }
 
+    public function saveRate($mun_id, $veh_type_id, $state_id, $carrier_id, $value){
+        $rate = CarriersRate::where([
+            ['carrier_id',$carrier_id],
+            ['state_id', $state_id],
+            ['mun_id', $mun_id],
+            ['veh_type_id', $veh_type_id]
+        ])->first();
+
+        if(!is_null($rate)){
+            $rate->rate = $value;
+            $rate->update();
+        }else{
+            $rate = new CarriersRate;
+            $rate->carrier_id = $carrier_id;
+            $rate->origen_id = 'OR000000';
+            $rate->veh_type_id = $veh_type_id;
+            $rate->state_id = $state_id;
+            $rate->mun_id = $mun_id;
+            $rate->rate = $value;
+            $rate->save();
+        }
+    }
+
     /**
      * Store a newly created resource in storage.
      *
@@ -76,42 +68,30 @@ class RatesController extends Controller
      */
     public function store(Request $request)
     {
-        $arr = array();
         $carrier_id = auth()->user()->carrier()->first()->id_carrier;
 
-        for($i = 0; $i<sizeof($request->in); $i++){
-            if($i % 2 != 0){
-                $values = json_decode($request->in[$i]);
-                $values->rate = $request->in[$i - 1];
-                array_push($arr, $values);
+        foreach($request->val as $v){
+            if($v[4] != null){
+                $this->saveRate($v[0], 1, $v[1], $carrier_id, $v[4]);
+            }
+            if($v[5] != null){
+                $this->saveRate($v[0], 2, $v[1], $carrier_id, $v[5]);
+            }
+            if($v[6] != null){
+                $this->saveRate($v[0], 3, $v[1], $carrier_id, $v[6]);
+            }
+            if($v[7] != null){
+                $this->saveRate($v[0], 4, $v[1], $carrier_id, $v[7]);
+            }
+            if($v[8] != null){
+                $this->saveRate($v[0], 5, $v[1], $carrier_id, $v[8]);
+            }
+            if($v[9] != null){
+                $this->saveRate($v[0], 6, $v[1], $carrier_id, $v[9]);
             }
         }
 
-        foreach($arr as $a){
-            $rate = CarriersRate::where([
-                                ['carrier_id', $carrier_id],
-                                ['state_id',$a->state_id],
-                                ['mun_id',$a->mun_id],
-                                ['is_distribution', 0],
-                                ['is_official', 1]
-                            ])->first();
-            
-            if(!is_null($rate)){
-                $rate->rate = $a->rate;
-                $rate->update();
-            }else{
-                $rate->carrier_id = $carrier_id;
-                $rate->state_id = $a->state_id;
-                $rate->mun_id = $a->mun_id;
-                $rate->is_distribution = 0;
-                $rate->is_official = 1;
-                $rate->rate = $a->rate;
-                $rate->save();
-            }
-        }
-
-        
-        return response()->json(200);
+        return response()->json($request->val);
     }
 
     /**

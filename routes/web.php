@@ -133,6 +133,7 @@ Route::middleware(['auth', 'verified', 'menu'])->group( function () {
     
     //tarifas
     Route::get('/fletesRates', 'RatesController@indexRateFlete')->name('fletes_rates');
+    Route::post('/fletesRates', 'RatesController@store')->name('guardar_fletes_rates');
 
     // Rutas Documentos
     Route::get('documents/{id?}', 'DocumentController@index')->name('documents');
