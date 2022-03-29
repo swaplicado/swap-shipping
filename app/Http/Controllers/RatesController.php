@@ -20,6 +20,7 @@ class RatesController extends Controller
     {
         $carrier_id = auth()->user()->carrier()->first()->id_carrier;
         $veh_types = \DB::table('f_vehicles_keys')->get();
+        $title = 'Tarifas';
 
         switch ($id) {
             case 1:
@@ -27,6 +28,7 @@ class RatesController extends Controller
                 $mun = Municipalities::join('sat_states', 'sat_municipalities.state_id', '=', 'sat_states.id')
                 ->select('sat_municipalities.id as mun_id','sat_municipalities.municipality_name','sat_municipalities.state_id','sat_states.state_name')
                 ->get();
+                $title = 'Tarifas municipio';
                 break;
             case 2:
                 $rates = CarriersRate::where([['carrier_id', $carrier_id],['zone_mun_id', '!=', NULL]])->get();
@@ -45,6 +47,7 @@ class RatesController extends Controller
                     'sat_states.state_name'
                     )
                 ->get();
+                $title = 'Tarifas zona municipio';
                 break;
             case 3:
                 $rates = CarriersRate::where([['carrier_id', $carrier_id],['zone_state_id', '!=', NULL]])->get();
@@ -59,6 +62,8 @@ class RatesController extends Controller
                     'sat_states.state_name'
                 )
                 ->get();
+                $title = 'Tarifas zona estado';
+                break;
             case 4:
                 $rates = CarriersRate::where([
                     ['carrier_id', $carrier_id],
@@ -74,13 +79,14 @@ class RatesController extends Controller
                     'state_name'
                     )
                 ->get();
+                $title = 'Tarifas estado';
                 break;
                 default:
                 # code...
                 break;
         }
 
-        return view('catalogos/rates/index',['rates' => $rates, 'mun' => $mun, 'veh' => $veh_types, 'id' => $id]);
+        return view('catalogos/rates/index',['rates' => $rates, 'mun' => $mun, 'veh' => $veh_types, 'id' => $id, 'title' => $title]);
     }
 
     /**

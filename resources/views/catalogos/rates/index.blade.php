@@ -17,7 +17,7 @@
 @endsection
 
 @section('content')
-<h2>Tarifas</h2>
+<h2>{{$title}}</h2>
 <br>
 <div class="btn-group" role="group" aria-label="Basic checkbox toggle button group">
     <input type="checkbox" class="btn-check" id="btncheck1" autocomplete="off">
@@ -25,7 +25,7 @@
 </div>
 <br>
 <br>
-<form id="myForm" action="{{ route('guardar_fletes_rates') }}" method="POST">
+<form id="myForm" action="{{ route('guardar_fletes_rates') }}" method="POST" onSubmit="wait();">
     @csrf
 <div class="container table-responsive">
     <table id="T_rates" class="display" style="width:100%;">
@@ -95,7 +95,7 @@
                         @case(1)
                             @if (sizeof($rates->where('mun_id',$m->mun_id)->where('veh_type_id',$v->id_key)) != 0)
                                 <td>
-                                    <input id="{{$v->key_code}}" class="rate" type="number" name="rate[]"
+                                    <input id="{{$v->key_code}}" class="rate" type="number" name="rate[]" step=".01"
                                         value="{{$rates->where('mun_id',$m->mun_id)->where('veh_type_id',$v->id_key)->values()[0]['rate']}}"
                                         style="background-color: transparent;"
                                         disabled
@@ -106,7 +106,7 @@
                                 </td>
                             @else
                                 <td>
-                                    <input id="{{$v->key_code}}" class="rate" name="rate[]" type="number" value="" style="background-color: transparent;" disabled>
+                                    <input id="{{$v->key_code}}" class="rate" name="rate[]" type="number" step=".01" value="" style="background-color: transparent;" disabled>
                                     <p style="display: none;">0</p>
                                 </td>
                             @endif
@@ -114,7 +114,7 @@
                         @case(2)
                             @if (sizeof($rates->where('mun_id',$m->mun_id)->where('veh_type_id',$v->id_key)->where('zone_mun_id',$m->id_mun_zone)) != 0)
                                 <td>
-                                    <input id="{{$v->key_code}}" class="rate" type="number" name="rate[]"
+                                    <input id="{{$v->key_code}}" class="rate" type="number" name="rate[]" step=".01"
                                         value="{{$rates->where('mun_id',$m->mun_id)->where('veh_type_id',$v->id_key)->where('zone_mun_id',$m->id_mun_zone)->values()[0]['rate']}}"
                                         style="background-color: transparent;"
                                         disabled
@@ -125,7 +125,7 @@
                                 </td>
                             @else
                                 <td>
-                                    <input id="{{$v->key_code}}" class="rate" name="rate[]" type="number" value="" style="background-color: transparent;" disabled>
+                                    <input id="{{$v->key_code}}" class="rate" name="rate[]" type="number" step=".01" value="" style="background-color: transparent;" disabled>
                                     <p style="display: none;">0</p>
                                 </td>
                             @endif
@@ -133,7 +133,7 @@
                         @case(3)
                             @if (sizeof($rates->where('state_id',$m->state_id)->where('veh_type_id',$v->id_key)->where('zone_state_id',$m->id_state_zone)) != 0)
                                 <td>
-                                    <input id="{{$v->key_code}}" class="rate" type="number" name="rate[]"
+                                    <input id="{{$v->key_code}}" class="rate" type="number" name="rate[]" step=".01"
                                         value="{{$rates->where('state_id',$m->state_id)->where('veh_type_id',$v->id_key)->where('zone_state_id',$m->id_state_zone)->values()[0]['rate']}}"
                                         style="background-color: transparent;"
                                         disabled
@@ -144,7 +144,7 @@
                                 </td>
                             @else
                                 <td>
-                                    <input id="{{$v->key_code}}" class="rate" name="rate[]" type="number" value="" style="background-color: transparent;" disabled>
+                                    <input id="{{$v->key_code}}" class="rate" name="rate[]" type="number" step=".01" value="" style="background-color: transparent;" disabled>
                                     <p style="display: none;">0</p>
                                 </td>
                             @endif
@@ -152,7 +152,7 @@
                         @case(4)
                             @if (sizeof($rates->where('state_id',$m->state_id)->where('veh_type_id',$v->id_key)) != 0)
                                 <td>
-                                    <input id="{{$v->key_code}}" class="rate" type="number" name="rate[]"
+                                    <input id="{{$v->key_code}}" class="rate" type="number" name="rate[]" step=".01"
                                         value="{{$rates->where('state_id',$m->state_id)->where('veh_type_id',$v->id_key)->values()[0]['rate']}}"
                                         style="background-color: transparent;"
                                         disabled
@@ -163,7 +163,7 @@
                                 </td>
                             @else
                                 <td>
-                                    <input id="{{$v->key_code}}" class="rate" name="rate[]" type="number" value="" style="background-color: transparent;" disabled>
+                                    <input id="{{$v->key_code}}" step=".01" class="rate" name="rate[]" type="number" value="" style="background-color: transparent;" disabled>
                                     <p style="display: none;">0</p>
                                 </td>
                             @endif
@@ -176,9 +176,18 @@
         </tbody>
     </table>
 </div>
-<button type="submit" class="btn btn-primary">Submit</button>
+<br>
+<div class="container">
+    <div class="row">
+        <div class="col-11">
+            <p>Nota: Al presionar en el botón "guardar", solo se guardarán los valores mostrados en la pantalla actual.</p>
+        </div>
+        <div class="col-1">
+            <button id="btnGuardar" type="submit" class="btn btn-primary" disabled>Guardar</button>
+        </div>
+    </div>
+</div>
 </form>
-{{-- <button type="button" class="btn btn-success" onclick="getIn()">guardar</button> --}}
 @endsection
 
 @section('scripts')
@@ -195,6 +204,7 @@
                 break;
             case '3':
                 arr = [0,1,2,3,5,7];
+                break;
             case '4':
                 arr = [0,1,2,3,5,6,7];
                 break;
@@ -226,28 +236,42 @@
                 }
             ],
             "order": [[ 8, 'desc' ], [ 9, 'desc' ], [ 10, 'desc' ], [ 11, 'desc' ], [ 12, 'desc' ], [ 13, 'desc' ], [ 0, 'asc' ]],
-            "initComplete": function(){ 
+            "fnDrawCallback": function( oSettings ) {
+                document.getElementById('btncheck1').checked  = false;
+                document.getElementById('btnGuardar').setAttribute('disabled', 'disabled');
+                disableIns();
+            },
+            "initComplete": function(){
                 $("#T_rates").show(); 
             }
         });
     });
 </script>
 <script>
+    function enableIns(){
+        inputs = document.getElementsByClassName('rate');
+        for (index = 0; index < inputs.length; ++index) {
+            inputs[index].removeAttribute('disabled');
+            inputs[index].style.background = '#fff';
+        }
+    }
+    function disableIns(){
+        inputs = document.getElementsByClassName('rate');
+        for (index = 0; index < inputs.length; ++index) {
+            inputs[index].setAttribute('disabled', 'disabled');
+            inputs[index].style.background = 'transparent';
+        }
+    }
+
     $(function () {
         const check = document.getElementById('btncheck1');
         check.addEventListener('change', function handleChange(event){
             if(check.checked){
-                inputs = document.getElementsByClassName('rate');
-                for (index = 0; index < inputs.length; ++index) {
-                    inputs[index].removeAttribute('disabled');
-                    inputs[index].style.background = '#fff';
-                }
+                document.getElementById('btnGuardar').removeAttribute('disabled');
+                enableIns();
             }else{
-                inputs = document.getElementsByClassName('rate');
-                for (index = 0; index < inputs.length; ++index) {
-                    inputs[index].setAttribute('disabled', 'disabled');
-                    inputs[index].style.background = 'transparent';
-                }
+                document.getElementById('btnGuardar').setAttribute('disabled', 'disabled');
+                disableIns();
             }
         });
     });
@@ -256,7 +280,9 @@
     $(function () {
       $('#myForm').submit(function(event) {
         event.preventDefault();
-
+        document.getElementById('btnGuardar').setAttribute('disabled', 'disabled');
+        disableIns();
+        document.getElementById('btncheck1').checked  = false;
         var table = $('#T_rates').DataTable();
         var data = table.rows( {page: 'current'} ).data();
         var actionUrl = $(this).attr('action');
