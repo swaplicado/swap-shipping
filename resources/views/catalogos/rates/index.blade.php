@@ -78,6 +78,16 @@
                         <td>{{$m->zone}}</td>
                         <td></td>
                         @break
+                    @case(4)
+                        <td>{{$m->state_id}}</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td>{{$m->state_name}}</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        @break
                     @default
                 @endswitch
                 @foreach ($veh as $v)
@@ -139,6 +149,25 @@
                                 </td>
                             @endif
                             @break
+                        @case(4)
+                            @if (sizeof($rates->where('state_id',$m->state_id)->where('veh_type_id',$v->id_key)) != 0)
+                                <td>
+                                    <input id="{{$v->key_code}}" class="rate" type="number" name="rate[]"
+                                        value="{{$rates->where('state_id',$m->state_id)->where('veh_type_id',$v->id_key)->values()[0]['rate']}}"
+                                        style="background-color: transparent;"
+                                        disabled
+                                    >
+                                    <p style="display: none;">
+                                        {{$rates->where('state_id',$m->state_id)->where('veh_type_id',$v->id_key)->values()[0]['rate']}}
+                                    </p>
+                                </td>
+                            @else
+                                <td>
+                                    <input id="{{$v->key_code}}" class="rate" name="rate[]" type="number" value="" style="background-color: transparent;" disabled>
+                                    <p style="display: none;">0</p>
+                                </td>
+                            @endif
+                            @break
                         @default
                     @endswitch
                 @endforeach
@@ -166,6 +195,9 @@
                 break;
             case '3':
                 arr = [0,1,2,3,5,7];
+            case '4':
+                arr = [0,1,2,3,5,6,7];
+                break;
             default:
                 break;
         }

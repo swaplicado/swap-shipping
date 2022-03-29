@@ -59,6 +59,22 @@ class RatesController extends Controller
                     'sat_states.state_name'
                 )
                 ->get();
+            case 4:
+                $rates = CarriersRate::where([
+                    ['carrier_id', $carrier_id],
+                    ['state_id', '!=', NULL],
+                    ['zone_state_id', NULL],
+                    ['zone_mun_id', NULL],
+                    ['mun_id', NULL]
+                    ])
+                    ->get();
+                $mun = States::whereBetween('id',[1,32])
+                ->select(
+                    'id as state_id',
+                    'state_name'
+                    )
+                ->get();
+                break;
                 default:
                 # code...
                 break;
