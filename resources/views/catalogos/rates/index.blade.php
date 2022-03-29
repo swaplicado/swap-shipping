@@ -47,26 +47,39 @@
         <tbody id="tbody">
             @foreach($mun as $m)
             <tr>
-                <td>{{$m->state_id}}</td>
-                <td>{{$m->mun_id}}</td>
-                @if ($id == 1)
-                    <td></td>
-                    <td></td>
-                @endif
-                @if ($id == 2)
-                    <td></td>
-                    <td>{{$m->id_mun_zone}}</td>
-                @endif
-                <td>{{$m->state_name}}</td>
-                <td>{{$m->municipality_name}}</td>
-                @if ($id == 1)
-                    <td></td>
-                    <td></td>
-                @endif
-                @if ($id == 2)
-                    <td></td>
-                    <td>{{$m->zone}}</td>
-                @endif
+                @switch($id)
+                    @case(1)
+                        <td>{{$m->state_id}}</td>
+                        <td>{{$m->mun_id}}</td>
+                        <td></td>
+                        <td></td>
+                        <td>{{$m->state_name}}</td>
+                        <td>{{$m->municipality_name}}</td>
+                        <td></td>
+                        <td></td>
+                        @break
+                    @case(2)
+                        <td>{{$m->state_id}}</td>
+                        <td>{{$m->mun_id}}</td>
+                        <td></td>
+                        <td>{{$m->id_mun_zone}}</td>
+                        <td>{{$m->state_name}}</td>
+                        <td>{{$m->municipality_name}}</td>
+                        <td></td>
+                        <td>{{$m->zone}}</td>
+                        @break
+                    @case(3)
+                        <td>{{$m->state_id}}</td>
+                        <td></td>
+                        <td>{{$m->id_state_zone}}</td>
+                        <td></td>
+                        <td>{{$m->state_name}}</td>
+                        <td></td>
+                        <td>{{$m->zone}}</td>
+                        <td></td>
+                        @break
+                    @default
+                @endswitch
                 @foreach ($veh as $v)
                     @switch($id)
                         @case(1)
@@ -107,8 +120,26 @@
                                 </td>
                             @endif
                             @break
+                        @case(3)
+                            @if (sizeof($rates->where('state_id',$m->state_id)->where('veh_type_id',$v->id_key)->where('zone_state_id',$m->id_state_zone)) != 0)
+                                <td>
+                                    <input id="{{$v->key_code}}" class="rate" type="number" name="rate[]"
+                                        value="{{$rates->where('state_id',$m->state_id)->where('veh_type_id',$v->id_key)->where('zone_state_id',$m->id_state_zone)->values()[0]['rate']}}"
+                                        style="background-color: transparent;"
+                                        disabled
+                                    >
+                                    <p style="display: none;">
+                                        {{$rates->where('state_id',$m->state_id)->where('veh_type_id',$v->id_key)->where('zone_state_id',$m->id_state_zone)->values()[0]['rate']}}
+                                    </p>
+                                </td>
+                            @else
+                                <td>
+                                    <input id="{{$v->key_code}}" class="rate" name="rate[]" type="number" value="" style="background-color: transparent;" disabled>
+                                    <p style="display: none;">0</p>
+                                </td>
+                            @endif
+                            @break
                         @default
-                            
                     @endswitch
                 @endforeach
             </tr>
@@ -133,6 +164,8 @@
             case '2':
                 arr = [0,1,2,3,6];
                 break;
+            case '3':
+                arr = [0,1,2,3,5,7];
             default:
                 break;
         }

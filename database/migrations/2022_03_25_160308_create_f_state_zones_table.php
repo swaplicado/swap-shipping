@@ -18,11 +18,9 @@ class CreateFStateZonesTable extends Migration
             $table->bigInteger('origen_id')->unsigned();
             $table->bigInteger('state_id')->unsigned();
             $table->string('zone');
-            $table->bigInteger('mun_id')->unsigned();
             $table->timestamps();
 
             $table->foreign('state_id')->references('id')->on('sat_states');
-            $table->foreign('mun_id')->references('id')->on('sat_municipalities');
             $table->foreign('origen_id')->references('id_local_origin')->on('f_local_origins');
         });
     }

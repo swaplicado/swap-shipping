@@ -46,6 +46,19 @@ class RatesController extends Controller
                     )
                 ->get();
                 break;
+            case 3:
+                $rates = CarriersRate::where([['carrier_id', $carrier_id],['zone_state_id', '!=', NULL]])->get();
+                $mun = \DB::table('f_state_zones')
+                ->join('sat_states', 'f_state_zones.state_id', '=', 'sat_states.id')
+                ->where('f_state_zones.origen_id', 1)
+                ->select(
+                    'f_state_zones.id as id_state_zone',
+                    'f_state_zones.origen_id',
+                    'f_state_zones.state_id',
+                    'f_state_zones.zone',
+                    'sat_states.state_name'
+                )
+                ->get();
                 default:
                 # code...
                 break;

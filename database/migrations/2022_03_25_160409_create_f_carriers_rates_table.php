@@ -21,7 +21,7 @@ class CreateFCarriersRatesTable extends Migration
             $table->bigInteger('veh_type_id')->unsigned();
             $table->bigInteger('state_id')->unsigned();
             $table->bigInteger('zone_state_id')->unsigned()->nullable();
-            $table->bigInteger('mun_id')->unsigned();
+            $table->bigInteger('mun_id')->unsigned()->nullable();
             $table->bigInteger('zone_mun_id')->unsigned()->nullable();
             $table->string('id_rate')->nullable();
             $table->float('rate')->unsigned();
