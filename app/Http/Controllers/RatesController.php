@@ -16,15 +16,42 @@ class RatesController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function indexRateFlete()
+    public function indexRateFlete($id)
     {
-        $carrier_id = auth()->user()->carrier()->first()->id_carrier;     
-        $rates = CarriersRate::where('carrier_id', $carrier_id)->get();
-        $mun = Municipalities::join('sat_states', 'sat_municipalities.state_id', '=', 'sat_states.id')
-        ->select('sat_municipalities.id','sat_municipalities.municipality_name','sat_municipalities.state_id','sat_states.state_name')
-        ->get();
+        $carrier_id = auth()->user()->carrier()->first()->id_carrier;
         $veh_types = \DB::table('f_vehicles_keys')->get();
-        return view('catalogos/rates/index',['rates' => $rates, 'mun' => $mun, 'veh' => $veh_types]);
+
+        switch ($id) {
+            case 1:
+                $rates = CarriersRate::where([['carrier_id', $carrier_id],['zone_mun_id', NULL],['zone_state_id', NULL]])->get();
+                $mun = Municipalities::join('sat_states', 'sat_municipalities.state_id', '=', 'sat_states.id')
+                ->select('sat_municipalities.id as mun_id','sat_municipalities.municipality_name','sat_municipalities.state_id','sat_states.state_name')
+                ->get();
+                break;
+            case 2:
+                $rates = CarriersRate::where([['carrier_id', $carrier_id],['zone_mun_id', '!=', NULL]])->get();
+                $mun = \DB::table('f_mun_zones')
+                ->join('sat_municipalities',
+                        'f_mun_zones.mun_id', '=', 'sat_municipalities.id',)
+                ->join('sat_states', 'f_mun_zones.state_id', '=', 'sat_states.id')
+                ->where('f_mun_zones.origen_id', 1)
+                ->select(
+                    'f_mun_zones.id as id_mun_zone',
+                    'f_mun_zones.origen_id',
+                    'f_mun_zones.state_id',
+                    'f_mun_zones.mun_id',
+                    'f_mun_zones.zone',
+                    'sat_municipalities.municipality_name',
+                    'sat_states.state_name'
+                    )
+                ->get();
+                break;
+                default:
+                # code...
+                break;
+        }
+
+        return view('catalogos/rates/index',['rates' => $rates, 'mun' => $mun, 'veh' => $veh_types, 'id' => $id]);
     }
 
     /**
@@ -37,32 +64,50 @@ class RatesController extends Controller
         //
     }
 
-    public function saveRate($mun_id, $veh_type_id, $state_id, $carrier_id, $value){
+    public function saveRate($carrier_id, $state_id, $mun_id, $id_zone_sta, $id_zone_mun, $veh_type_id, $tarifa){
         $rate = CarriersRate::where([
             ['carrier_id',$carrier_id],
             ['state_id', $state_id],
             ['mun_id', $mun_id],
+            ['zone_state_id', $id_zone_sta],
+            ['zone_mun_id', $id_zone_mun],
             ['veh_type_id', $veh_type_id]
         ])->first();
-
+         
         if(!is_null($rate)){
-            $rate->rate = $value;
+            $rate->rate = $tarifa;
             $rate->update();
         }else{
             $rate = new CarriersRate;
             $rate->carrier_id = $carrier_id;
-            $rate->origen_id = 'OR000000';
+            $rate->origen_id = 1;
             $rate->veh_type_id = $veh_type_id;
             $rate->state_id = $state_id;
+            $rate->zone_state_id = $id_zone_sta;
             $rate->mun_id = $mun_id;
-            $rate->rate = $value;
+            $rate->zone_mun_id = $id_zone_mun;
+            $rate->rate = $tarifa;
             $rate->save();
         }
     }
 
     /**
-     * Store a newly created resource in storage.
-     *
+     * Guarda la tarifa ingresada,
+     * los index son:
+     * v[0] = id del estado,
+     * v[1] = id del municipio,
+     * v[2] = id zona estado,
+     * v[3] = id zona municipio,
+     * v[4] = nombre estado,
+     * v[5] = nombre municipio,
+     * v[6] = nombre zona estado,
+     * v[7] = nombre zona municipio,
+     * v[8] = tarifa Trailer 48,
+     * v[9] = tarifa Trailer 53,
+     * v[10] = tarifa Mudancero,
+     * v[11] = tarifa Thorton,
+     * v[12] = tarifa Camioneta grande,
+     * v[13] = tarifa Camioneta chica
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
@@ -71,23 +116,24 @@ class RatesController extends Controller
         $carrier_id = auth()->user()->carrier()->first()->id_carrier;
 
         foreach($request->val as $v){
-            if($v[4] != null){
-                $this->saveRate($v[0], 1, $v[1], $carrier_id, $v[4]);
-            }
-            if($v[5] != null){
-                $this->saveRate($v[0], 2, $v[1], $carrier_id, $v[5]);
-            }
-            if($v[6] != null){
-                $this->saveRate($v[0], 3, $v[1], $carrier_id, $v[6]);
-            }
-            if($v[7] != null){
-                $this->saveRate($v[0], 4, $v[1], $carrier_id, $v[7]);
-            }
             if($v[8] != null){
-                $this->saveRate($v[0], 5, $v[1], $carrier_id, $v[8]);
+                //saveRate(carrier_id, state_id, mun_id, id_zone_sta, id_zone_mun, veh_type_id, tarifa)
+                $this->saveRate($carrier_id, $v[0], $v[1], $v[2], $v[3], 1, $v[8]);
             }
             if($v[9] != null){
-                $this->saveRate($v[0], 6, $v[1], $carrier_id, $v[9]);
+                $this->saveRate($carrier_id, $v[0], $v[1], $v[2], $v[3], 2, $v[9]);
+            }
+            if($v[10] != null){
+                $this->saveRate($carrier_id, $v[0], $v[1], $v[2], $v[3], 3, $v[10]);
+            }
+            if($v[11] != null){
+                $this->saveRate($carrier_id, $v[0], $v[1], $v[2], $v[3], 4, $v[11]);
+            }
+            if($v[12] != null){
+                $this->saveRate($carrier_id, $v[0], $v[1], $v[2], $v[3], 5, $v[12]);
+            }
+            if($v[13] != null){
+                $this->saveRate($carrier_id, $v[0], $v[1], $v[2], $v[3], 6, $v[13]);
             }
         }
 

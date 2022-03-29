@@ -31,10 +31,14 @@
     <table id="T_rates" class="display" style="width:100%;">
         <thead>
             <tr>
-                <th></th>
-                <th></th>
+                <th>id state</th>
+                <th>id mun</th>
+                <th>id zona estado</th>
+                <th>id zona municipio</th>
                 <th>Estado</th>
                 <th>Municipio</th>
+                <th>Zona estado</th>
+                <th>Zona municipio</th>
                 @foreach ($veh as $v)
                     <th style="text-align: center;">{{$v->description}} - tarifa</th>
                 @endforeach
@@ -43,28 +47,69 @@
         <tbody id="tbody">
             @foreach($mun as $m)
             <tr>
-                <td>{{$m->id}}</td>
                 <td>{{$m->state_id}}</td>
+                <td>{{$m->mun_id}}</td>
+                @if ($id == 1)
+                    <td></td>
+                    <td></td>
+                @endif
+                @if ($id == 2)
+                    <td></td>
+                    <td>{{$m->id_mun_zone}}</td>
+                @endif
                 <td>{{$m->state_name}}</td>
                 <td>{{$m->municipality_name}}</td>
+                @if ($id == 1)
+                    <td></td>
+                    <td></td>
+                @endif
+                @if ($id == 2)
+                    <td></td>
+                    <td>{{$m->zone}}</td>
+                @endif
                 @foreach ($veh as $v)
-                    @if (sizeof($rates->where('mun_id',$m->id)->where('veh_type_id',$v->id_key)) != 0)
-                        <td>
-                            <input id="{{$v->key_code}}" class="rate" type="number" name="rate[]"
-                                value="{{$rates->where('mun_id',$m->id)->where('veh_type_id',$v->id_key)->values()[0]['rate']}}"
-                                style="background-color: transparent;"
-                                disabled
-                            >
-                            <p style="display: none;">
-                                {{$rates->where('mun_id',$m->id)->where('veh_type_id',$v->id_key)->values()[0]['rate']}}
-                            </p>
-                        </td>
-                    @else
-                        <td>
-                            <input id="{{$v->key_code}}" class="rate" name="rate[]" type="number" value="" style="background-color: transparent;" disabled>
-                            <p style="display: none;">0</p>
-                        </td>
-                    @endif
+                    @switch($id)
+                        @case(1)
+                            @if (sizeof($rates->where('mun_id',$m->mun_id)->where('veh_type_id',$v->id_key)) != 0)
+                                <td>
+                                    <input id="{{$v->key_code}}" class="rate" type="number" name="rate[]"
+                                        value="{{$rates->where('mun_id',$m->mun_id)->where('veh_type_id',$v->id_key)->values()[0]['rate']}}"
+                                        style="background-color: transparent;"
+                                        disabled
+                                    >
+                                    <p style="display: none;">
+                                        {{$rates->where('mun_id',$m->mun_id)->where('veh_type_id',$v->id_key)->values()[0]['rate']}}
+                                    </p>
+                                </td>
+                            @else
+                                <td>
+                                    <input id="{{$v->key_code}}" class="rate" name="rate[]" type="number" value="" style="background-color: transparent;" disabled>
+                                    <p style="display: none;">0</p>
+                                </td>
+                            @endif
+                            @break
+                        @case(2)
+                            @if (sizeof($rates->where('mun_id',$m->mun_id)->where('veh_type_id',$v->id_key)->where('zone_mun_id',$m->id_mun_zone)) != 0)
+                                <td>
+                                    <input id="{{$v->key_code}}" class="rate" type="number" name="rate[]"
+                                        value="{{$rates->where('mun_id',$m->mun_id)->where('veh_type_id',$v->id_key)->where('zone_mun_id',$m->id_mun_zone)->values()[0]['rate']}}"
+                                        style="background-color: transparent;"
+                                        disabled
+                                    >
+                                    <p style="display: none;">
+                                        {{$rates->where('mun_id',$m->mun_id)->where('veh_type_id',$v->id_key)->where('zone_mun_id',$m->id_mun_zone)->values()[0]['rate']}}
+                                    </p>
+                                </td>
+                            @else
+                                <td>
+                                    <input id="{{$v->key_code}}" class="rate" name="rate[]" type="number" value="" style="background-color: transparent;" disabled>
+                                    <p style="display: none;">0</p>
+                                </td>
+                            @endif
+                            @break
+                        @default
+                            
+                    @endswitch
                 @endforeach
             </tr>
             @endforeach
@@ -79,6 +124,19 @@
 @section('scripts')
 <script>
     $(document).ready(function () {
+        const idRender = '<?php echo $id ?>';
+        var arr = [];
+        switch (idRender) {
+            case '1':
+                arr = [0,1,2,3,6,7];
+                break;
+            case '2':
+                arr = [0,1,2,3,6];
+                break;
+            default:
+                break;
+        }
+
         var table = $('#T_rates').DataTable({
             "language": {
                 "lengthMenu": "Mostrar _MENU_ registros",
@@ -97,12 +155,12 @@
             },
             "columnDefs": [
                 {
-                    "targets": [0,1],
+                    "targets": arr,
                     "visible": false,
                     "searchable": false
                 }
             ],
-            "order": [[ 4, 'desc' ], [ 5, 'desc' ], [ 6, 'desc' ], [ 7, 'desc' ], [ 8, 'desc' ], [ 9, 'desc' ], [ 1, 'asc' ]],
+            "order": [[ 8, 'desc' ], [ 9, 'desc' ], [ 10, 'desc' ], [ 11, 'desc' ], [ 12, 'desc' ], [ 13, 'desc' ], [ 0, 'asc' ]],
             "initComplete": function(){ 
                 $("#T_rates").show(); 
             }
@@ -114,14 +172,12 @@
         const check = document.getElementById('btncheck1');
         check.addEventListener('change', function handleChange(event){
             if(check.checked){
-                // inputs = document.getElementsByTagName('input');
                 inputs = document.getElementsByClassName('rate');
                 for (index = 0; index < inputs.length; ++index) {
                     inputs[index].removeAttribute('disabled');
                     inputs[index].style.background = '#fff';
                 }
             }else{
-                // inputs = document.getElementsByTagName('input');
                 inputs = document.getElementsByClassName('rate');
                 for (index = 0; index < inputs.length; ++index) {
                     inputs[index].setAttribute('disabled', 'disabled');
@@ -139,19 +195,17 @@
         var table = $('#T_rates').DataTable();
         var data = table.rows( {page: 'current'} ).data();
         var actionUrl = $(this).attr('action');
-        // var formData = new FormData(this);
         var formData = document.getElementsByClassName('rate');
-        var BoxArray = Array.from(formData);
-        // var aux = BoxArray.splice(0,6);
+        var BoxArray = Array.from(formData)
         var values = [];
         for (let i = 0; i< data.length; i++) {
-            var aux = BoxArray.splice(0,6);
-            data[i][4] = aux[0].value;
-            data[i][5] = aux[1].value;
-            data[i][6] = aux[2].value;
-            data[i][7] = aux[3].value;
-            data[i][8] = aux[4].value;
-            data[i][9] = aux[5].value;
+            var rowValues = BoxArray.splice(0,6);
+            data[i][8] = rowValues[0].value;
+            data[i][9] = rowValues[1].value;
+            data[i][10] = rowValues[2].value;
+            data[i][11] = rowValues[3].value;
+            data[i][12] = rowValues[4].value;
+            data[i][13] = rowValues[5].value;
             values.push(data[i]);
         };
         $.ajax({
@@ -163,7 +217,6 @@
                 icon: 'success',
                 title: 'Guardado con exito'
             })
-            console.log(data);
           },
         });
       });

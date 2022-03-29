@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateFMunZonesLocalityTable extends Migration
+class CreateFMunZonesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,15 +13,17 @@ class CreateFMunZonesLocalityTable extends Migration
      */
     public function up()
     {
-        Schema::create('f_mun_zones_locality', function (Blueprint $table) {
+        Schema::create('f_mun_zones', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->string('origen_id');
+            $table->bigInteger('origen_id')->unsigned();
+            $table->bigInteger('state_id')->unsigned();
             $table->bigInteger('mun_id')->unsigned();
             $table->string('zone');
-            $table->string('locality');
             $table->timestamps();
 
+            $table->foreign('state_id')->references('id')->on('sat_states');
             $table->foreign('mun_id')->references('id')->on('sat_municipalities');
+            $table->foreign('origen_id')->references('id_local_origin')->on('f_local_origins');
         });
     }
 
@@ -32,6 +34,6 @@ class CreateFMunZonesLocalityTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('f_mun_zones_locality');
+        Schema::dropIfExists('f_mun_zones');
     }
 }

@@ -15,13 +15,11 @@ class CreateFMunZonesCpTable extends Migration
     {
         Schema::create('f_mun_zones_cp', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->string('origen_id');
-            $table->bigInteger('mun_id')->unsigned();
-            $table->string('zone');
+            $table->bigInteger('mun_zone_id')->unsigned();
             $table->string('zip_code');
             $table->timestamps();
 
-            $table->foreign('mun_id')->references('id')->on('sat_municipalities');
+            $table->foreign('mun_zone_id')->references('id')->on('f_mun_zones');
         });
     }
 

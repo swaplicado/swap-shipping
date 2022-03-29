@@ -15,7 +15,7 @@ class CreateFStateZonesTable extends Migration
     {
         Schema::create('f_state_zones', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->string('origen_id');
+            $table->bigInteger('origen_id')->unsigned();
             $table->bigInteger('state_id')->unsigned();
             $table->string('zone');
             $table->bigInteger('mun_id')->unsigned();
@@ -23,6 +23,7 @@ class CreateFStateZonesTable extends Migration
 
             $table->foreign('state_id')->references('id')->on('sat_states');
             $table->foreign('mun_id')->references('id')->on('sat_municipalities');
+            $table->foreign('origen_id')->references('id_local_origin')->on('f_local_origins');
         });
     }
 

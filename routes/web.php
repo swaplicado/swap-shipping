@@ -132,7 +132,7 @@ Route::middleware(['auth', 'verified', 'menu'])->group( function () {
     Route::put('/series/recover/{id}', 'SeriesController@recover')->name('recuperar_serie');
     
     //tarifas
-    Route::get('/fletesRates', 'RatesController@indexRateFlete')->name('fletes_rates');
+    Route::get('/fletesRates/{id}', 'RatesController@indexRateFlete')->name('fletes_rates');
     Route::post('/fletesRates', 'RatesController@store')->name('guardar_fletes_rates');
 
     // Rutas Documentos
