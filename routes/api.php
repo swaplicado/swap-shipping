@@ -21,12 +21,13 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::post('requestdocument', [
-    'uses' => 'api\\ApiDocumentController@store'
-]);
 
 Route::group(['middleware' => 'auth:api'], function() {
-
+    
+    Route::post('requestdocument', [
+        'uses' => 'api\\ApiDocumentController@store'
+    ]);
+    
     /**
      * API Routes
     */
