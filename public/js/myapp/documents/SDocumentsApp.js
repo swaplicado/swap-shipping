@@ -100,6 +100,9 @@ var app = new Vue({
         removeTrailer(index) {
             this.lSelectedTrailers.splice(this.lSelectedTrailers.indexOf(index), 1);
         },
+        cleanTrailer(){
+            this.lSelectedTrailers = [];
+        },
         formatCurrency(value) {
             return "$ " + value.toFixed(2).replace(/(\d)(?=(\d{3})+(?:\.\d+)?$)/g, "$1,");
         },
@@ -211,10 +214,14 @@ var app = new Vue({
             this.setLocationsIds();
         },
         onVehicleKeyChange() {
+            this.cleanTrailer();
             this.setLocationsIds();
         },
         setLocationsIds() {
             let shipDigit = 0;
+            if(this.oVehicle.vcfg_trailer == 1){
+                this.addTrailer();
+            }
             for (const oVehKey of this.lVehicleKeys) {
                 if (oVehKey.id_key == this.oVehicle.veh_key_id) {
                     shipDigit = this.sShipType == "F" ? oVehKey.foreign_digit : oVehKey.local_digit;
@@ -296,6 +303,26 @@ var app = new Vue({
                     }
 
                     trailers[this.lSelectedTrailers[i].oTrailer.id_trailer] = true;
+                }
+            }
+
+            if(this.oVehicle.vcfg_trailer == 1){
+                var haveTrailer = false;
+                if(this.lSelectedTrailers.length < 1){
+                    SGui.showError("El tipo de autotransporte seleccionado requiere de un remolque");
+                    this.clickAndFocus("btnTransport", "labRems");
+                    return false;
+                }else if(this.lSelectedTrailers.length > 0){
+                    for (let i = 0; i < this.lSelectedTrailers.length; i++) {
+                        if (this.lSelectedTrailers[i].oTrailer != 0) {
+                            haveTrailer = true;
+                        }
+                    }
+                }
+                if(!haveTrailer){
+                    SGui.showError("El tipo de autotransporte seleccionado requiere de un remolque");
+                    this.clickAndFocus("btnTransport", "labRems");
+                    return false;
                 }
             }
 

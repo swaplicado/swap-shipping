@@ -248,6 +248,7 @@ class DocumentController extends Controller
                                 'v.carrier_id',
                                 'vcfg.key_code AS vcfg_key_code',
                                 'vcfg.description AS vcfg_description',
+                                'vcfg.trailer AS vcfg_trailer',
                                 'slic.key_code AS slic_key_code',
                                 'slic.description AS slic_description',
                                 'i.full_name AS insurance_full_name'
