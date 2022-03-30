@@ -24,17 +24,21 @@
             </div>
         </div>
         <div v-if="bCustomAtts" class="row">
-            <div class="col-md-4">
+            <div class="col-md-3">
                 <label class="form-label">Folios de embarque</label>
-                <input type="text" class="form-control" v-model="oConcept.oCustomAttributes.shippingOrders">
+                <input type="text" :title="oConcept.oCustomAttributes.shippingOrders" class="form-control" v-model="oConcept.oCustomAttributes.shippingOrders">
+            </div>
+            <div class="col-md-2">
+                <label class="form-label">Tarifa</label>
+                <input type="text" :title="oConcept.oCustomAttributes.rateCode" class="form-control" v-model="oConcept.oCustomAttributes.rateCode">
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">Destino</label>
+                <input type="text" :title="oConcept.oCustomAttributes.destinyName" class="form-control" v-model="oConcept.oCustomAttributes.destinyName">
             </div>
             <div class="col-md-4">
                 <label class="form-label">Cliente</label>
-                <input type="text" class="form-control" v-model="oConcept.oCustomAttributes.customerName">
-            </div>
-            <div class="col-md-4">
-                <label class="form-label">Destino</label>
-                <input type="text" class="form-control" v-model="oConcept.oCustomAttributes.destinyName">
+                <input type="text" :title="oConcept.oCustomAttributes.customerName" class="form-control" v-model="oConcept.oCustomAttributes.customerName">
             </div>
         </div>
         <div class="row">

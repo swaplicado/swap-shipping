@@ -18,3 +18,4 @@ shipconfig.json
 *.cer
 config/debugbar.php
 storage/debugbar/*.json
+.tmp.driveupload/

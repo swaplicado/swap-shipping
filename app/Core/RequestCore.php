@@ -143,6 +143,7 @@ class RequestCore {
          * Documento, datos internos
          */
         $oObjData->vehKeyId = 0;
+        $oObjData->shippingFolio = $oRequest->embarque;
 
         /**
          * Determinación de retenciones y traslados
@@ -299,11 +300,17 @@ class RequestCore {
             // Atributos del concepto que no se incluyen en el XML
             if (env('WITH_CUSTOM_ATTRIBUTES')) {
                 $oConcept->oCustomAttributes = new \stdClass();
-                $oConcept->oCustomAttributes->customerName = $oLocDest->nombreRFC;
+                $oConcept->oCustomAttributes->customerName = strtoupper($oLocDest->nombreRFC);
                 $oConcept->oCustomAttributes->customerFiscalId = $oLocDest->rfcRemitenteDestinatario;
                 $oConcept->oCustomAttributes->shippingOrders = "";
                 $oMunicipality = GralUtils::getMunicipalityByCode($oLocDest->domicilio->estado, $oLocDest->domicilio->municipio);
-                $oConcept->oCustomAttributes->destinyName = $oMunicipality == null ? "" : $oMunicipality->municipality_name;
+                $oConcept->oCustomAttributes->destinyName = $oMunicipality == null ? "" : strtoupper($oMunicipality->municipality_name);
+                if ($oVehicle != null) {
+                    $oConcept->oCustomAttributes->rateCode = "";
+                }
+                else {
+                    $oConcept->oCustomAttributes->rateCode = "";
+                }
             }
 
             $dSubTotal += $oConcept->importe;

@@ -7,6 +7,7 @@ use App\Models\Document;
 use App\Models\DocumentStamp;
 use App\Models\M\MDocument;
 use App\Models\M\MSignLog;
+use App\Models\M\MRequestLog;
 use App\Models\Carrier;
 use App\Models\VehicleKey;
 use Illuminate\Http\Request;
@@ -224,6 +225,8 @@ class DocumentController extends Controller
         if (! $resValidation['isValid']) {
             return redirect()->back()->with(['icon' => "error", 'message' => $resValidation['message']]);
         }
+
+        $oDocument->update(['is_editing' => true, 'dt_editing' => date('Y-m-d H:i:s')]);
 
         $oCarrier = Carrier::find($oDocument->carrier_id);
 
@@ -618,6 +621,8 @@ class DocumentController extends Controller
         $sXml = XmlGeneration::generateCartaPorte($oDocument, $oMongoDocument, $oCarrier);
 
         $oDocument->generated_at = date('Y-m-d H:i:s');
+        $oDocument->is_editing = true;
+        $oDocument->dt_editing = null;
         $oDocument->is_processed = true;
 
         $oDocument->save();

@@ -2,7 +2,9 @@
 
 namespace App\SXml;
 
+use Carbon\Carbon;
 use App\Models\Carrier;
+use App\Models\Document;
 use App\Models\Sat\Currencies;
 use App\Models\Sat\FiscalAddress;
 use App\Models\Sat\Items;
@@ -25,6 +27,29 @@ class verifyDocument
                 $response->code = 500;
                 $response->message = "NO EXISTE EL ID ORIGEN";
                 $response->checked_values = $info->idOrigen;
+
+                return $response;
+            }
+
+            $oDoc = Document::where('shipping_folio', $info->embarque)
+                                ->orderBy('is_signed', 'desc')
+                                ->orderBy('is_canceled', 'desc')
+                                ->orderBy('is_processed', 'desc')
+                                ->first();
+            if ($oDoc != null) {
+                if ($oDoc->is_editing && Carbon::parse($oDoc->dt_editing)->addMinutes(env('TIME_EDIT_MIN'))->lessThan(Carbon::now())) {
+                    $oDoc->is_editing = false;
+                    $oDoc->dt_editing = null;
+                    $oDoc->save();
+                }
+            }
+            if ($oDoc != null && ($oDoc->is_signed || $oDoc->is_canceled || ($oDoc->is_processed && $oDoc->is_editing))) {
+                $response = new \stdClass();
+                $response->code = 500;
+                $response->message = "EL DOCUMENTO YA FUE PROCESADO O SE ESTÁ EDITANDO";
+                $response->checked_values = $info;
+                $response->doc_id = $oDoc->id_document;
+                $response->mongo_doc_id = $oDoc->mongo_document_id;
 
                 return $response;
             }
