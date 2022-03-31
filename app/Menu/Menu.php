@@ -223,6 +223,42 @@ class Menu {
             ';
         }
 
+        if($oUser->hasAnyPermission(['800'])){
+            $tar_mun = route('fletes_rates', ['id' => 1]);
+            $tar_zm = route('fletes_rates', ['id' => 2]);
+            $tar_zst = route('fletes_rates', ['id' => 3]);
+            $tar_st = route('fletes_rates', ['id' => 4]);
+            $tar_rep = route('fletes_rates', ['id' => 5]);
+            $menu = $menu.'
+                <li>
+                    <a class="show-cat-btn" href="##">
+                        <span class="icon bx bx-dollar bx-sm" aria-hidden="true"></span>Tarifas destinos
+                        <span class="category__btn transparent-btn" title="Open list">
+                            <span class="sr-only">Open list</span>
+                            <span class="icon arrow-down" aria-hidden="true"></span>
+                        </span>
+                    </a>
+                    <ul class="cat-sub-menu">
+                    <li>
+                        <a href="'.$tar_mun.'"><span class="icon bx bx-dollar-circle bx-sm" aria-hidden="true"></span>Tarifas mun.</a>
+                    </li>
+                    <li>
+                        <a href="'.$tar_zm.'"><span class="icon bx bxs-dollar-circle bx-sm" aria-hidden="true"></span>Tarifas zona mun.</a>
+                    </li>
+                    <li>
+                        <a href="'.$tar_zst.'"><span class="icon bx bxs-coin bx-sm" aria-hidden="true"></span>Tarifas zona est.</a>
+                    </li>
+                    <li>
+                        <a href="'.$tar_st.'"><span class="icon bx bx-coin bx-sm" aria-hidden="true"></span>Tarifas est.</a>
+                    </li>
+                    </ul>
+                </li>
+                <li>
+                    <a href="'.$tar_rep.'"><span class="icon bx bx-money-withdraw bx-sm" aria-hidden="true"></span>Tarifas repartos</a>
+                </li>
+            ';
+        }
+
         if($oUser->hasAnyPermission(['000'])){
             $menu = $menu.'
             <li>

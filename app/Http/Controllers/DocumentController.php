@@ -625,7 +625,8 @@ class DocumentController extends Controller
         $oDocument->is_editing = true;
         $oDocument->dt_editing = null;
         $oDocument->is_processed = true;
-
+        // GralUtils::saveRates($oDocument->carrier_id, $oDocument->ship_type, $oMongoDocument->vehKeyId, $locations, $oMongoDocument->conceptos);
+        // dd("ya se guardo");
         $oDocument->save();
 
         $oMongoDocument->xml_cfdi = $sXml;

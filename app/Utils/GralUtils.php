@@ -1,5 +1,9 @@
 <?php namespace App\Utils;
 
+use App\Models\Sat\States;
+use App\Models\Sat\Municipalities;
+use App\Models\CarriersRate;
+
 class GralUtils {
 
    public static function arrayToObject($array)
@@ -62,5 +66,115 @@ class GralUtils {
                            ->first();
 
       return $oMunicipality;
+   }
+
+   public static function saveRates($carrier_id, $ship_type, $vehKeyId, $locations, $conceptos){
+      // dd($carrier_id, $vehKeyId, $locations, $conceptos);
+      for($i = 0; $i < count($conceptos); $i++){
+         $state_id = States::where('key_code', $locations[$i + 1]['domicilio']['estado'])->value('id');
+                  
+         $mun_id = Municipalities::where([
+                                 ['key_code', $locations[$i + 1]['domicilio']['municipio']],
+                                 ['state_id',$state_id]
+                                    ])
+                                 ->value('id');
+         if($i < count($conceptos) - 1){
+            if($conceptos[$i]['isOfficialRate']){
+               if(!is_null($locations[$i + 1]['domicilio']['estado']) && !is_null($locations[$i + 1]['domicilio']['municipio'])){
+                  $oRate = CarriersRate::where([
+                                       ['carrier_id', $carrier_id],
+                                       ['ship_type', $ship_type],
+                                       ['veh_type_id', $vehKeyId],
+                                       ['state_id', $state_id],
+                                       ['mun_id', $mun_id],
+                                       ['is_reparto', 1]
+                                       ])->first();
+                  
+                  if(!is_null($oRate)){
+                     $oRate->carrier_id = $carrier_id;
+                     $oRate->ship_type = $ship_type;
+                     $oRate->veh_type_id = $vehKeyId;
+                     $oRate->mun_id = $mun_id;
+                     $oRate->state_id = $state_id;
+                     $oRate->rate = $conceptos[$i]['valorUnitario'];
+                     $oRate->is_official = $conceptos[$i]['isOfficialRate'];
+                     $oRate->is_reparto = 1;
+                     $oRate->update();
+                  }else{
+                     $oRate = new CarriersRate;
+                     $oRate->carrier_id = $carrier_id;
+                     $oRate->ship_type = $ship_type;
+                     $oRate->veh_type_id = $vehKeyId;
+                     $oRate->mun_id = $mun_id;
+                     $oRate->state_id = $state_id;
+                     $oRate->rate = $conceptos[$i]['valorUnitario'];
+                     $oRate->is_official = $conceptos[$i]['isOfficialRate'];
+                     $oRate->is_reparto = 1;
+                     $oRate->save();
+                  }
+               }
+            }
+         }else{
+            if($conceptos[$i]['isOfficialRate']){
+               if(!is_null($locations[$i + 1]['domicilio']['estado']) && !is_null($locations[$i + 1]['domicilio']['municipio'])){
+                  $oRate = CarriersRate::where([
+                                       ['carrier_id', $carrier_id],
+                                       ['ship_type', $ship_type],
+                                       ['veh_type_id', $vehKeyId],
+                                       ['state_id', $state_id],
+                                       ['mun_id', $mun_id],
+                                       ['is_reparto', 0]
+                                       ])->first();
+                  
+                  if(!is_null($oRate)){
+                     $oRate->carrier_id = $carrier_id;
+                     $oRate->ship_type = $ship_type;
+                     $oRate->veh_type_id = $vehKeyId;
+                     $oRate->mun_id = $mun_id;
+                     $oRate->state_id = $state_id;
+                     $oRate->rate = $conceptos[$i]['valorUnitario'];
+                     $oRate->is_official = $conceptos[$i]['isOfficialRate'];
+                     $oRate->is_reparto = 0;
+                     $oRate->update();
+                  }else{
+                     $oRate = new CarriersRate;
+                     $oRate->carrier_id = $carrier_id;
+                     $oRate->ship_type = $ship_type;
+                     $oRate->veh_type_id = $vehKeyId;
+                     $oRate->mun_id = $mun_id;
+                     $oRate->state_id = $state_id;
+                     $oRate->rate = $conceptos[$i]['valorUnitario'];
+                     $oRate->is_official = $conceptos[$i]['isOfficialRate'];
+                     $oRate->is_reparto = 0;
+                     $oRate->save();
+                  }
+               }
+            }
+         }
+      }
+   } 
+
+   public static function getRate($carrier_id, $ship_type, $state_id, $mun_id, $veh_type_id, $is_reparto){
+      $rate = 0;
+      if(!is_null($carrier_id) && !is_null($state_id) && !is_null($mun_id) && !is_null($veh_type_id) && !is_null($is_reparto)){
+         $rate = CarriersRate::where([
+                        ['carrier_id', $carrier_id],
+                        ['ship_type', $ship_type],
+                        ['veh_type_id', $veh_type_id],
+                        ['state_id', $state_id],
+                        ['mun_id', $mun_id],
+                        ['is_official', 1],
+                        ['is_reparto', $is_reparto]
+                     ])
+                     ->value('rate');
+         
+         if(!is_null($rate)){
+            return $rate;
+         }else{
+            return 0;
+         }
+      }else{
+         return $rate;
+      }
    }
 }

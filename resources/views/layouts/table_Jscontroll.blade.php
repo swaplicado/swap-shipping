@@ -78,6 +78,9 @@
                 }
             ],
             "colReorder": true,
+            "initComplete": function(){ 
+                $("#{{$table_id}}").show(); 
+            }
         });
 
         $('#{{$table_id}} tbody').on('click', 'tr', function () {

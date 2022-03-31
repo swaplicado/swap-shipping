@@ -131,6 +131,11 @@ Route::middleware(['auth', 'verified', 'menu'])->group( function () {
     Route::delete('/series/{id}', 'SeriesController@destroy')->name('eliminar_serie');
     Route::put('/series/recover/{id}', 'SeriesController@recover')->name('recuperar_serie');
     
+    //tarifas
+    Route::get('/fletesRates/{id}', 'RatesController@index')->name('fletes_rates');
+    Route::post('/fletesRates', 'RatesController@store')->name('guardar_fletes_rates');
+    Route::post('/repartoRates', 'RatesController@storeReparto')->name('guardar_reparto_rates');
+
     // Rutas Documentos
     Route::get('documents/{id?}', 'DocumentController@index')->name('documents');
     Route::resource('documents', 'DocumentController');
