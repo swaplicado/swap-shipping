@@ -2,6 +2,15 @@
 
 @section('headStyles')
 <link rel="stylesheet" href="{{ asset('css/DataTables/datatables.css') }}">
+<style>
+    .in_sm{
+        background-color: transparent;
+        border: 0 solid transparent;
+        min-height: 20px;
+        text-align:
+        center;
+    }
+</style>
 @endsection
 
 @section('headJs')
@@ -94,7 +103,14 @@
                     @switch($id)
                         @case(1)
                             @if (sizeof($rates->where('mun_id',$m->mun_id)->where('veh_type_id',$v->id_key)) != 0)
-                                <td>
+                                <td style="text-align: center;">
+                                    @if($m->local_foreign == 'F')
+                                        <input class="in_sm" type="text" name="rateId[]"
+                                         value="{{$m->local_foreign}}{{$v->foreign_digit}}{{$m->id_rate}}" disabled>
+                                    @else
+                                        <input class="in_sm" type="text" name="rateId[]"
+                                         value="{{$m->local_foreign}}{{$v->local_digit}}{{$m->id_rate}}" disabled>
+                                    @endif                    
                                     <input id="{{$v->key_code}}" class="rate" type="number" name="rate[]" step=".01"
                                         value="{{$rates->where('mun_id',$m->mun_id)->where('veh_type_id',$v->id_key)->values()[0]['rate']}}"
                                         style="background-color: transparent;"
@@ -105,7 +121,14 @@
                                     </p>
                                 </td>
                             @else
-                                <td>
+                                <td style="text-align: center;">
+                                    @if($m->local_foreign == 'F')
+                                        <input class="in_sm" type="text" name="rateId[]"
+                                         value="{{$m->local_foreign}}{{$v->foreign_digit}}{{$m->id_rate}}" disabled>
+                                    @else
+                                        <input class="in_sm" type="text" name="rateId[]"
+                                         value="{{$m->local_foreign}}{{$v->local_digit}}{{$m->id_rate}}" disabled>
+                                    @endif
                                     <input id="{{$v->key_code}}" class="rate" name="rate[]" type="number" step=".01" value="" style="background-color: transparent;" disabled>
                                     <p style="display: none;">0</p>
                                 </td>
@@ -114,6 +137,13 @@
                         @case(2)
                             @if (sizeof($rates->where('mun_id',$m->mun_id)->where('veh_type_id',$v->id_key)->where('zone_mun_id',$m->id_mun_zone)) != 0)
                                 <td>
+                                    @if($m->local_foreign == 'F')
+                                        <input class="in_sm"
+                                         value="{{$m->local_foreign}}{{$v->foreign_digit}}{{$m->id_rate}}" disabled>
+                                    @else
+                                        <input class="in_sm"
+                                         value="{{$m->local_foreign}}{{$v->local_digit}}{{$m->id_rate}}" disabled>
+                                    @endif 
                                     <input id="{{$v->key_code}}" class="rate" type="number" name="rate[]" step=".01"
                                         value="{{$rates->where('mun_id',$m->mun_id)->where('veh_type_id',$v->id_key)->where('zone_mun_id',$m->id_mun_zone)->values()[0]['rate']}}"
                                         style="background-color: transparent;"
@@ -125,6 +155,13 @@
                                 </td>
                             @else
                                 <td>
+                                    @if($m->local_foreign == 'F')
+                                        <input class="in_sm"
+                                         value="{{$m->local_foreign}}{{$v->foreign_digit}}{{$m->id_rate}}" disabled>
+                                    @else
+                                        <input class="in_sm"
+                                         value="{{$m->local_foreign}}{{$v->local_digit}}{{$m->id_rate}}" disabled>
+                                    @endif
                                     <input id="{{$v->key_code}}" class="rate" name="rate[]" type="number" step=".01" value="" style="background-color: transparent;" disabled>
                                     <p style="display: none;">0</p>
                                 </td>
@@ -287,7 +324,7 @@
         var data = table.rows( {page: 'current'} ).data();
         var actionUrl = $(this).attr('action');
         var formData = document.getElementsByClassName('rate');
-        var BoxArray = Array.from(formData)
+        var BoxArray = Array.from(formData);
         var values = [];
         for (let i = 0; i< data.length; i++) {
             var rowValues = BoxArray.splice(0,6);
@@ -299,10 +336,28 @@
             data[i][13] = rowValues[5].value;
             values.push(data[i]);
         };
+        var ratesIds = [];
+        const idRender = '<?php echo $id ?>';
+        if(idRender == '1' || idRender == '2'){
+            var dataRatesIds = document.getElementsByClassName('in_sm');
+            var arrayRatesIds = Array.from(dataRatesIds);
+            for (let i = 0; i< data.length; i++) {
+                var rowRatesIds = arrayRatesIds.splice(0,6);
+                ratesIds.push([
+                    rowRatesIds[0].value,
+                    rowRatesIds[1].value,
+                    rowRatesIds[2].value,
+                    rowRatesIds[3].value,
+                    rowRatesIds[4].value,
+                    rowRatesIds[5].value,
+                ]);
+            };
+        }
+
         $.ajax({
           url: actionUrl,
           type: "POST",
-          data: {val: values, _token: '{{csrf_token()}}'},
+          data: {val: values, ratesIds: ratesIds,  _token: '{{csrf_token()}}'},
           success: function(data) {
             Swal.fire({
                 icon: 'success',

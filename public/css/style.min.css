@@ -1501,7 +1501,8 @@ input {
     border-radius: 6px;
     background-color: #ffffff;
     min-height: 40px;
-    border: solid grey 1px!important
+    /* border: solid grey 1px!important */
+    border: solid grey 1px;
 }
 
 input[type=checkbox],

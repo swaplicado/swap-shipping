@@ -32,7 +32,7 @@
         <thead>
             <tr>
                 <th></th>
-                <th>Tipo de destino</th>
+                <th>Tipo de reparto</th>
                 @foreach ($veh as $v)
                     <th style="text-align: center;">{{$v->description}} - tarifa</th>
                 @endforeach

@@ -8,6 +8,7 @@ use App\Utils\messagesErros;
 use App\Models\CarriersRate;
 use App\Models\Sat\States;
 use App\Models\Sat\Municipalities;
+use App\Utils\GralUtils;
 
 class RatesController extends Controller
 {
@@ -26,8 +27,24 @@ class RatesController extends Controller
             case 1:
                 $rates = CarriersRate::where([['carrier_id', $carrier_id],['zone_mun_id', NULL],['zone_state_id', NULL]])->get();
                 $mun = Municipalities::join('sat_states', 'sat_municipalities.state_id', '=', 'sat_states.id')
-                ->select('sat_municipalities.id as mun_id','sat_municipalities.municipality_name','sat_municipalities.state_id','sat_states.state_name')
+                ->select(
+                    'sat_municipalities.id as mun_id',
+                    'sat_municipalities.municipality_name',
+                    'sat_municipalities.key_code as mun_key_code',
+                    'sat_municipalities.state_id',
+                    'sat_states.state_name',
+                    'sat_states.key_code as st_key_code'
+                    )
                 ->get();
+
+                foreach($mun as $m){
+                    $m->local_foreign = GralUtils::getShipType($m->state_id, $m->mun_id, null);
+                    if($m->state_id < 10){
+                        $m->id_rate =  '0'.$m->state_id.$m->st_key_code.$m->mun_key_code;
+                    }else{
+                        $m->id_rate =  $m->state_id.$m->st_key_code.$m->mun_key_code;
+                    }
+                }
                 $title = 'Tarifas municipio';
                 return view('catalogos/rates/index',['rates' => $rates, 'mun' => $mun, 'veh' => $veh_types, 'id' => $id, 'title' => $title]);
                 break;
@@ -44,10 +61,21 @@ class RatesController extends Controller
                     'f_mun_zones.state_id',
                     'f_mun_zones.mun_id',
                     'f_mun_zones.zone',
+                    'f_mun_zones.zone_digit',
                     'sat_municipalities.municipality_name',
-                    'sat_states.state_name'
+                    'sat_municipalities.key_code as mun_key_code',
+                    'sat_states.state_name',
+                    'sat_states.key_code as st_key_code'
                     )
                 ->get();
+                foreach($mun as $m){
+                    $m->local_foreign = GralUtils::getShipType($m->state_id, $m->mun_id, null);
+                    if($m->state_id < 10){
+                        $m->id_rate =  '0'.$m->state_id.$m->st_key_code.$m->mun_key_code.'-'.$m->zone_digit;
+                    }else{
+                        $m->id_rate =  $m->state_id.$m->st_key_code.$m->mun_key_code.'-'.$m->zone_digit;
+                    }
+                }
                 $title = 'Tarifas zona municipio';
                 return view('catalogos/rates/index',['rates' => $rates, 'mun' => $mun, 'veh' => $veh_types, 'id' => $id, 'title' => $title]);
                 break;
@@ -113,7 +141,7 @@ class RatesController extends Controller
         //
     }
 
-    public function saveRate($carrier_id, $state_id, $mun_id, $id_zone_sta, $id_zone_mun, $veh_type_id, $tarifa, $local_foreign = null, $is_reparto = 0){
+    public function saveRate($carrier_id, $state_id, $mun_id, $id_zone_sta, $id_zone_mun, $veh_type_id, $tarifa, $rate_id = null, $local_foreign = null, $is_reparto = 0){
         $rate = CarriersRate::where([
             ['carrier_id',$carrier_id],
             ['state_id', $state_id],
@@ -122,7 +150,8 @@ class RatesController extends Controller
             ['zone_mun_id', $id_zone_mun],
             ['veh_type_id', $veh_type_id],
             ['Local_foreign', $local_foreign],
-            ['is_reparto', $is_reparto]
+            ['is_reparto', $is_reparto],
+            ['id_rate', $rate_id]
         ])->first();
          
         if(!is_null($rate)){
@@ -140,6 +169,7 @@ class RatesController extends Controller
             $rate->rate = $tarifa;
             $rate->Local_foreign = $local_foreign;
             $rate->is_reparto = $is_reparto;
+            $rate->id_rate = $rate_id;
             $rate->save();
         }
     }
@@ -168,27 +198,75 @@ class RatesController extends Controller
     {
         $carrier_id = auth()->user()->carrier()->first()->id_carrier;
 
-        foreach($request->val as $v){
-            if($v[8] != null){
-                //saveRate(carrier_id, state_id, mun_id, id_zone_sta, id_zone_mun, veh_type_id, tarifa)
-                $this->saveRate($carrier_id, $v[0], $v[1], $v[2], $v[3], 1, $v[8]);
+        if(isset($request->ratesIds)){
+            if(sizeof($request->ratesIds) > 0){
+                foreach($request->val as $index => $v){
+                    $rate_id = $request->ratesIds[$index];
+                    if($v[8] != null){
+//$carrier_id, $state_id, $mun_id, $id_zone_sta, $id_zone_mun, $veh_type_id, $tarifa, $rate_id, $local_foreign, $is_reparto
+                        $this->saveRate($carrier_id, $v[0], $v[1], $v[2], $v[3], 1, $v[8], $rate_id[0]);
+                    }
+                    if($v[9] != null){
+                        $this->saveRate($carrier_id, $v[0], $v[1], $v[2], $v[3], 2, $v[9], $rate_id[1]);
+                    }
+                    if($v[10] != null){
+                        $this->saveRate($carrier_id, $v[0], $v[1], $v[2], $v[3], 3, $v[10], $rate_id[2]);
+                    }
+                    if($v[11] != null){
+                        $this->saveRate($carrier_id, $v[0], $v[1], $v[2], $v[3], 4, $v[11], $rate_id[3]);
+                    }
+                    if($v[12] != null){
+                        $this->saveRate($carrier_id, $v[0], $v[1], $v[2], $v[3], 5, $v[12], $rate_id[4]);
+                    }
+                    if($v[13] != null){
+                        $this->saveRate($carrier_id, $v[0], $v[1], $v[2], $v[3], 6, $v[13], $rate_id[5]);
+                    }
+                }
+            }else{
+                foreach($request->val as $index => $v){
+                    if($v[8] != null){
+                        $this->saveRate($carrier_id, $v[0], $v[1], $v[2], $v[3], 1, $v[8]);
+                    }
+                    if($v[9] != null){
+                        $this->saveRate($carrier_id, $v[0], $v[1], $v[2], $v[3], 2, $v[9]);
+                    }
+                    if($v[10] != null){
+                        $this->saveRate($carrier_id, $v[0], $v[1], $v[2], $v[3], 3, $v[10]);
+                    }
+                    if($v[11] != null){
+                        $this->saveRate($carrier_id, $v[0], $v[1], $v[2], $v[3], 4, $v[11]);
+                    }
+                    if($v[12] != null){
+                        $this->saveRate($carrier_id, $v[0], $v[1], $v[2], $v[3], 5, $v[12]);
+                    }
+                    if($v[13] != null){
+                        $this->saveRate($carrier_id, $v[0], $v[1], $v[2], $v[3], 6, $v[13]);
+                    }
+                }
             }
-            if($v[9] != null){
-                $this->saveRate($carrier_id, $v[0], $v[1], $v[2], $v[3], 2, $v[9]);
-            }
-            if($v[10] != null){
-                $this->saveRate($carrier_id, $v[0], $v[1], $v[2], $v[3], 3, $v[10]);
-            }
-            if($v[11] != null){
-                $this->saveRate($carrier_id, $v[0], $v[1], $v[2], $v[3], 4, $v[11]);
-            }
-            if($v[12] != null){
-                $this->saveRate($carrier_id, $v[0], $v[1], $v[2], $v[3], 5, $v[12]);
-            }
-            if($v[13] != null){
-                $this->saveRate($carrier_id, $v[0], $v[1], $v[2], $v[3], 6, $v[13]);
+        }else{
+            foreach($request->val as $index => $v){
+                if($v[8] != null){
+                    $this->saveRate($carrier_id, $v[0], $v[1], $v[2], $v[3], 1, $v[8]);
+                }
+                if($v[9] != null){
+                    $this->saveRate($carrier_id, $v[0], $v[1], $v[2], $v[3], 2, $v[9]);
+                }
+                if($v[10] != null){
+                    $this->saveRate($carrier_id, $v[0], $v[1], $v[2], $v[3], 3, $v[10]);
+                }
+                if($v[11] != null){
+                    $this->saveRate($carrier_id, $v[0], $v[1], $v[2], $v[3], 4, $v[11]);
+                }
+                if($v[12] != null){
+                    $this->saveRate($carrier_id, $v[0], $v[1], $v[2], $v[3], 5, $v[12]);
+                }
+                if($v[13] != null){
+                    $this->saveRate($carrier_id, $v[0], $v[1], $v[2], $v[3], 6, $v[13]);
+                }
             }
         }
+
 
         return response()->json($request->val);
     }
@@ -198,23 +276,23 @@ class RatesController extends Controller
         $carrier_id = auth()->user()->carrier()->first()->id_carrier;
         foreach($request->val as $v){
             if($v[2] != null){
-                //saveRate(carrier_id, state_id, mun_id, id_zone_sta, id_zone_mun, veh_type_id, tarifa)
-                $this->saveRate($carrier_id, null, null, null, null, 1, $v[2], $v[0], 1);
+//$carrier_id, $state_id, $mun_id, $id_zone_sta, $id_zone_mun, $veh_type_id, $tarifa, $rate_id, $local_foreign, $is_reparto
+                $this->saveRate($carrier_id, null, null, null, null, 1, $v[2], null, $v[0], 1);
             }
             if($v[3] != null){
-                $this->saveRate($carrier_id, null, null, null, null, 2, $v[3], $v[0], 1);
+                $this->saveRate($carrier_id, null, null, null, null, 2, $v[3], null, $v[0], 1);
             }
             if($v[4] != null){
-                $this->saveRate($carrier_id, null, null, null, null, 3, $v[4], $v[0], 1);
+                $this->saveRate($carrier_id, null, null, null, null, 3, $v[4], null, $v[0], 1);
             }
             if($v[5] != null){
-                $this->saveRate($carrier_id, null, null, null, null, 4, $v[5], $v[0], 1);
+                $this->saveRate($carrier_id, null, null, null, null, 4, $v[5], null, $v[0], 1);
             }
             if($v[6] != null){
-                $this->saveRate($carrier_id, null, null, null, null, 5, $v[6], $v[0], 1);
+                $this->saveRate($carrier_id, null, null, null, null, 5, $v[6], null, $v[0], 1);
             }
             if($v[7] != null){
-                $this->saveRate($carrier_id, null, null, null, null, 6, $v[7], $v[0], 1);
+                $this->saveRate($carrier_id, null, null, null, null, 6, $v[7], null, $v[0], 1);
             }
         }
     }
