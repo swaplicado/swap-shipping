@@ -15,7 +15,7 @@ class CreateFCarriersRatesTable extends Migration
     {
         Schema::create('f_carriers_rates', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->bigInteger('carrier_id')->unsigned();
+            $table->bigInteger('carrier_id')->unsigned()->nullable();
             $table->bigInteger('origen_id')->unsigned();
             $table->char('Local_foreign')->nullable();
             $table->bigInteger('veh_type_id')->unsigned();

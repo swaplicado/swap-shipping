@@ -19,7 +19,12 @@ class RatesController extends Controller
      */
     public function index($id)
     {
-        $carrier_id = auth()->user()->carrier()->first()->id_carrier;
+        auth()->user()->authorizePermission(['800']);
+        if(auth()->user()->isCarrier()){
+            $carrier_id = auth()->user()->carrier()->first()->id_carrier;
+        } else if (auth()->user()->isAdmin() || auth()->user()->isClient()){
+            $carrier_id = null;
+        }
         $veh_types = \DB::table('f_vehicles_keys')->get();
         $title = 'Tarifas';
 
@@ -196,7 +201,12 @@ class RatesController extends Controller
      */
     public function store(Request $request)
     {
-        $carrier_id = auth()->user()->carrier()->first()->id_carrier;
+        auth()->user()->authorizePermission(['801']);
+        if(auth()->user()->isCarrier()){
+            $carrier_id = auth()->user()->carrier()->first()->id_carrier;
+        } else if (auth()->user()->isAdmin() || auth()->user()->isClient()){
+            $carrier_id = null;
+        }
 
         if(isset($request->ratesIds)){
             if(sizeof($request->ratesIds) > 0){
@@ -272,8 +282,13 @@ class RatesController extends Controller
     }
 
     public function storeReparto(Request $request){
+        auth()->user()->authorizePermission(['801']);
+        if(auth()->user()->isCarrier()){
+            $carrier_id = auth()->user()->carrier()->first()->id_carrier;
+        } else if (auth()->user()->isAdmin() || auth()->user()->isClient()){
+            $carrier_id = null;
+        }
         $val = $request->val;
-        $carrier_id = auth()->user()->carrier()->first()->id_carrier;
         foreach($request->val as $v){
             if($v[2] != null){
 //$carrier_id, $state_id, $mun_id, $id_zone_sta, $id_zone_mun, $veh_type_id, $tarifa, $rate_id, $local_foreign, $is_reparto
