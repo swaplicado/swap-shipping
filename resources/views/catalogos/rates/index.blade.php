@@ -51,6 +51,11 @@
                 @foreach ($veh as $v)
                     <th style="text-align: center;">{{$v->description}} - tarifa</th>
                 @endforeach
+                @if ($id == 1 || $id == 2)
+                    @foreach ($veh as $v)
+                        <th></th>
+                    @endforeach
+                @endif
             </tr>
         </thead>
         <tbody id="tbody">
@@ -208,6 +213,17 @@
                         @default
                     @endswitch
                 @endforeach
+                @if ($id == 1 || $id == 2)
+                    @foreach ($veh as $v)
+                        <td>
+                            @if($m->local_foreign == 'F')
+                                <p>{{$m->local_foreign}}{{$v->foreign_digit}}{{$m->id_rate}}</p>
+                            @else
+                                <p>{{$m->local_foreign}}{{$v->local_digit}}{{$m->id_rate}}</p>
+                            @endif
+                        </td>
+                    @endforeach
+                @endif
             </tr>
             @endforeach
         </tbody>
@@ -232,12 +248,15 @@
     $(document).ready(function () {
         const idRender = '<?php echo $id ?>';
         var arr = [];
+        var hiddenCol = [];
         switch (idRender) {
             case '1':
                 arr = [0,1,2,3,6,7];
+                hiddenCol = [14,15,16,17,18,19]; 
                 break;
             case '2':
                 arr = [0,1,2,3,6];
+                hiddenCol = [14,15,16,17,18,19];
                 break;
             case '3':
                 arr = [0,1,2,3,5,7];
@@ -270,6 +289,11 @@
                     "targets": arr,
                     "visible": false,
                     "searchable": false
+                },
+                {
+                    "targets": hiddenCol,
+                    "visible": false,
+                    "searchable": true
                 }
             ],
             "order": [[ 8, 'desc' ], [ 9, 'desc' ], [ 10, 'desc' ], [ 11, 'desc' ], [ 12, 'desc' ], [ 13, 'desc' ], [ 0, 'asc' ]],
