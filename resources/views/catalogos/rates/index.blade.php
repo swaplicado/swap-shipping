@@ -49,7 +49,7 @@
                 <th>Zona estado</th>
                 <th>Zona municipio</th>
                 @foreach ($veh as $v)
-                    <th style="text-align: center;">{{$v->description}} - tarifa</th>
+                    <th style="text-align: center;">{{$v->description}} $</th>
                 @endforeach
                 @if ($id == 1 || $id == 2)
                     @foreach ($veh as $v)
@@ -118,7 +118,7 @@
                                     @endif                    
                                     <input id="{{$v->key_code}}" class="rate" type="number" name="rate[]" step=".01"
                                         value="{{$rates->where('mun_id',$m->mun_id)->where('veh_type_id',$v->id_key)->values()[0]['rate']}}"
-                                        style="background-color: transparent;"
+                                        style="background-color: transparent; text-align: right;"
                                         disabled
                                     >
                                     <p style="display: none;">
@@ -134,7 +134,7 @@
                                         <input class="in_sm" type="text" name="rateId[]"
                                          value="{{$m->local_foreign}}{{$v->local_digit}}{{$m->id_rate}}" disabled>
                                     @endif
-                                    <input id="{{$v->key_code}}" class="rate" name="rate[]" type="number" step=".01" value="" style="background-color: transparent;" disabled>
+                                    <input id="{{$v->key_code}}" class="rate" name="rate[]" type="number" step=".01" value="" style="background-color: transparent; text-align: right;" disabled>
                                     <p style="display: none;">0</p>
                                 </td>
                             @endif
@@ -151,7 +151,7 @@
                                     @endif 
                                     <input id="{{$v->key_code}}" class="rate" type="number" name="rate[]" step=".01"
                                         value="{{$rates->where('mun_id',$m->mun_id)->where('veh_type_id',$v->id_key)->where('zone_mun_id',$m->id_mun_zone)->values()[0]['rate']}}"
-                                        style="background-color: transparent;"
+                                        style="background-color: transparent; text-align: right;"
                                         disabled
                                     >
                                     <p style="display: none;">
@@ -167,7 +167,7 @@
                                         <input class="in_sm"
                                          value="{{$m->local_foreign}}{{$v->local_digit}}{{$m->id_rate}}" disabled>
                                     @endif
-                                    <input id="{{$v->key_code}}" class="rate" name="rate[]" type="number" step=".01" value="" style="background-color: transparent;" disabled>
+                                    <input id="{{$v->key_code}}" class="rate" name="rate[]" type="number" step=".01" value="" style="background-color: transparent; text-align: right;" disabled>
                                     <p style="display: none;">0</p>
                                 </td>
                             @endif
@@ -177,7 +177,7 @@
                                 <td>
                                     <input id="{{$v->key_code}}" class="rate" type="number" name="rate[]" step=".01"
                                         value="{{$rates->where('state_id',$m->state_id)->where('veh_type_id',$v->id_key)->where('zone_state_id',$m->id_state_zone)->values()[0]['rate']}}"
-                                        style="background-color: transparent;"
+                                        style="background-color: transparent; text-align: right;"
                                         disabled
                                     >
                                     <p style="display: none;">
@@ -186,7 +186,7 @@
                                 </td>
                             @else
                                 <td>
-                                    <input id="{{$v->key_code}}" class="rate" name="rate[]" type="number" step=".01" value="" style="background-color: transparent;" disabled>
+                                    <input id="{{$v->key_code}}" class="rate" name="rate[]" type="number" step=".01" value="" style="background-color: transparent; text-align: right;" disabled>
                                     <p style="display: none;">0</p>
                                 </td>
                             @endif
@@ -196,7 +196,7 @@
                                 <td>
                                     <input id="{{$v->key_code}}" class="rate" type="number" name="rate[]" step=".01"
                                         value="{{$rates->where('state_id',$m->state_id)->where('veh_type_id',$v->id_key)->values()[0]['rate']}}"
-                                        style="background-color: transparent;"
+                                        style="background-color: transparent; text-align: right;"
                                         disabled
                                     >
                                     <p style="display: none;">
@@ -205,7 +205,7 @@
                                 </td>
                             @else
                                 <td>
-                                    <input id="{{$v->key_code}}" step=".01" class="rate" name="rate[]" type="number" value="" style="background-color: transparent;" disabled>
+                                    <input id="{{$v->key_code}}" step=".01" class="rate" name="rate[]" type="number" value="" style="background-color: transparent; text-align: right;" disabled>
                                     <p style="display: none;">0</p>
                                 </td>
                             @endif
@@ -273,7 +273,7 @@
                 "lengthMenu": "Mostrar _MENU_ registros",
                 "zeroRecords": "No se encontraron resultados",
                 "EmptyTable": "Ningún dato disponible en esta tabla",
-                "info": "Mostrando página _PAGE_ de _PAGES_",
+                "info": "Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros",
                 "infoEmpty": "Mostrando registros del 0 al 0 de un total de 0 registros",
                 "infoFiltered": "(filtrado de un total de _MAX_ registros)",
                 "search": "Buscar:",

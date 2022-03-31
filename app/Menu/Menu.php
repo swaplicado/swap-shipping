@@ -249,7 +249,7 @@ class Menu {
                         <a href="'.$tar_zst.'"><span class="icon bx bxs-coin bx-sm" aria-hidden="true"></span>Tarifas zona est.</a>
                     </li>
                     <li>
-                        <a href="'.$tar_st.'"><span class="icon bx bx-coin bx-sm" aria-hidden="true"></span>Tarifas est.</a>
+                        <a href="'.$tar_st.'"><span class="icon bx bx-coin bx-sm" aria-hidden="true"></span>Tarifas estado</a>
                     </li>
                     </ul>
                 </li>
