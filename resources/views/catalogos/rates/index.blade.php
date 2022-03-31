@@ -141,7 +141,7 @@
                             @break
                         @case(2)
                             @if (sizeof($rates->where('mun_id',$m->mun_id)->where('veh_type_id',$v->id_key)->where('zone_mun_id',$m->id_mun_zone)) != 0)
-                                <td>
+                                <td style="text-align: center;">
                                     @if($m->local_foreign == 'F')
                                         <input class="in_sm"
                                          value="{{$m->local_foreign}}{{$v->foreign_digit}}{{$m->id_rate}}" disabled>
@@ -159,7 +159,7 @@
                                     </p>
                                 </td>
                             @else
-                                <td>
+                                <td style="text-align: center;">
                                     @if($m->local_foreign == 'F')
                                         <input class="in_sm"
                                          value="{{$m->local_foreign}}{{$v->foreign_digit}}{{$m->id_rate}}" disabled>
@@ -174,7 +174,7 @@
                             @break
                         @case(3)
                             @if (sizeof($rates->where('state_id',$m->state_id)->where('veh_type_id',$v->id_key)->where('zone_state_id',$m->id_state_zone)) != 0)
-                                <td>
+                                <td style="text-align: center;">
                                     <input id="{{$v->key_code}}" class="rate" type="number" name="rate[]" step=".01"
                                         value="{{$rates->where('state_id',$m->state_id)->where('veh_type_id',$v->id_key)->where('zone_state_id',$m->id_state_zone)->values()[0]['rate']}}"
                                         style="background-color: transparent; text-align: right;"
@@ -185,7 +185,7 @@
                                     </p>
                                 </td>
                             @else
-                                <td>
+                                <td style="text-align: center;">
                                     <input id="{{$v->key_code}}" class="rate" name="rate[]" type="number" step=".01" value="" style="background-color: transparent; text-align: right;" disabled>
                                     <p style="display: none;">0</p>
                                 </td>
@@ -193,7 +193,7 @@
                             @break
                         @case(4)
                             @if (sizeof($rates->where('state_id',$m->state_id)->where('veh_type_id',$v->id_key)) != 0)
-                                <td>
+                                <td style="text-align: center;">
                                     <input id="{{$v->key_code}}" class="rate" type="number" name="rate[]" step=".01"
                                         value="{{$rates->where('state_id',$m->state_id)->where('veh_type_id',$v->id_key)->values()[0]['rate']}}"
                                         style="background-color: transparent; text-align: right;"
@@ -204,7 +204,7 @@
                                     </p>
                                 </td>
                             @else
-                                <td>
+                                <td style="text-align: center;">
                                     <input id="{{$v->key_code}}" step=".01" class="rate" name="rate[]" type="number" value="" style="background-color: transparent; text-align: right;" disabled>
                                     <p style="display: none;">0</p>
                                 </td>

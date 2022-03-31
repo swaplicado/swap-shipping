@@ -34,7 +34,7 @@
                 <th></th>
                 <th>Tipo de reparto</th>
                 @foreach ($veh as $v)
-                    <th style="text-align: center;">{{$v->description}} - tarifa</th>
+                    <th style="text-align: center;">{{$v->description}} $</th>
                 @endforeach
             </tr>
         </thead>
@@ -46,16 +46,16 @@
                 </td>
                 @foreach ($veh as $v)
                     @if (sizeof($rates->where('veh_type_id',$v->id_key)->where('Local_foreign', 'L')) != 0)
-                        <td>
+                        <td style="text-align: center;">
                             <input id="{{$v->key_code}}" class="rate" type="number" name="rate[]" step=".01"
                                 value="{{$rates->where('veh_type_id',$v->id_key)->where('Local_foreign', 'L')->values()[0]['rate']}}"
-                                style="background-color: transparent;"
+                                style="background-color: transparent; text-align: right;"
                                 disabled
                             >
                         </td>
                     @else
-                        <td>
-                            <input id="{{$v->key_code}}" class="rate" name="rate[]" type="number" step=".01" value="" style="background-color: transparent;" disabled>
+                        <td style="text-align: center;">
+                            <input id="{{$v->key_code}}" class="rate" name="rate[]" type="number" step=".01" value="" style="background-color: transparent; text-align: right;" disabled>
                         </td>
                     @endif
                 @endforeach
@@ -67,16 +67,16 @@
                 </td>
                 @foreach ($veh as $v)
                     @if (sizeof($rates->where('veh_type_id',$v->id_key)->where('Local_foreign', 'F')) != 0)
-                    <td>
+                    <td style="text-align: center;">
                         <input id="{{$v->key_code}}" class="rate" type="number" name="rate[]" step=".01"
                             value="{{$rates->where('veh_type_id',$v->id_key)->where('Local_foreign', 'F')->values()[0]['rate']}}"
-                            style="background-color: transparent;"
+                            style="background-color: transparent; text-align: right;"
                             disabled
                         >
                     </td>
                     @else
-                    <td>
-                        <input id="{{$v->key_code}}" class="rate" name="rate[]" type="number" step=".01" value="" style="background-color: transparent;" disabled>
+                    <td style="text-align: center;">
+                        <input id="{{$v->key_code}}" class="rate" name="rate[]" type="number" step=".01" value="" style="background-color: transparent; text-align: right;" disabled>
                     </td>
                     @endif
                 @endforeach
