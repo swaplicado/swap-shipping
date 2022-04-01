@@ -306,6 +306,11 @@ class DocumentController extends Controller
                             ->where('t.is_deleted', false)
                             ->where('t.carrier_id', $oCarrier->id_carrier)
                             ->get();
+        
+        $lTra = clone $lTrailers;
+        $oTrailer = $lTra->where('plates', $oRequestObj->placaRemolque)
+                                ->where('carrier_id', $oCarrier->id_carrier)
+                                ->first();
 
         // Obtiene las figuras de transporte que tiene dados de alta el transportista
         $lFigures = \DB::table('f_trans_figures AS f')
@@ -361,6 +366,7 @@ class DocumentController extends Controller
                     'oObjData' => $oObjData,
                     'lVehicles' => $lVehicles,
                     'lTrailers' => $lTrailers,
+                    'oTrailer' => $oTrailer,
                     'lFigures' => $lFigures,
                     'oVehicle' => $oVehicle,
                     'lVehicleKeys' => $lVehicleKeys,

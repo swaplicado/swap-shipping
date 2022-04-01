@@ -48,6 +48,7 @@ var app = new Vue({
         lCurrencies: oServerData.lCurrencies,
         lCarrierSeries: oServerData.lCarrierSeries,
         oVehicle: oServerData.oVehicle,
+        oTrailer: oServerData.oTrailer,
         bShipCfg: oServerData.bShipCfg,
         bCustomAtts: oServerData.bCustomAtts,
         sShipType: oServerData.oData.shipType,
@@ -219,8 +220,8 @@ var app = new Vue({
         },
         setLocationsIds() {
             let shipDigit = 0;
-            if(this.oVehicle.vcfg_trailer == 1){
-                this.addTrailer();
+            if (this.oTrailer != null) {
+                this.lSelectedTrailers.push( { oTrailer: this.oTrailer } );
             }
             for (const oVehKey of this.lVehicleKeys) {
                 if (oVehKey.id_key == this.oVehicle.veh_key_id) {
