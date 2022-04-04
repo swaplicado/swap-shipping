@@ -114,7 +114,7 @@ class GralUtils {
          ['local_foreign', $local_foreign],
          ['zone_mun_id', $zone_mun_id],
          ['mun_id', $mun_id],
-         ['zone_state_id', $zone_st_id],
+         ['zone_state_id', null],
          ['state_id', $state_id],
          ['veh_type_id', $veh_type_id],
          ])->first();
@@ -127,10 +127,94 @@ class GralUtils {
             ['local_foreign', $local_foreign],
             ['zone_mun_id', $zone_mun_id],
             ['mun_id', $mun_id],
-            ['zone_state_id', $zone_st_id],
+            ['zone_state_id', null],
             ['state_id', $state_id],
             ['veh_type_id', $veh_type_id],
             ])->first();
+            
+            if(is_null($rate)){
+               $rate = CarriersRate::where([
+                  ['carrier_id', $carrier_id],
+                  ['origen_id', $origen_id],
+                  ['is_reparto', $is_reparto],
+                  ['local_foreign', $local_foreign],
+                  ['zone_mun_id', null],
+                  ['mun_id', $mun_id],
+                  ['zone_state_id', null],
+                  ['state_id', $state_id],
+                  ['veh_type_id', $veh_type_id],
+                  ])->first();
+                  
+                  if(is_null($rate)){
+                     $rate = CarriersRate::where([
+                        ['carrier_id', null],
+                        ['origen_id', $origen_id],
+                        ['is_reparto', $is_reparto],
+                        ['local_foreign', $local_foreign],
+                        ['zone_mun_id', null],
+                        ['mun_id', $mun_id],
+                        ['zone_state_id', null],
+                        ['state_id', $state_id],
+                        ['veh_type_id', $veh_type_id],
+                        ])->first();
+
+                        if(is_null($rate)){
+                           $rate = CarriersRate::where([
+                              ['carrier_id', $carrier_id],
+                              ['origen_id', $origen_id],
+                              ['is_reparto', $is_reparto],
+                              ['local_foreign', $local_foreign],
+                              ['zone_mun_id', null],
+                              ['mun_id', null],
+                              ['zone_state_id', $zone_st_id],
+                              ['state_id', $state_id],
+                              ['veh_type_id', $veh_type_id],
+                              ])->first();
+
+                              if(is_null($rate)){
+                                 $rate = CarriersRate::where([
+                                    ['carrier_id', null],
+                                    ['origen_id', $origen_id],
+                                    ['is_reparto', $is_reparto],
+                                    ['local_foreign', $local_foreign],
+                                    ['zone_mun_id', null],
+                                    ['mun_id', null],
+                                    ['zone_state_id', $zone_st_id],
+                                    ['state_id', $state_id],
+                                    ['veh_type_id', $veh_type_id],
+                                    ])->first();
+
+                                    if(is_null($rate)){
+                                       $rate = CarriersRate::where([
+                                          ['carrier_id', $carrier_id],
+                                          ['origen_id', $origen_id],
+                                          ['is_reparto', $is_reparto],
+                                          ['local_foreign', $local_foreign],
+                                          ['zone_mun_id', null],
+                                          ['mun_id', null],
+                                          ['zone_state_id', null],
+                                          ['state_id', $state_id],
+                                          ['veh_type_id', $veh_type_id],
+                                          ])->first();
+
+                                          if(is_null($rate)){
+                                             $rate = CarriersRate::where([
+                                                ['carrier_id', null],
+                                                ['origen_id', $origen_id],
+                                                ['is_reparto', $is_reparto],
+                                                ['local_foreign', $local_foreign],
+                                                ['zone_mun_id', null],
+                                                ['mun_id', null],
+                                                ['zone_state_id', null],
+                                                ['state_id', $state_id],
+                                                ['veh_type_id', $veh_type_id],
+                                                ])->first();
+                                          }
+                                    }
+                              }
+                        }
+                  }
+            }
       }
       
       return $rate;
