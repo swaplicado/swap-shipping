@@ -33,11 +33,25 @@ class RequestCore {
             $oMerch->claveUnidad = $oMerch->merchs[0]->claveUnidad;
             $oMerch->moneda = $oMerch->merchs[0]->moneda;
 
-            foreach ($oMerch->merchs as $merch) {
+            // agrupar por claveUnidad y destino
+            $merchsAgrupadas = collect($oMerch->merchs);
+            $lGrouped = $merchsAgrupadas->groupBy('index')->map(function ($row) {
+                        $registry = (object) [
+                            'cantidad' => $row->sum('cantidad'),
+                            'valorMercancia' => $row->sum('valorMercancia'),
+                            'pesoEnKg' => $row->sum('pesoEnKg')
+                        ];
+
+                return $registry;
+            });
+
+            foreach ($lGrouped as $merch) {
                 $oMerch->cantidad += $merch->cantidad;
                 $oMerch->valorMercancia += $merch->valorMercancia;
                 $oMerch->pesoEnKg += $merch->pesoEnKg;
             }
+
+            $oMerch->lGrouped = $lGrouped;
         }
 
         $oRequest->mercanciasTodas = $mercanciasTodas;
@@ -455,13 +469,13 @@ class RequestCore {
             // Mercancías Cantidades Transportadas
             if (count($oObjData->oCartaPorte->ubicaciones) > 2) {
                 $merch->cantidadesTransportadas = [];
-                foreach ($merch->merchs as $merchTransp) {
+                foreach ($merch->lGrouped as $key => $merchTransp) {
                     $oQtyTransp = new \stdClass();
                     $oQtyTransp->cantidad = $merchTransp->cantidad;
                     $oQtyTransp->idOrigen = $oObjData->oCartaPorte->ubicaciones[0]->IDUbicacion;
-                    $oQtyTransp->idDestino = $oObjData->oCartaPorte->ubicaciones[$merchTransp->index]->IDUbicacion;
+                    $oQtyTransp->idDestino = $oObjData->oCartaPorte->ubicaciones[$key]->IDUbicacion;
                     $oQtyTransp->cvesTrasporte = "";
-                    $oQtyTransp->index = $merchTransp->index;
+                    $oQtyTransp->index = $key;
     
                     $merch->cantidadesTransportadas[] = $oQtyTransp;
                 }

@@ -992,6 +992,7 @@ class CfdiUtils
         ';
 
         $mpdf = new \Mpdf\Mpdf([
+            'tempDir' => __DIR__ . '/../../tmp',
             'mode' => 'c',
             'margin_left' => 10,
             'margin_right' => 10,

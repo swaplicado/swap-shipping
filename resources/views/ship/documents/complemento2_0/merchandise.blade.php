@@ -58,7 +58,7 @@
                 </div>
                 <div class="col-md-2">
                     <label class="form-label" for="">ID Destino</label>
-                    <input type="text" class="form-control" :value="oData.oCartaPorte.ubicaciones[qtyIndex + 1].IDUbicacion" readonly>
+                    <input type="text" class="form-control" :value="oData.oCartaPorte.ubicaciones[qtyTran.index].IDUbicacion" readonly>
                 </div>
                 <div class="col-md-3">
                     <label class="form-label" for="">Cantidad</label>
