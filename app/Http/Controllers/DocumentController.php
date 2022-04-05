@@ -194,6 +194,17 @@ class DocumentController extends Controller
         ]);
     }
 
+    public function getTrailersPlates($plates){
+
+        $parts = [];
+        $tok = strtok($plates, ", ");
+        while ($tok !== false) {
+            $parts[] = $tok;
+            $tok = strtok(", ");
+        }
+        return $parts;
+    }
+
     /**
      * Muestra la pantalla de captura del CFDI.
      * Obtiene los datos ya sea del request o del documento almacenado en MongoDB
@@ -259,6 +270,14 @@ class DocumentController extends Controller
         $lCurrenciesQuery = \DB::table('sat_currencies AS cur')
                             ->where('cur.is_active', true);
 
+        // Obtiene los remolques que tiene dados de alta el transportista
+        $lTrailers = \DB::table('f_trailers AS t')
+                            ->join('sat_trailer_subtypes AS ts', 't.trailer_subtype_id', '=', 'ts.id')
+                            ->select('t.*', 'ts.description AS trailer_subtype_description', 'ts.key_code AS trailer_subtype_key_code')
+                            ->where('t.is_deleted', false)
+                            ->where('t.carrier_id', $oCarrier->id_carrier)
+                            ->get();
+
         // si el documento ya está procesado obtiene los datos de la base de datos
         $iVehKeyId = 0;
         if ($oDocument->is_processed) {
@@ -266,6 +285,10 @@ class DocumentController extends Controller
             $oObjData->id = 0;
             $oVehicle = $oObjData->oVehicle;
             $oFigure = $oObjData->oFigure;
+            $oTrailer = [];
+            foreach($oObjData->lTrailers as $trailer){
+                array_push($oTrailer, $trailer['oTrailer']);
+            }
         }
         else {
             // Si el documento no está procesado obtiene los datos del request
@@ -277,9 +300,24 @@ class DocumentController extends Controller
             $oRequestObj = RequestCore::adaptRequest($oJson);
 
             $lVehs = clone $lVehicles;
+            
             $oVehicle = $lVehs->where('v.plates', $oRequestObj->placaTransporte)
                                     ->where('v.carrier_id', $oCarrier->id_carrier)
                                     ->first();
+
+            $plates = $this->getTrailersPlates($oRequestObj->placaRemolque);
+            $lTra = clone $lTrailers;
+            $oTrailer = [];
+
+            foreach($plates as $p){
+                $Trailer = $lTra->where('plates', $p)
+                                    ->where('carrier_id', $oCarrier->id_carrier)
+                                    ->first();
+                if(is_null($Trailer)){
+                    $Trailer = new \stdClass();
+                }
+                array_push($oTrailer, $Trailer);
+            }
 
             $oObjData = RequestCore::requestToCfdiObject($oDocument, $oRequestObj, $lCurs, $oVehicle);
             $array = json_decode(json_encode(clone $oObjData), true);
@@ -298,19 +336,6 @@ class DocumentController extends Controller
         $lVehicles = $lVehicles->get();
 
         $lVehicleKeys = VehicleKey::get();
-
-        // Obtiene los remolques que tiene dados de alta el transportista
-        $lTrailers = \DB::table('f_trailers AS t')
-                            ->join('sat_trailer_subtypes AS ts', 't.trailer_subtype_id', '=', 'ts.id')
-                            ->select('t.*', 'ts.description AS trailer_subtype_description', 'ts.key_code AS trailer_subtype_key_code')
-                            ->where('t.is_deleted', false)
-                            ->where('t.carrier_id', $oCarrier->id_carrier)
-                            ->get();
-        
-        $lTra = clone $lTrailers;
-        $oTrailer = $lTra->where('plates', $oRequestObj->placaRemolque)
-                                ->where('carrier_id', $oCarrier->id_carrier)
-                                ->first();
 
         // Obtiene las figuras de transporte que tiene dados de alta el transportista
         $lFigures = \DB::table('f_trans_figures AS f')

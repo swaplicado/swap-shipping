@@ -221,7 +221,9 @@ var app = new Vue({
         setLocationsIds() {
             let shipDigit = 0;
             if (this.oTrailer != null) {
-                this.lSelectedTrailers.push( { oTrailer: this.oTrailer } );
+                for(let trailer of this.oTrailer){
+                    this.lSelectedTrailers.push( { oTrailer: trailer } );
+                }
             }
             for (const oVehKey of this.lVehicleKeys) {
                 if (oVehKey.id_key == this.oVehicle.veh_key_id) {
