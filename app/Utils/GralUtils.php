@@ -97,15 +97,22 @@ class GralUtils {
    public static function getInfoRate($carrier_id, $state_key, $mun_key, $zip_code, $veh_type_id, $is_reparto = 0, $local_foreign = null, $origen_id = 1){
       $state_id = States::where('key_code',$state_key)->value('id');
       $mun_id = Municipalities::where([['key_code',$mun_key],['state_id', $state_id]])->value('id');
-
+      
       if($is_reparto == 1){
          $local_foreign = GralUtils::getShipType($state_id, $mun_id, $zip_code);
+         $state_id = null;
+         $mun_id = null;
+         $zone_mun_cp_id = null;
+         $zone_mun_id = null;
+         $zone_st_mun_id = null;
+         $zone_st_id = null;
+      }else{
+         $zone_mun_cp_id = \DB::table('f_mun_zones_cp')->where('zip_code', $zip_code)->value('mun_zone_id');
+         $zone_mun_id = \DB::table('f_mun_zones')->where('id', $zone_mun_cp_id)->value('id');
+         $zone_st_mun_id = \DB::table('f_state_zones_mun')->where('mun_id', $mun_id)->value('state_zone_id');
+         $zone_st_id = \DB::table('f_state_zones')->where('id', $zone_st_mun_id)->value('id');
       }
-      
-      $zone_mun_cp_id = \DB::table('f_mun_zones_cp')->where('zip_code', $zip_code)->value('mun_zone_id');
-      $zone_mun_id = \DB::table('f_mun_zones')->where('id', $zone_mun_cp_id)->value('id');
-      $zone_st_mun_id = \DB::table('f_state_zones_mun')->where('mun_id', $mun_id)->value('state_zone_id');
-      $zone_st_id = \DB::table('f_state_zones')->where('id', $zone_st_mun_id)->value('id');
+
 
       $rate = CarriersRate::where([
          ['carrier_id', $carrier_id],
