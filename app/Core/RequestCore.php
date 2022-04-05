@@ -346,7 +346,10 @@ class RequestCore {
                 $oConcept->oCustomAttributes->destinyName = $oMunicipality == null ? "" : strtoupper($oMunicipality->municipality_name);
                 if ($oVehicle != null) {
                     $rate_key = "";
-                    if(!is_null($infoRate)){
+                    
+                    if($freightType == "Reparto"){
+                        $rate_key = "Reparto";
+                    }else if(!is_null($infoRate->id_rate)){
                         $rate_key = $infoRate->id_rate;
                     }else{
                         $rate_key = GralUtils::generateRateKey(

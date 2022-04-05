@@ -262,6 +262,7 @@ class GralUtils {
                      $oRate->origen_id = 1;
                      $oRate->veh_type_id = $veh_type_id;
                      $oRate->is_reparto = 1;
+                     $oRate->local_foreign = $local_foreign;
                      $oRate->rate = $conceptos[$i]['valorUnitario'];
                      $oRate->save();
                   }
