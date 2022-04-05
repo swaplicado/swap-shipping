@@ -269,15 +269,36 @@ class RequestCore {
 
             $freightType = "";
             if ($iDestination == $nLocationsTemp - 1) {
-                $oConcept->valorUnitario = $oConfigurations->tarifaBase * $oState->rate;
-                // $oConcept->valorUnitario = GralUtils::getRate(1, 'F', $oState->id, $oMun->id, 2, 0);
-                // $oConcept->valorUnitario = GralUtils::getFleteRate(1, $oState->id, $oMun->id, 1);
+                $infoRate = GralUtils::getInfoRate(
+                    $oCarrier->id_carrier,
+                    $oLocDest->domicilio->estado,
+                    $oLocDest->domicilio->municipio,
+                    $oLocDest->domicilio->codigoPostal,
+                    $oVehicle->veh_key_id
+                );
+                $rate = 0;
+                if(!is_null($infoRate)){
+                    $rate = $infoRate->rate;
+                }
+                // $oConcept->valorUnitario = $oConfigurations->tarifaBase * $oState->rate;
+                $oConcept->valorUnitario = $rate;
                 $freightType = "Destino";
             }
             else {
-                $oConcept->valorUnitario = $oConfigurations->tarifaBaseEscala * $oState->rate;
-                // $oConcept->valorUnitario = GralUtils::getRate(1, 'F', $oState->id, $oMun->id, 2, 1);
-                // $oConcept->valorUnitario = GralUtils::getRepartoRate(1, $oState->id, $oMun->id, 1);
+                $infoRate = GralUtils::getInfoRate(
+                    $oCarrier->id_carrier,
+                    $oLocDest->domicilio->estado,
+                    $oLocDest->domicilio->municipio,
+                    $oLocDest->domicilio->codigoPostal,
+                    $oVehicle->veh_key_id,
+                    1
+                );
+                $rate = 0;
+                if(!is_null($infoRate)){
+                    $rate = $infoRate->rate;
+                }
+                // $oConcept->valorUnitario = $oConfigurations->tarifaBaseEscala * $oState->rate;
+                $oConcept->valorUnitario = $rate;
                 $freightType = "Reparto";
             }
             $oConcept->isOfficialRate = false;
@@ -320,11 +341,21 @@ class RequestCore {
                 $oConcept->oCustomAttributes = new \stdClass();
                 $oConcept->oCustomAttributes->customerName = strtoupper($oLocDest->nombreRFC);
                 $oConcept->oCustomAttributes->customerFiscalId = $oLocDest->rfcRemitenteDestinatario;
-                $oConcept->oCustomAttributes->shippingOrders = "";
+                $oConcept->oCustomAttributes->shippingOrders = $oLocDest->talones;
                 $oMunicipality = GralUtils::getMunicipalityByCode($oLocDest->domicilio->estado, $oLocDest->domicilio->municipio);
                 $oConcept->oCustomAttributes->destinyName = $oMunicipality == null ? "" : strtoupper($oMunicipality->municipality_name);
                 if ($oVehicle != null) {
-                    $oConcept->oCustomAttributes->rateCode = "";
+                    $rate_key = "";
+                    if(!is_null($infoRate)){
+                        $rate_key = $infoRate->id_rate;
+                    }else{
+                        $rate_key = GralUtils::generateRateKey(
+                            $oLocDest->domicilio->estado,
+                            $oLocDest->domicilio->municipio,
+                            $oLocDest->domicilio->codigoPostal,
+                            $oVehicle->veh_key_id);
+                    }
+                    $oConcept->oCustomAttributes->rateCode = $rate_key;
                 }
                 else {
                     $oConcept->oCustomAttributes->rateCode = "";

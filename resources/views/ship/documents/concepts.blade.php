@@ -60,7 +60,7 @@
                 <div class="form-check">
                     <input class="form-check-input" type="checkbox" v-model="oConcept.isOfficialRate" id="official_rate">
                     <label class="form-check-label" for="official_rate">
-                        Es tarifa oficial
+                        Guardar tarifa
                     </label>
                 </div>
             </div>
