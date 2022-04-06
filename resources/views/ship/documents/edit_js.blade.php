@@ -5,6 +5,7 @@
         this.lVehicles = <?php echo json_encode($lVehicles) ?>;
         this.lVehicleKeys = <?php echo json_encode($lVehicleKeys) ?>;
         this.lTrailers = <?php echo json_encode($lTrailers) ?>;
+        this.lSuburbs = <?php echo json_encode($lSuburbs) ?>;
         this.lFigures = <?php echo json_encode($lFigures) ?>;
         this.oVehicle = <?php echo json_encode($oVehicle) ?>;
         this.oTrailer = <?php echo json_encode($oTrailer) ?>;

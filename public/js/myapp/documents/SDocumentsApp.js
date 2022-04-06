@@ -42,6 +42,7 @@ var app = new Vue({
         lVehicles: oServerData.lVehicles,
         lVehicleKeys: oServerData.lVehicleKeys,
         lTrailers: oServerData.lTrailers,
+        lSuburbs: oServerData.lSuburbs,
         lFigures: oServerData.lFigures,
         lPayMethods: oServerData.lPayMethods,
         lPayForms: oServerData.lPayForms,
@@ -352,6 +353,13 @@ var app = new Vue({
                     SGui.showError("La fecha y hora de salida/llegada en la ubicación " + (index + 1) + " es inválida");
                     this.clickAndFocus("btnLocations", "dateTimeLocId" + index);
                     return false;
+                }
+                if(this.lSuburbs[index].length > 0){
+                    if(loc.domicilio.colonia == null){
+                        SGui.showError("Debe seleccionar una colonia en la ubicación " + (index + 1));
+                        this.clickAndFocus("btnLocations", "distanceId" + index);
+                        return false;
+                    }
                 }
             }
 

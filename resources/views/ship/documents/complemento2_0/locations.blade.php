@@ -44,27 +44,28 @@
         <div class="row">
             <label>Domicilio</label>
             <div class="row">
-                {{-- <div class="col-md-2">
-                    <label>Colonia</label>
-                    <input style="text-align: right" type="text" class="form-control" :value="oLocation.domicilio.colonia" readonly>
-                </div>
-                <div class="col-md-2">
-                    <label>Localidad</label>
-                    <input style="text-align: right" type="text" class="form-control" :value="oLocation.domicilio.localidad" readonly>
-                </div> --}}
-                <div class="col-md-4">
+                <div class="col-md-3">
                     <label>Municipio</label>
                     <input type="text" class="form-control" :value="oLocation.domicilio.municipioName" readonly>
+                </div>
+                <div class="col-md-3" v-if="lSuburbs[i].length > 0">
+                    <label>Colonia:</label>
+                    <select class="form-select" v-model="oLocation.domicilio.colonia">
+                        <option v-for="suburb in lSuburbs[i]" :value="suburb.key_code">@{{ suburb.suburb_name }}</option>
+                    </select>
+                </div>
+                <div v-else style="display: none">
+                    @{{oLocation.domicilio.colonia = ''}}
                 </div>
                 <div class="col-md-3">
                     <label>Estado</label>
                     <input type="text" class="form-control" :value="oLocation.domicilio.estadoName" readonly>
                 </div>
-                <div class="col-md-2">
+                <div class="col-md-1">
                     <label>CP</label>
                     <input type="text" class="form-control" :value="oLocation.domicilio.codigoPostal" readonly>
                 </div>
-                <div class="col-md-3">
+                <div class="col-md-2">
                     <label>País</label>
                     <input type="text" class="form-control" :value="oLocation.domicilio.paisName" readonly>
                 </div>

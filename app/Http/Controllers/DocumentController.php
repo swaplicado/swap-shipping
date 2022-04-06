@@ -194,10 +194,10 @@ class DocumentController extends Controller
         ]);
     }
 
-    public function getTrailersPlates($plates){
+    public function getArrayFromString($string){
 
         $parts = [];
-        $tok = strtok($plates, ", ");
+        $tok = strtok($string, ", ");
         while ($tok !== false) {
             $parts[] = $tok;
             $tok = strtok(", ");
@@ -289,6 +289,23 @@ class DocumentController extends Controller
             foreach($oObjData->lTrailers as $trailer){
                 array_push($oTrailer, $trailer['oTrailer']);
             }
+
+            $lSuburbs = [];
+            for($i = 0; $i<count($oObjData["oCartaPorte"]["ubicaciones"]); $i++){
+                $colonias = $this->getArrayFromString($oObjData["oCartaPorte"]["ubicaciones"][$i]["domicilio"]["colonia"]);
+                $arrSuburbs = [];
+                foreach($colonias as $c){
+                    $colonia = \DB::table('sat_suburb')
+                                    ->where([
+                                        ['zip_code', $oObjData["oCartaPorte"]["ubicaciones"][$i]["domicilio"]["codigoPostal"]],
+                                        ['key_code', $c]
+                                        ])->first();
+                    if(!is_null($colonia)){
+                        array_push($arrSuburbs, $colonia);
+                    }
+                }
+                array_push($lSuburbs, $arrSuburbs);
+            }
         }
         else {
             // Si el documento no está procesado obtiene los datos del request
@@ -305,7 +322,7 @@ class DocumentController extends Controller
                                     ->where('v.carrier_id', $oCarrier->id_carrier)
                                     ->first();
 
-            $plates = $this->getTrailersPlates($oRequestObj->placaRemolque);
+            $plates = $this->getArrayFromString($oRequestObj->placaRemolque);
             $lTra = clone $lTrailers;
             $oTrailer = [];
 
@@ -331,6 +348,26 @@ class DocumentController extends Controller
                 $oVehicle = new \stdClass(); 
             }
             $oFigure = new \stdClass();
+
+            $lSuburbs = [];
+            for($i = 0; $i<count($oObjData->oCartaPorte->ubicaciones); $i++){
+                $colonias = $this->getArrayFromString($oObjData->oCartaPorte->ubicaciones[$i]->domicilio->colonia);
+                $arrSuburbs = [];
+                foreach($colonias as $c){
+                    $colonia = \DB::table('sat_suburb')
+                                    ->where([
+                                        ['zip_code', $oObjData->oCartaPorte->ubicaciones[$i]->domicilio->codigoPostal],
+                                        ['key_code', $c]
+                                        ])->first();
+                    if(!is_null($colonia)){
+                        array_push($arrSuburbs, $colonia);
+                    }
+                }
+                if(count($arrSuburbs) > 1){
+                    $oObjData->oCartaPorte->ubicaciones[$i]->domicilio->colonia = null;
+                }
+                array_push($lSuburbs, $arrSuburbs);
+            }
         }
 
         $lVehicles = $lVehicles->get();
@@ -391,6 +428,7 @@ class DocumentController extends Controller
                     'oObjData' => $oObjData,
                     'lVehicles' => $lVehicles,
                     'lTrailers' => $lTrailers,
+                    'lSuburbs' => $lSuburbs,
                     'oTrailer' => $oTrailer,
                     'lFigures' => $lFigures,
                     'oVehicle' => $oVehicle,
@@ -615,6 +653,7 @@ class DocumentController extends Controller
 
             $location["distanciaRecorrida"] = $distance;
             $location["IDUbicacion"] = $oClientLoc->IDUbicacion;
+            $location["domicilio"]["colonia"] = $oClientLoc->domicilio->colonia;
             $locations[] = $location;
             $totalDistancia += $oClientLoc->distanciaRecorrida;
         }
