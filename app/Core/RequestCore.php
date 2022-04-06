@@ -109,6 +109,11 @@ class RequestCore {
 
         $oDate = Carbon::parse($oDocument->requested_at);
 
+        if(is_null($oVehicle)){
+            $oVehicle = new \stdClass();
+            $oVehicle->veh_key_id = null;
+        }
+
         /**
          * Encabezado
          */
@@ -339,9 +344,9 @@ class RequestCore {
             // Atributos del concepto que no se incluyen en el XML
             if (env('WITH_CUSTOM_ATTRIBUTES')) {
                 $oConcept->oCustomAttributes = new \stdClass();
-                $oConcept->oCustomAttributes->customerName = strtoupper($oLocDest->nombreRFC);
-                $oConcept->oCustomAttributes->customerFiscalId = $oLocDest->rfcRemitenteDestinatario;
-                $oConcept->oCustomAttributes->shippingOrders = $oLocDest->talones;
+                $oConcept->oCustomAttributes->customerName = isset($oLocDest->nombreRFC) ? strtoupper($oLocDest->nombreRFC) : "";
+                $oConcept->oCustomAttributes->customerFiscalId = isset($oLocDest->rfcRemitenteDestinatario) ? $oLocDest->rfcRemitenteDestinatario : "";
+                $oConcept->oCustomAttributes->shippingOrders = isset($oLocDest->talones) ? $oLocDest->talones : "";
                 $oMunicipality = GralUtils::getMunicipalityByCode($oLocDest->domicilio->estado, $oLocDest->domicilio->municipio);
                 $oConcept->oCustomAttributes->destinyName = $oMunicipality == null ? "" : strtoupper($oMunicipality->municipality_name);
                 if ($oVehicle != null) {
@@ -349,8 +354,16 @@ class RequestCore {
                     
                     if($freightType == "Reparto"){
                         $rate_key = "Reparto";
-                    }else if(!is_null($infoRate->id_rate)){
-                        $rate_key = $infoRate->id_rate;
+                    }else if(!is_null($infoRate)){
+                        if(!is_null($infoRate->id_rate)){
+                            $rate_key = $infoRate->id_rate;
+                        }else{
+                            $rate_key = GralUtils::generateRateKey(
+                                $oLocDest->domicilio->estado,
+                                $oLocDest->domicilio->municipio,
+                                $oLocDest->domicilio->codigoPostal,
+                                $oVehicle->veh_key_id);    
+                        }
                     }else{
                         $rate_key = GralUtils::generateRateKey(
                             $oLocDest->domicilio->estado,

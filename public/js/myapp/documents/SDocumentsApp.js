@@ -310,6 +310,16 @@ var app = new Vue({
                 }
             }
 
+            if(this.lSelectedTrailers.length > 0){
+                for (let i = 0; i < this.lSelectedTrailers.length; i++) {
+                    if (this.lSelectedTrailers[i].oTrailer.id_trailer == undefined) {
+                        SGui.showError("No se seleccionó un remolque");
+                        this.clickAndFocus("btnTransport", "labRems");
+                        return false;
+                    }
+                }
+            }
+
             if(this.oVehicle.vcfg_trailer == 1){
                 var haveTrailer = false;
                 if(this.lSelectedTrailers.length < 1){

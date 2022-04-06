@@ -67,9 +67,6 @@
                     "sSortDescending": ": Activar para ordenar la columna de manera descendente"
                 }
             },
-            fixedHeader: {
-                header: true
-            },
             columnDefs: [
                 {
                     "targets": [0,1,2],
