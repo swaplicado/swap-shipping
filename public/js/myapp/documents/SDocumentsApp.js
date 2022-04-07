@@ -237,15 +237,15 @@ var app = new Vue({
             }
         },
         validateAll() {
-            // document.getElementById("btnMerch").click();
-            if (this.oData.serie == undefined || this.oData.serie == "") {
-                SGui.showError("Debe seleccionar una serie para el documento");
-                this.clickAndFocus("btnHeader", "serie");
-                return false;
-            }
+            // Se comenta porque la serie y el folio son opcionales
+            // if (this.oData.serie == undefined || this.oData.serie == "") {
+            //     SGui.showError("Debe seleccionar una serie para el documento");
+            //     this.clickAndFocus("btnHeader", "serie");
+            //     return false;
+            // }
 
-            if (!this.oData.folio > 0) {
-                SGui.showError("Debe ingresar un folio para el documento");
+            if (this.oData.folio < 0) {
+                SGui.showError("Debe ingresar un folio mayor que 0 o dejarlo en blanco");
                 this.clickAndFocus("btnHeader", "folio");
                 return false;
             }
