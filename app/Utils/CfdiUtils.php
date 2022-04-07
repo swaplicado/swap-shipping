@@ -12,6 +12,8 @@ use App\Utils\Configuration;
 use App\Models\Carrier;
 use App\Models\Sat\Units;
 use App\Models\Sat\VehicleConfig;
+use App\Models\Sat\Municipalities;
+use App\Models\Sat\States;
 
 class CfdiUtils
 {
@@ -34,9 +36,9 @@ class CfdiUtils
         }
     }
 
-    public static function updatePdf($id, $xml, $carrier_id, $atributos_concepto){
+    public static function updatePdf($id, $xml, $carrier_id, $mdocument){
         $logo_name = Carrier::where('id_carrier',$carrier_id)->value('logo');
-        $pdf = CfdiUtils::generatePDF($xml, $logo_name, $atributos_concepto);
+        $pdf = CfdiUtils::generatePDF($xml, $logo_name, $mdocument);
         DB::transaction( function () use($id, $pdf) {
             $Document = MDocument::findOrFail($id);
             $Document->pdf = $pdf;
@@ -122,12 +124,9 @@ class CfdiUtils
         return $QR;
     }
 
-    public static function generatePDF($xml, $logo_name, $atributos_concepto){
-        // $filepath = file_get_contents("./doc/prueba.xml");
+    public static function generatePDF($xml, $logo_name, $mdocument){
+        $atributos_concepto = $mdocument->conceptos;
         $formatterES = new \NumberFormatter("es", \NumberFormatter::SPELLOUT);
-        // $data = Configuration::getConfigurations();
-        
-        // $logo = $data->logo;
 
         $cfdi = \CfdiUtils\Cfdi::newFromString($xml);
         $cfdi->getVersion();
@@ -212,6 +211,7 @@ class CfdiUtils
             $Rfc_E = $Emisor['Rfc'];
             $Nombre_E = $Emisor['Nombre'];
             $RegimenFiscal_E = $Emisor['RegimenFiscal'].CfdiUtils::claveDescription($Emisor['RegimenFiscal'], 'RegimenFiscal');
+            $Clave_proveedor = isset($mdocument->emisor->oCustomAttributes->provider) ? $mdocument->emisor->oCustomAttributes->provider : null;
         }else{
             $Rfc_E = null;
             $Nombre_E = null;
@@ -462,9 +462,9 @@ class CfdiUtils
             $UnitMercDescription = Units::where('key_code', $m['ClaveUnidad'])->value('description');
 
             $CantidadTransporta = $m->searchNodes('cartaporte20:CantidadTransporta');
-            $tabla_cantidadTransporta = '';
+            $content_tabla_cantidadTransporta = '';
             foreach($CantidadTransporta as $ct){
-                $tabla_cantidadTransporta = $tabla_cantidadTransporta.'
+                $content_tabla_cantidadTransporta = $content_tabla_cantidadTransporta.'
                                 <tr>
                                     <td class="text-r">'.$ct['Cantidad'].'</td>
                                     <td class="text-r">'.$ct['IDOrigen'].'</td>
@@ -472,6 +472,23 @@ class CfdiUtils
                                 </tr>                                    
                 ';    
             }
+
+            $tabla_cantidadTransporta = '
+                                    <tr>
+                                        <td colspan = "8">
+                                            <table style = "width: 100%;">
+                                                <tbody>
+                                                    <tr>
+                                                        <td class = "th3">Cantidad:</td>
+                                                        <td class = "th3">ID de origen:</td>
+                                                        <td class = "th3">ID de destino:</td>
+                                                    </tr>
+                                                    '.$content_tabla_cantidadTransporta.'
+                                                </tbody>
+                                            </table>
+                                        </td>
+                                    </tr>
+        ';
 
             $tabla_Mercancia = $tabla_Mercancia.'
                             <tr>
@@ -483,21 +500,11 @@ class CfdiUtils
                                 <td class="td1 text-c">'.$m['PesoEnKg'].'</td>
                                 <td class="td1 text-r">'.$m['ValorMercancia'].'</td>
                                 <td class="td1 text-c">'.$m['Moneda'].'</td>
-                            </tr>
-                            <tr>
-                                <td colspan = "8">
-                                    <table style = "width: 100%;">
-                                        <tbody>
-                                            <tr>
-                                                <td class = "th3">Cantidad:</td>
-                                                <td class = "th3">ID de origen:</td>
-                                                <td class = "th3">ID de destino:</td>
-                                            </tr>
-                                            '.$tabla_cantidadTransporta.'
-                                        </tbody>
-                                    </table>
-                                </td>
-                            </tr>                             
+                            </tr>'.
+
+                            ($content_tabla_cantidadTransporta != '' ? $tabla_cantidadTransporta : '')
+
+                            .'                           
             ';
         }
 
@@ -557,15 +564,28 @@ class CfdiUtils
             if($u['TipoUbicacion'] == "Origen"){
                 $Domicilio = $u->searchNode('cartaporte20:Domicilio');
                 if($Domicilio != null){
+                    $colonia_name = \DB::table('sat_suburb')
+                                    ->where([
+                                        ['zip_code',$Domicilio['CodigoPostal']],
+                                        ['key_code',$Domicilio['Colonia']]
+                                    ])
+                                    ->value('suburb_name');
+                    $state_id = States::where('key_code', $Domicilio['Estado'])->value('id');
+                    $mun_name = Municipalities::where([
+                                                    ['state_id', $state_id],
+                                                    ['key_code', $Domicilio['Municipio']],
+                                                ])
+                                                ->value('municipality_name');
+
                     $tabla_ubicacion_origen = $tabla_ubicacion_origen.
                                             '
                                             <tr>
                                                 <td class="td1 text-c">'.$Domicilio['Calle'].'</td>
                                                 <td class="td1 text-c">'.$Domicilio['NumeroExterior'].'</td>
                                                 <td class="td1 text-c">'.$Domicilio['NumeroInterior'].'</td>
-                                                <td class="td1 text-c">'.$Domicilio['Colonia'].'</td>
+                                                <td class="td1 text-c">'.$colonia_name.'</td>
                                                 <td class="td1 text-c">'.$Domicilio['Localidad'].'</td>
-                                                <td class="td1 text-c">'.$Domicilio['Referencia'].'</td>
+                                                <td class="td1 text-c">'.$mun_name.'</td>
                                                 <td class="td1 text-c">'.$Domicilio['Municipio'].'</td>
                                                 <td class="td1 text-c">'.$Domicilio['Estado'].'</td>
                                                 <td class="td1 text-c">'.$Domicilio['Pais'].'</td>
@@ -582,15 +602,27 @@ class CfdiUtils
             if($u['TipoUbicacion'] == "Destino"){
                 $Domicilio = $u->searchNode('cartaporte20:Domicilio');
                 if($Domicilio != null){
+                    $colonia_name = \DB::table('sat_suburb')
+                                    ->where([
+                                        ['zip_code',$Domicilio['CodigoPostal']],
+                                        ['key_code',$Domicilio['Colonia']]
+                                    ])
+                                    ->value('suburb_name');
+                    $state_id = States::where('key_code', $Domicilio['Estado'])->value('id');
+                    $mun_name = Municipalities::where([
+                                                    ['state_id', $state_id],
+                                                    ['key_code', $Domicilio['Municipio']],
+                                                ])
+                                                ->value('municipality_name');
                     $tabla_ubicacion_destino = $tabla_ubicacion_destino.
                                             '
                                             <tr>
                                                 <td class="td1 text-c">'.$Domicilio['Calle'].'</td>
                                                 <td class="td1 text-c">'.$Domicilio['NumeroExterior'].'</td>
                                                 <td class="td1 text-c">'.$Domicilio['NumeroInterior'].'</td>
-                                                <td class="td1 text-c">'.$Domicilio['Colonia'].'</td>
+                                                <td class="td1 text-c">'.$colonia_name.'</td>
                                                 <td class="td1 text-c">'.$Domicilio['Localidad'].'</td>
-                                                <td class="td1 text-c">'.$Domicilio['Referencia'].'</td>
+                                                <td class="td1 text-c">'.$mun_name.'</td>
                                                 <td class="td1 text-c">'.$Domicilio['Municipio'].'</td>
                                                 <td class="td1 text-c">'.$Domicilio['Estado'].'</td>
                                                 <td class="td1 text-c">'.$Domicilio['Pais'].'</td>
@@ -613,8 +645,13 @@ class CfdiUtils
                         <td colspan="3" class = "border" style = "width: 54%;">
                             <b>Emisor: </b><b style = "font-size: 3.5mm;">'.$Nombre_E.'</b>
                             <p style="margin-top: 0; font-size: 3mm">
-                                <b>RFC emisor: </b>'.$Rfc_E.'<br>
-                                <b>Régimen fiscal emisor: </b>'.$RegimenFiscal_E.'<br>
+                                <b>RFC emisor: </b>'.$Rfc_E.''.
+                                
+                                (!is_null($Clave_proveedor) ? '<b>&nbsp; Clave proveedor: </b>'.$Clave_proveedor : '')
+                                
+                                .'
+                                <br>
+                                <b>Régimen fiscal emisor: </b>'.$RegimenFiscal_E.'
                             </p>
                         </td>
                         <td class = "border text-c" style = "width: 30%;">
@@ -861,8 +898,8 @@ class CfdiUtils
             <table style = "width: 100%">
                 <tbody>
                     <tr>
-                        <th colspan="3" class="th1 border">Remitente:</th>
-                        <th colspan="3" class="th1 border">Destinatario:</th>
+                        <th colspan="4" class="th1 border">Remitente:</th>
+                        <th colspan="4" class="th1 border">Destinatario:</th>
                     </tr>
                     <tr>
                         <td class="th2">ID ubicación</td>
@@ -872,7 +909,7 @@ class CfdiUtils
                         <td class="th2">ID ubicación</td>
                         <td class="th2">RFC destinatario</td>
                         <td class="th2">Nombre destinatario</td>
-                        <td class="th2">Fecha y hora salida</td>
+                        <td class="th2">Fecha y hora llegada</td>
                     </tr>
                     '.$tabla_Remitente_Destinatario.'
                 </tbody>

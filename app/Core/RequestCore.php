@@ -143,6 +143,10 @@ class RequestCore {
         $oEmisor->rfcEmisor = $oCarrier->fiscal_id;
         $oEmisor->nombreEmisor = $oCarrier->fullname;
         $oEmisor->regimenFiscal = $oCarrier->tax_regime->key_code;
+        if(isset($oRequest->proveedor)){
+            $oEmisor->oCustomAttributes = new \stdClass();
+            $oEmisor->oCustomAttributes->provider = isset($oRequest->proveedor) ? $oRequest->proveedor : "";
+        }
 
         /**
          * Receptor
