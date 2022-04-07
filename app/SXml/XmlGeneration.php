@@ -279,6 +279,7 @@ class XmlGeneration {
             $nodeMercancia->setAttribute('BienesTransp', $aMerch["bienesTransp"]);
             $nodeMercancia->setAttribute('Descripcion', $aMerch["descripcion"]);
             $nodeMercancia->setAttribute('Cantidad', SFormats::formatNumber($aMerch["cantidad"], 4));
+            $nodeMercancia->setAttribute('MaterialPeligroso', "No");
             $nodeMercancia->setAttribute('ClaveUnidad', $aMerch["claveUnidad"]);
             $nodeMercancia->setAttribute('PesoEnKg', SFormats::formatNumber($aMerch["pesoEnKg"], 3));
             $nodeMercancia->setAttribute('ValorMercancia', SFormats::formatNumber($aMerch["valorMercancia"]));
