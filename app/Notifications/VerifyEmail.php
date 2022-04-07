@@ -17,6 +17,21 @@ class VerifyEmail extends VerifyEmailBase
     }
 //    use Queueable;
 
+    protected function verificationUrl($notifiable)
+    {
+        $forceRuta = URL::forceRootUrl(env('APP_URL'));
+
+        $ruta = URL::signedRoute(
+            'verification.verify',
+            [
+                'id' => $notifiable->getKey(),
+                'hash' => sha1($notifiable),
+            ]
+        );
+
+        return $ruta;
+    }
+
     // change as you want
     public function toMail($notifiable)
     {
