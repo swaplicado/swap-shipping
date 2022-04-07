@@ -291,6 +291,33 @@ var app = new Vue({
                 idxConcept++;
             }
 
+            for (let index = 0; index < this.oData.oCartaPorte.ubicaciones.length; index++) {
+                let loc = this.oData.oCartaPorte.ubicaciones[index];
+                if (index > 0 && loc.distanciaRecorrida <= 0) {
+                    SGui.showError("La distancia recorrida en la ubicación " + (index + 1) + " es inválida");
+                    this.clickAndFocus("btnLocations", "distanceId" + index);
+                    return false;
+                }
+                if (loc.fechaHoraSalidaLlegada == null || loc.fechaHoraSalidaLlegada == "") {
+                    SGui.showError("La fecha y hora de salida/llegada en la ubicación " + (index + 1) + " es inválida");
+                    this.clickAndFocus("btnLocations", "dateTimeLocId" + index);
+                    return false;
+                }
+                let oDate = moment(loc.fechaHoraSalidaLlegada, "YYYY-MM-DDTHH:mm:ss");
+                if (oDate.year() < 2000 || oDate.year() > 3000) {
+                    SGui.showError("La fecha y hora de salida/llegada en la ubicación " + (index + 1) + " es inválida");
+                    this.clickAndFocus("btnLocations", "dateTimeLocId" + index);
+                    return false;
+                }
+                if(this.lSuburbs[index].length > 0){
+                    if(loc.domicilio.colonia == null){
+                        SGui.showError("Debe seleccionar una colonia en la ubicación " + (index + 1));
+                        this.clickAndFocus("btnLocations", "distanceId" + index);
+                        return false;
+                    }
+                }
+            }
+
             if (this.oVehicle.id_vehicle == undefined || this.oVehicle.id_vehicle <= 0) {
                 SGui.showError("Debe seleccionar un transporte");
                 this.clickAndFocus("btnTransport", "autotransporte");
@@ -344,33 +371,6 @@ var app = new Vue({
                 SGui.showError("Debe seleccionar una figura de transporte");
                 this.clickAndFocus("btnFigure", "figure");
                 return false;
-            }
-
-            for (let index = 0; index < this.oData.oCartaPorte.ubicaciones.length; index++) {
-                let loc = this.oData.oCartaPorte.ubicaciones[index];
-                if (index > 0 && loc.distanciaRecorrida <= 0) {
-                    SGui.showError("La distancia recorrida en la ubicación " + (index + 1) + " es inválida");
-                    this.clickAndFocus("btnLocations", "distanceId" + index);
-                    return false;
-                }
-                if (loc.fechaHoraSalidaLlegada == null || loc.fechaHoraSalidaLlegada == "") {
-                    SGui.showError("La fecha y hora de salida/llegada en la ubicación " + (index + 1) + " es inválida");
-                    this.clickAndFocus("btnLocations", "dateTimeLocId" + index);
-                    return false;
-                }
-                let oDate = moment(loc.fechaHoraSalidaLlegada, "YYYY-MM-DDTHH:mm:ss");
-                if (oDate.year() < 2000 || oDate.year() > 3000) {
-                    SGui.showError("La fecha y hora de salida/llegada en la ubicación " + (index + 1) + " es inválida");
-                    this.clickAndFocus("btnLocations", "dateTimeLocId" + index);
-                    return false;
-                }
-                if(this.lSuburbs[index].length > 0){
-                    if(loc.domicilio.colonia == null){
-                        SGui.showError("Debe seleccionar una colonia en la ubicación " + (index + 1));
-                        this.clickAndFocus("btnLocations", "distanceId" + index);
-                        return false;
-                    }
-                }
             }
 
             return true;
