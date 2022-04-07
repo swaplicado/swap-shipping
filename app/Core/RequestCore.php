@@ -122,7 +122,7 @@ class RequestCore {
         $oObjData->tipoDeComprobante = $oConfigurations->cfdi4_0->tipoComprobante;
         $oObjData->dtDate = $oDocument->requested_at;
         $oObjData->serie = "";
-        $oObjData->folio = 0;
+        $oObjData->folio = "";
         $oObjData->lugarExpedicion = $oConfigurations->cfdi4_0->lugarExpedicion;
         $oObjData->objetoImp = $oConfigurations->cfdi4_0->objetoImp;
         $oObjData->usoCfdi = $oConfigurations->cfdi4_0->usoCFDI;
@@ -352,7 +352,7 @@ class RequestCore {
                 $oConcept->oCustomAttributes->customerFiscalId = isset($oLocDest->rfcRemitenteDestinatario) ? $oLocDest->rfcRemitenteDestinatario : "";
                 $oConcept->oCustomAttributes->shippingOrders = isset($oLocDest->talones) ? $oLocDest->talones : "";
                 $oMunicipality = GralUtils::getMunicipalityByCode($oLocDest->domicilio->estado, $oLocDest->domicilio->municipio);
-                $oConcept->oCustomAttributes->destinyName = $oMunicipality == null ? "" : strtoupper($oMunicipality->municipality_name);
+                $oConcept->oCustomAttributes->destinyName = strtoupper(isset($oState->key_code) ? $oState->key_code : "".' - '.($oMunicipality == null ? "" : $oMunicipality->municipality_name));
                 if ($oVehicle != null) {
                     $rate_key = "";
                     

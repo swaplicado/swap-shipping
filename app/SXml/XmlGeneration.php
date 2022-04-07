@@ -25,8 +25,12 @@ class XmlGeneration {
         $root->setAttribute("xmlns:cartaporte20", "http://www.sat.gob.mx/CartaPorte20");
         $root->setAttribute("xsi:schemaLocation", "http://www.sat.gob.mx/cfd/4 http://www.sat.gob.mx/sitio_internet/cfd/4/cfdv40.xsd http://www.sat.gob.mx/CartaPorte20 http://www.sat.gob.mx/sitio_internet/cfd/CartaPorte/CartaPorte20.xsd");
         $root->setAttribute("Version", $oDocument->xml_version);
-        $root->setAttribute("Serie", $oMongoDocument->serie);
-        $root->setAttribute("Folio", $oMongoDocument->folio);
+        if (isset($oMongoDocument->serie) && $oMongoDocument->serie != '' && $oMongoDocument->serie != null) {
+            $root->setAttribute("Serie", $oDocument->serie);
+        }
+        if (isset($oMongoDocument->folio) && $oMongoDocument->folio != '' && $oMongoDocument->folio != null) {
+            $root->setAttribute("Folio", $oDocument->folio);
+        }
 
         $oDate = Carbon::parse($oMongoDocument->dtDate);
         $root->setAttribute("Fecha", $oDate->format('Y-m-d').'T'.$oDate->format('H:i:s'));

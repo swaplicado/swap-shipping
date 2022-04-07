@@ -451,7 +451,7 @@ class DocumentController extends Controller
                                         ->get();
 
         if (count($lCarrierSeries) == 0) {
-            return ['isValid' => false, 'message' => 'No existen series de folios configurados para el transportista, favor de configurarlas.'];
+            // return ['isValid' => false, 'message' => 'No existen series de folios configurados para el transportista, favor de configurarlas.'];
         }
 
         // Vehiculos
@@ -512,11 +512,11 @@ class DocumentController extends Controller
 
         }
         else {
-            $oMongoDocument->serie = $oCfdiData->oData->serie;
-            $oMongoDocument->folio = $oCfdiData->oData->folio;
+            $oMongoDocument->serie = strlen($oCfdiData->oData->serie) > 0 ? $oCfdiData->oData->serie : "";
+            $oMongoDocument->folio = strlen($oCfdiData->oData->folio) > 0 ? $oCfdiData->oData->folio : "";
 
-            $oDocument->serie = $oCfdiData->oData->serie;
-            $oDocument->folio = $oCfdiData->oData->folio;
+            $oDocument->serie = $oMongoDocument->serie;
+            $oDocument->folio = $oMongoDocument->folio;
         }
 
         $oMongoDocument->shipType = $oCfdiData->oData->shipType;
