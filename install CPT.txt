@@ -49,5 +49,5 @@ Otorgar permisos:
 Configurar .env:
 1.-APP_ENV=production
 2.-APP_DEBUG=true
-3.-APP_URL=http://10.83.30.2
+3.-APP_URL=http://cartro.com.mx:9090
 

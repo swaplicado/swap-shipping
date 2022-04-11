@@ -14,6 +14,7 @@ use App\Models\Sat\Units;
 use App\Models\Sat\VehicleConfig;
 use App\Models\Sat\Municipalities;
 use App\Models\Sat\States;
+use App\Models\M\MCarrierLogos;
 
 class CfdiUtils
 {
@@ -37,8 +38,9 @@ class CfdiUtils
     }
 
     public static function updatePdf($id, $xml, $carrier_id, $mdocument){
-        $logo_name = Carrier::where('id_carrier',$carrier_id)->value('logo');
-        $pdf = CfdiUtils::generatePDF($xml, $logo_name, $mdocument);
+        // $logo_name = Carrier::where('id_carrier',$carrier_id)->value('logo');
+        $logo = MCarrierLogos::where('carrier_id',$carrier_id)->first();
+        $pdf = CfdiUtils::generatePDF($xml, $logo, $mdocument);
         DB::transaction( function () use($id, $pdf) {
             $Document = MDocument::findOrFail($id);
             $Document->pdf = $pdf;
@@ -149,7 +151,7 @@ class CfdiUtils
         return $QR;
     }
 
-    public static function generatePDF($xml, $logo_name, $mdocument){
+    public static function generatePDF($xml, $logo, $mdocument){
         $atributos_concepto = $mdocument->conceptos;
         $formatterES = new \NumberFormatter("es", \NumberFormatter::SPELLOUT);
 
@@ -236,6 +238,8 @@ class CfdiUtils
             $Rfc_E = $Emisor['Rfc'];
             $Nombre_E = $Emisor['Nombre'];
             $RegimenFiscal_E = $Emisor['RegimenFiscal'].CfdiUtils::claveDescription($Emisor['RegimenFiscal'], 'RegimenFiscal');
+            $mdocument->emisor = (object) $mdocument->emisor;
+            isset($mdocument->emisor->oCustomAttributes) ? $mdocument->emisor->oCustomAttributes = (object) $mdocument->emisor->oCustomAttributes :  null;
             $Clave_proveedor = isset($mdocument->emisor->oCustomAttributes->provider) ? $mdocument->emisor->oCustomAttributes->provider : null;
         }else{
             $Rfc_E = null;
@@ -427,7 +431,8 @@ class CfdiUtils
 
             $UnitDescription = Units::where('key_code', $c['ClaveUnidad'])->value('description');
             $tabla_atributos_concepto = '';
-            if(isset($atributos_concepto[$index_concepto])){
+            $atributos_concepto[$index_concepto]['oCustomAttributes'] = (object) $atributos_concepto[$index_concepto]['oCustomAttributes'];
+            if(isset($atributos_concepto[$index_concepto]['oCustomAttributes']->shippingOrders)){
                 if(!is_null($atributos_concepto[$index_concepto]['oCustomAttributes']->shippingOrders)){
                     if(strlen($atributos_concepto[$index_concepto]['oCustomAttributes']->shippingOrders) != 0){
                         $tabla_atributos_concepto = '
@@ -472,7 +477,7 @@ class CfdiUtils
 
                                 (!is_null($c['Descuento']) && (int)$c['Descuento']  > 0.00 ? '<td class="th2">Descuento</td>' : '')
 
-                                .'<td class="th2">Objecto impuesto</td>
+                                .'<td class="th2" '.(!is_null($c['Descuento']) && (int)$c['Descuento']  > 0.00 ? '' : 'colspan = "2"').'>Objecto impuesto</td>
                             </tr>
                             <tr>
                                 <td class="td1 text-r">'.$c['Cantidad'].'</td> 
@@ -482,7 +487,7 @@ class CfdiUtils
 
                                 (!is_null($c['Descuento']) && (int)$c['Descuento']  > 0.00 ? '<td class="td1 text-r">'.number_format($c['Descuento'], (int) strpos(strrev($c['Descuento']), "."), '.', ',').'</td>' : '')
 
-                                .'<td class="td1 text-c">'.$c['ObjetoImp'].$ObjImpDesc.'</td>
+                                .'<td class="td1 text-c"'.(!is_null($c['Descuento']) && (int)$c['Descuento']  > 0.00 ? '' : 'colspan = "2"').'>'.$c['ObjetoImp'].$ObjImpDesc.'</td>
                             </tr>
                             <tr>
                                 <td colspan = "6">
@@ -549,7 +554,7 @@ class CfdiUtils
                                 <td class="td1 text-c">'.$m['ClaveUnidad'].' - '.$UnitMercDescription.'</td>
                                 <td class="td1 text-c">'.$m['MaterialPeligroso'].'</td>
                                 <td class="td1 text-c">'.$m['PesoEnKg'].'</td>
-                                <td class="td1 text-r">'.$m['ValorMercancia'].'</td>
+                                <td class="td1 text-r">'.number_format($m['ValorMercancia'], (int) strpos(strrev($m['ValorMercancia']), "."), '.', ',').'</td>
                                 <td class="td1 text-c">'.$m['Moneda'].'</td>
                             </tr>'.
 
@@ -691,7 +696,8 @@ class CfdiUtils
                 <tbody>
                     <tr>
                         <td class = "border" style = "width: 15%; text-align: center">'.
-                            (!is_null($logo_name) ? '<img src="./logos/'.$logo_name.'" style="max-width: 2cm; max-height: 1.5cm">' : '')
+                            // (!is_null($logo_name) ? '<img src="./logos/'.$logo_name.'" style="max-width: 2cm; max-height: 1.5cm">' : '')
+                            (!is_null($logo) ? '<img src="data:image/'.$logo->extension.';base64,'.$logo->image_64.'" style="max-width: 2cm; max-height: 1.5cm">' : '')
                         .'</td>
                         <td colspan="3" class = "border" style = "width: 54%;">
                             <table style = "width: 100%;">
@@ -904,13 +910,13 @@ class CfdiUtils
                         <td style = "font-size: 2.5mm; font-weight: bold; width: 22%;">
                             Número de serie del certificado:
                         </td>
-                        <td  style = "font-size: 2.5mm; width: 22%;">
+                        <td style = "font-size: 2.5mm; width: 22%;">
                             '.$NoCertificado.'
                         </td>
-                        <td style = "font-size: 2.5mm; font-weight: bold; width: 22%;">
+                        <td style = "font-size: 2.5mm; font-weight: bold; width: 14%;">
                             Fecha certificación:
                         </td>
-                        <td style = "font-size: 2.5mm">
+                        <td class = "text-l" style = "font-size: 2.5mm">
                             '.$FechaTimbrado.'
                         </td>
                     </tr>
@@ -1118,7 +1124,7 @@ class CfdiUtils
             'mode' => 'c',
             'margin_left' => 10,
             'margin_right' => 10,
-            'margin_top' => 60,
+            'margin_top' => 65,
             'margin_bottom' => 30,
             'margin_header' => 10,
             'margin_footer' => 10
