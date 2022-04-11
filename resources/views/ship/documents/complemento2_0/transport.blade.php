@@ -78,7 +78,7 @@
 </div>
 <div class="row">
     <div class="col-md-4">
-        <button type="button" class="btn btn-info" v-on:click="addTrailer()">Agregar remolque</button>
+        <button type="button" class="btn btn-info" v-on:click="addTrailer()" :disabled="oVehicle.vcfg_trailer == 0">Agregar remolque</button>
     </div>
 </div>
 <div class="row" v-for="selTrailer in lSelectedTrailers">
