@@ -10,6 +10,7 @@ use App\Models\Carrier;
 use App\Models\Driver;
 use App\Models\FAddress;
 use App\Utils\messagesErros;
+use App\Models\M\MCarrierLogos;
 use Validator;
 
 class ProfileController extends Controller
@@ -204,17 +205,26 @@ class ProfileController extends Controller
             $validator->validate();
         }
 
-            $name = auth()->user()->carrier()->first()->fullname;
-            $logo_name = null;
+            $mlogo = MCarrierLogos::where('carrier_id', auth()->user()->carrier()->first()->id_carrier)->first();
+
             $file = $request->file('logo');
             if(!is_null($file)){
-                $logo_name = str_replace(' ', '_', $name);
-                $logo_name = 'logo_'.$logo_name.'.'.$file->extension();
-                $file->move('./logos',$logo_name);
+                $ext = pathinfo($file->getClientOriginalName(), PATHINFO_EXTENSION);
+                $data = file_get_contents($file);
+                if(!is_null($mlogo)){
+                    $mlogo->image_64 = base64_encode($data);
+                    $mlogo->update();
+                }else{
+                    $mlogo = new MCarrierLogos;
+                    $mlogo->carrier_id = auth()->user()->carrier()->first()->id_carrier;
+                    $mlogo->image_64 = base64_encode($data);
+                    $mlogo->extension = $ext;
+                    $mlogo->save();
+                }
             }
 
         try {
-            DB::transaction(function () use ($request, $logo_name){
+            DB::transaction(function () use ($request){
                 $user = User::findOrFail(auth()->user()->id);
                 $carrier = Carrier::findOrFail(auth()->user()->carrier()->first()->id_carrier);
 
@@ -236,7 +246,7 @@ class ProfileController extends Controller
                 $carrier->telephone1 = $request->telephone1;
                 $carrier->contact2 = mb_strtoupper($request->contact2, 'UTF-8');
                 $carrier->telephone2 = $request->telephone2;
-                $carrier->logo = $logo_name;
+                // $carrier->logo = $logo_name;
                 
                 $carrier->update();
                 $user->update();

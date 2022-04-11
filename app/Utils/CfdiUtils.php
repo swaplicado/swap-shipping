@@ -14,6 +14,7 @@ use App\Models\Sat\Units;
 use App\Models\Sat\VehicleConfig;
 use App\Models\Sat\Municipalities;
 use App\Models\Sat\States;
+use App\Models\M\MCarrierLogos;
 
 class CfdiUtils
 {
@@ -37,8 +38,9 @@ class CfdiUtils
     }
 
     public static function updatePdf($id, $xml, $carrier_id, $mdocument){
-        $logo_name = Carrier::where('id_carrier',$carrier_id)->value('logo');
-        $pdf = CfdiUtils::generatePDF($xml, $logo_name, $mdocument);
+        // $logo_name = Carrier::where('id_carrier',$carrier_id)->value('logo');
+        $logo = MCarrierLogos::where('carrier_id',$carrier_id)->first();
+        $pdf = CfdiUtils::generatePDF($xml, $logo, $mdocument);
         DB::transaction( function () use($id, $pdf) {
             $Document = MDocument::findOrFail($id);
             $Document->pdf = $pdf;
@@ -149,7 +151,7 @@ class CfdiUtils
         return $QR;
     }
 
-    public static function generatePDF($xml, $logo_name, $mdocument){
+    public static function generatePDF($xml, $logo, $mdocument){
         $atributos_concepto = $mdocument->conceptos;
         $formatterES = new \NumberFormatter("es", \NumberFormatter::SPELLOUT);
 
@@ -472,7 +474,7 @@ class CfdiUtils
 
                                 (!is_null($c['Descuento']) && (int)$c['Descuento']  > 0.00 ? '<td class="th2">Descuento</td>' : '')
 
-                                .'<td class="th2">Objecto impuesto</td>
+                                .'<td class="th2" '.(!is_null($c['Descuento']) && (int)$c['Descuento']  > 0.00 ? '' : 'colspan = "2"').'>Objecto impuesto</td>
                             </tr>
                             <tr>
                                 <td class="td1 text-r">'.$c['Cantidad'].'</td> 
@@ -482,7 +484,7 @@ class CfdiUtils
 
                                 (!is_null($c['Descuento']) && (int)$c['Descuento']  > 0.00 ? '<td class="td1 text-r">'.number_format($c['Descuento'], (int) strpos(strrev($c['Descuento']), "."), '.', ',').'</td>' : '')
 
-                                .'<td class="td1 text-c">'.$c['ObjetoImp'].$ObjImpDesc.'</td>
+                                .'<td class="td1 text-c"'.(!is_null($c['Descuento']) && (int)$c['Descuento']  > 0.00 ? '' : 'colspan = "2"').'>'.$c['ObjetoImp'].$ObjImpDesc.'</td>
                             </tr>
                             <tr>
                                 <td colspan = "6">
@@ -549,7 +551,7 @@ class CfdiUtils
                                 <td class="td1 text-c">'.$m['ClaveUnidad'].' - '.$UnitMercDescription.'</td>
                                 <td class="td1 text-c">'.$m['MaterialPeligroso'].'</td>
                                 <td class="td1 text-c">'.$m['PesoEnKg'].'</td>
-                                <td class="td1 text-r">'.$m['ValorMercancia'].'</td>
+                                <td class="td1 text-r">'.number_format($m['ValorMercancia'], (int) strpos(strrev($m['ValorMercancia']), "."), '.', ',').'</td>
                                 <td class="td1 text-c">'.$m['Moneda'].'</td>
                             </tr>'.
 
@@ -691,7 +693,8 @@ class CfdiUtils
                 <tbody>
                     <tr>
                         <td class = "border" style = "width: 15%; text-align: center">'.
-                            (!is_null($logo_name) ? '<img src="./logos/'.$logo_name.'" style="max-width: 2cm; max-height: 1.5cm">' : '')
+                            // (!is_null($logo_name) ? '<img src="./logos/'.$logo_name.'" style="max-width: 2cm; max-height: 1.5cm">' : '')
+                            (!is_null($logo) ? '<img src="data:image/'.$logo->extension.';base64,'.$logo->image_64.'" style="max-width: 2cm; max-height: 1.5cm">' : '')
                         .'</td>
                         <td colspan="3" class = "border" style = "width: 54%;">
                             <table style = "width: 100%;">
