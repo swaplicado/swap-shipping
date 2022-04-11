@@ -97,7 +97,11 @@ var app = new Vue({
             this.onChangeAmount();
         },
         addTrailer() {
-            this.lSelectedTrailers.push({ oTrailer: 0 });
+            if(this.oVehicle != null && this.oVehicle != undefined){
+                if(this.oVehicle.vcfg_trailer != 0){
+                    this.lSelectedTrailers.push({ oTrailer: 0 });
+                }
+            }
         },
         removeTrailer(index) {
             this.lSelectedTrailers.splice(this.lSelectedTrailers.indexOf(index), 1);
@@ -222,9 +226,15 @@ var app = new Vue({
         setLocationsIds() {
             let shipDigit = 0;
             if (this.oTrailer != null) {
-                for(let trailer of this.oTrailer){
-                    this.lSelectedTrailers.push( { oTrailer: trailer } );
+                if(this.oVehicle.vcfg_trailer != 0){
+                    for(let trailer of this.oTrailer){
+                        this.lSelectedTrailers.push( { oTrailer: trailer } );
+                    }
+                }else if(this.oVehicle.vcfg_trailer == 0){
+                    this.cleanTrailer();    
                 }
+            }else{
+                this.cleanTrailer();
             }
             for (const oVehKey of this.lVehicleKeys) {
                 if (oVehKey.id_key == this.oVehicle.veh_key_id) {
