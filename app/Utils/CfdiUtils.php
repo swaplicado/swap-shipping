@@ -238,6 +238,8 @@ class CfdiUtils
             $Rfc_E = $Emisor['Rfc'];
             $Nombre_E = $Emisor['Nombre'];
             $RegimenFiscal_E = $Emisor['RegimenFiscal'].CfdiUtils::claveDescription($Emisor['RegimenFiscal'], 'RegimenFiscal');
+            $mdocument->emisor = (object) $mdocument->emisor;
+            isset($mdocument->emisor->oCustomAttributes) ? $mdocument->emisor->oCustomAttributes = (object) $mdocument->emisor->oCustomAttributes :  null;
             $Clave_proveedor = isset($mdocument->emisor->oCustomAttributes->provider) ? $mdocument->emisor->oCustomAttributes->provider : null;
         }else{
             $Rfc_E = null;
@@ -429,7 +431,8 @@ class CfdiUtils
 
             $UnitDescription = Units::where('key_code', $c['ClaveUnidad'])->value('description');
             $tabla_atributos_concepto = '';
-            if(isset($atributos_concepto[$index_concepto])){
+            $atributos_concepto[$index_concepto]['oCustomAttributes'] = (object) $atributos_concepto[$index_concepto]['oCustomAttributes'];
+            if(isset($atributos_concepto[$index_concepto]['oCustomAttributes']->shippingOrders)){
                 if(!is_null($atributos_concepto[$index_concepto]['oCustomAttributes']->shippingOrders)){
                     if(strlen($atributos_concepto[$index_concepto]['oCustomAttributes']->shippingOrders) != 0){
                         $tabla_atributos_concepto = '
@@ -907,13 +910,13 @@ class CfdiUtils
                         <td style = "font-size: 2.5mm; font-weight: bold; width: 22%;">
                             Número de serie del certificado:
                         </td>
-                        <td  style = "font-size: 2.5mm; width: 22%;">
+                        <td style = "font-size: 2.5mm; width: 22%;">
                             '.$NoCertificado.'
                         </td>
-                        <td style = "font-size: 2.5mm; font-weight: bold; width: 22%;">
+                        <td style = "font-size: 2.5mm; font-weight: bold; width: 14%;">
                             Fecha certificación:
                         </td>
-                        <td style = "font-size: 2.5mm">
+                        <td class = "text-l" style = "font-size: 2.5mm">
                             '.$FechaTimbrado.'
                         </td>
                     </tr>
@@ -1121,7 +1124,7 @@ class CfdiUtils
             'mode' => 'c',
             'margin_left' => 10,
             'margin_right' => 10,
-            'margin_top' => 60,
+            'margin_top' => 65,
             'margin_bottom' => 30,
             'margin_header' => 10,
             'margin_footer' => 10

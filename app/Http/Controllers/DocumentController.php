@@ -535,6 +535,7 @@ class DocumentController extends Controller
         $dDiscount = 0;
         $dTraslados = 0;
         $aTraslados = [];
+        $aRetenciones = [];
         $dRetention = 0;
         $indexConcept = 0;
         $lConcepts = [];
@@ -580,6 +581,21 @@ class DocumentController extends Controller
                 $aRetecion["base"] = $aConcept["importe"];
                 $aRetecion["importe"] = round($aRetecion["base"] * $aRetecion["tasa"], 2);
 
+                if (array_key_exists(($aRetecion["tasa"].""), $aRetenciones)) {
+                    $aRetenciones[($aRetecion["tasa"]."")] = [
+                                                                "base" => ($aRetenciones[($aRetecion["tasa"]."")]["base"] + $aRetecion["base"]),
+                                                                "importe" => ($aRetenciones[($aRetecion["tasa"]."")]["importe"] + $aRetecion["importe"]),
+                                                                "impuesto" => ($aRetenciones[($aRetecion["tasa"]."")]["impuesto"]),
+                                                            ];
+                }
+                else {
+                    $aRetenciones[($aRetecion["tasa"]."")] = [
+                                                                "base" => $aRetecion["base"],
+                                                                "importe" => $aRetecion["importe"],
+                                                                "impuesto" => $aRetecion["impuesto"],
+                                                            ];
+                }
+
                 $lCptRetenciones[] = $aRetecion;
                 $dRetention += $aRetecion["importe"];
             }
@@ -610,10 +626,14 @@ class DocumentController extends Controller
         }
         
         $oImpuestos->lRetenciones = [];
-        $oRetencion = new \stdClass();
-        $oRetencion->importe = $dRetention;
-        $oRetencion->impuesto = "002";
-        $oImpuestos->lRetenciones[] = $oRetencion;
+        foreach ($aRetenciones as $key => $value) {
+            $oRetencion = new \stdClass();
+            $oRetencion->tasa = $key;
+            $oRetencion->base = $value["base"];
+            $oRetencion->importe = $value["importe"];
+            $oRetencion->impuesto = $value["impuesto"];
+            $oImpuestos->lRetenciones[] = $oRetencion;
+        }
 
         $oMongoDocument->oImpuestos = json_decode(json_encode($oImpuestos), true);
 
