@@ -216,9 +216,15 @@ class DocumentController extends Controller
     public function edit($idDocument)
     {
         $oDocument = Document::find($idDocument);
-
-        if(auth()->user()->isAdmin() || auth()->user()->isClient()) {
-            abort_unless(CfdiUtils::remisionistaCanEdit($oDocument->carrier_id), 401);
+        if(auth()->user()->isAdmin()){
+            auth()->user()->authorizePermission(['001']);
+        }else{
+            if(auth()->user()->isAdmin() || auth()->user()->isClient()) {
+                abort_unless(CfdiUtils::remisionistaCanEdit($oDocument->carrier_id), 401);
+            }else{
+                auth()->user()->authorizePermission(['113']);
+                auth()->user()->carrierAutorization($oDocument->carrier_id);
+            }
         }
 
         $oMongoDocument = MDocument::find($oDocument->mongo_document_id);
@@ -490,9 +496,13 @@ class DocumentController extends Controller
         $oCfdiData = json_decode($request->the_cfdi_data);
 
         $oDocument = Document::find($idDocument);
-        if(auth()->user()->isAdmin() || auth()->user()->isClient()){
+        if(auth()->user()->isAdmin() || auth()->user()->isClient()) {
             abort_unless(CfdiUtils::remisionistaCanEdit($oDocument->carrier_id), 401);
+        }else{
+            auth()->user()->authorizePermission(['113']);
+            auth()->user()->carrierAutorization($oDocument->carrier_id);
         }
+
         $oMongoDocument = MDocument::find($oDocument->mongo_document_id);
         $oCarrier = Carrier::find($oDocument->carrier_id);
 
@@ -730,8 +740,11 @@ class DocumentController extends Controller
     public function sign($id)
     {
         $oDocument = Document::find($id);
-        if(auth()->user()->isAdmin() || auth()->user()->isClient()){
-            abort_unless(CfdiUtils::remisionistaCanStamp($oDocument->carrier_id), 401);
+        if(auth()->user()->isAdmin() || auth()->user()->isClient()) {
+            abort_unless(CfdiUtils::remisionistaCanEdit($oDocument->carrier_id), 401);
+        }else{
+            auth()->user()->authorizePermission(['116']);
+            auth()->user()->carrierAutorization($oDocument->carrier_id);
         }
         
         $oMongoDocument = MDocument::find($oDocument->mongo_document_id);
