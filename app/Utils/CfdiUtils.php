@@ -287,11 +287,15 @@ class CfdiUtils
             $SelloCFD = $tfd['SelloCFD'];
             $FechaTimbrado = $tfd['FechaTimbrado'];
             $RFC_PAC = $tfd['RfcProvCertif'];
+            $versionTfd = $tfd['Version'];
+            $NoCertificadoSAT = $tfd['NoCertificadoSAT'];
         } else {
             $UUID_tfd = null;
             $SelloSAT = null;
             $SelloCFD = null;
             $RFC_PAC = null;
+            $versionTfd = null;
+            $NoCertificadoSAT = null;
         }
 
         /*Atributos (Version, TranspInternac, TotalDistRec) y nodos hijos (Ubicaciones, Mercancias, FiguraTransporte)
@@ -437,16 +441,16 @@ class CfdiUtils
                     if(strlen($atributos_concepto[$index_concepto]['oCustomAttributes']->shippingOrders) != 0){
                         $tabla_atributos_concepto = '
                             <tr>
-                                <td colspan = "7">
+                                <td colspan = "6">
                                     <table style = "width: 100%;">
                                         <tbody>
                                             <tr>
                                                 <td class = "td2" style="width: 15%;"><b>Orden embarque:</b></td>
-                                                <td class = "td2" style="width: 15%;">'.$atributos_concepto[$index_concepto]['oCustomAttributes']->shippingOrders.'</td>
+                                                <td class = "td2">'.$atributos_concepto[$index_concepto]['oCustomAttributes']->shippingOrders.'</td>
                                                 <td class = "td2" style="width: 10%;"><b>Destino:</b></td>
-                                                <td class = "td2" style="width: 10%;">'.$atributos_concepto[$index_concepto]['oCustomAttributes']->destinyName.'</td>
+                                                <td class = "td2">'.$atributos_concepto[$index_concepto]['oCustomAttributes']->destinyName.'</td>
                                                 <td class = "td2" style="width: 10%;"><b>Cliente:</b></td>
-                                                <td class = "td2" style="width: 30%;">'.$atributos_concepto[$index_concepto]['oCustomAttributes']->customerName.'</td>
+                                                <td class = "td2">'.$atributos_concepto[$index_concepto]['oCustomAttributes']->customerName.'</td>
                                             </tr>
                                         </tbody>
                                     </table>
@@ -480,7 +484,7 @@ class CfdiUtils
                                 .'<td class="th2" '.(!is_null($c['Descuento']) && (int)$c['Descuento']  > 0.00 ? '' : 'colspan = "2"').'>Objecto impuesto</td>
                             </tr>
                             <tr>
-                                <td class="td1 text-r">'.$c['Cantidad'].'</td> 
+                                <td class="td1 text-r">'.number_format($c['Cantidad'], (int) strpos(strrev($c['Cantidad']), "."), '.', ',').'</td> 
                                 <td class="td1 text-c">'.$c['ClaveUnidad'].' - '.$UnitDescription.'</td>
                                 <td class="td1 text-r">'.number_format($c['ValorUnitario'], (int) strpos(strrev($c['ValorUnitario']), "."), '.', ',').'</td> 
                                 <td class="td1 text-r">'.number_format($c['Importe'], (int) strpos(strrev($c['Importe']), "."), '.', ',').'</td>'.
@@ -550,10 +554,10 @@ class CfdiUtils
                             <tr>
                                 <td class="td1 text-c">'.$m['BienesTransp'].'</td>
                                 <td class="td1 text-c">'.$m['Descripcion'].'</td>
-                                <td class="td1 text-c">'.$m['Cantidad'].'</td>
+                                <td class="td1 text-c">'.number_format($m['Cantidad'], (int) strpos(strrev($m['Cantidad']), "."), '.', ',').'</td>
                                 <td class="td1 text-c">'.$m['ClaveUnidad'].' - '.$UnitMercDescription.'</td>
                                 <td class="td1 text-c">'.$m['MaterialPeligroso'].'</td>
-                                <td class="td1 text-c">'.$m['PesoEnKg'].'</td>
+                                <td class="td1 text-c">'.number_format($m['PesoEnKg'], (int) strpos(strrev($m['PesoEnKg']), "."), '.', ',').'</td>
                                 <td class="td1 text-r">'.number_format($m['ValorMercancia'], (int) strpos(strrev($m['ValorMercancia']), "."), '.', ',').'</td>
                                 <td class="td1 text-c">'.$m['Moneda'].'</td>
                             </tr>'.
@@ -772,7 +776,7 @@ class CfdiUtils
                             <p>'.$Exportacion.'</p>
                         </td>
                         <td class = "border text-c">
-                            <b>No. Certificado:</b>
+                            <b>CSD emisor:</b>
                             <p>'.$NoCertificado.'</p>
                         </td>
                         <td class = "border text-c">
@@ -780,7 +784,7 @@ class CfdiUtils
                             <p>'.$Moneda.'</p>
                         </td>
                         <td class = "border text-c">
-                            <b>Tipo de cambio:</b>
+                            <b>Tipo cambio:</b>
                             <p>'.$TipoCambio.'</p>
                         </td>
                     </tr>
@@ -841,10 +845,9 @@ class CfdiUtils
             <table style = "width: 100%;">
                 <tbody>
                     <tr>
-                        <td style = "border-top: solid 0.03cm black;"><b>Forma pago:</b></td>
-                        <td style = "border-top: solid 0.03cm black;"><b>Método pago:</b></td>
-                        <td style = "border-top: solid 0.03cm black;"><b>Uso CFDI:</b></td>
-                        <td rowspan = "4" style = "border-bottom: 0.03cm solid black; border-top: solid 0.03cm black;">
+                        <td style="width: 13%; border-top: solid 0.03cm black;"><b>Forma pago:</b></td>
+                        <td style="border-top: solid 0.03cm black;">'.$FormaPago.'</td>
+                        <td rowspan = "5" style="border-top: solid 0.03cm black; border-bottom: solid 0.03cm black;">
                             <table style = "width: 100%;">
                                 <tbody>
                                     <tr>
@@ -874,72 +877,67 @@ class CfdiUtils
                                 </tbody>
                             </table>
                         </td>
+                    <tr>
+                        <td><b>Método pago:</b></td>
+                        <td colspan="2">'.$MetodoPago.'</td>
                     </tr>
                     <tr>
-                        <td style = "">'.$FormaPago.'</td>
-                        <td style = "">'.$MetodoPago.'</td>
-                        <td style = "">'.$UsoCFDI.CfdiUtils::claveDescription($UsoCFDI, 'UsoCFDI').'</td>
+                        <td><b>Uso CFDI:</b></td>
+                        <td colspan="2">'.$UsoCFDI.CfdiUtils::claveDescription($UsoCFDI, 'UsoCFDI').'</td>
                     </tr>
                     <tr>
-                        <td colspan = "3" style = ""><b>Importe total con letra:</b></td>
+                        <td colspan = "3"><b>Total con letra:</b></td>
                     </tr>
                     <tr>
-                        <td colspan = "3" style = "border-bottom: 0.03cm solid black;">'.ucfirst($formatterES->format($Total)).'&nbsp;'.CfdiUtils::getCoinKey($Moneda).
+                        <td colspan = "3" style="border-bottom: solid 0.03cm black;">'.ucfirst($formatterES->format($Total)).'&nbsp;'.CfdiUtils::getCoinKey($Moneda).
                         '&nbsp;'.substr(strrchr($Total, "."), 1).'/100'.'&nbsp;'.$Moneda.'</td>
                     </tr>
                 </tbody>
             </table>
 
-            <div class = "container">
-                <div style = "font-size: 2.5mm; font-family: sans-serif; font-weight: bold;">
-                    Sello digital del CFDI:
-                </div>
-                <div style = "font-size: 2mm">'.$SelloCFD.'</div>
-                <div style = "font-size: 2.5mm; font-family: sans-serif; font-weight: bold;">
-                    Sello digital del SAT:
-                </div>
-                <div style = "font-size: 2mm; font-family: sans-serif;">'.$SelloSAT.'</div>
-            </div>
-            
-            <br>
+            <table class = "container">
+                <tbody>
+                    <tr>
+                        <td style="font-size: 2.7mm;"><b>CSD SAT:</b></td>
+                        <td style="font-size: 2.7mm;">'.$NoCertificadoSAT.'</td>
+                        <td class="text-c" style="font-size: 2.7mm;"><b>Fecha certificación:</b></td>
+                        <td style="font-size: 2.7mm;">'.$FechaTimbrado.'</td>
+                        <td class="text-c" style="font-size: 2.7mm;"><b>RFC certificación:</b></td>
+                        <td style="font-size: 2.7mm;">'.$RFC_PAC.'</td>
+                    </tr>
+                    <tr>
+                        <td style="font-size: 2.7mm;"><b>UUID:</b></td>
+                        <td style="font-size: 2.7mm;">'.$UUID_tfd.'</td>
+                        <td class="text-c" style="font-size: 2.7mm;"><b>Versión comp. timbrado:</b></td>
+                        <td style="font-size: 2.7mm;">'.$versionTfd.'</td>
+                        <td style="font-size: 2.7mm;"></td>
+                        <td style="font-size: 2.7mm;"></td>
+                    </tr>
+                </tbody>
+            </table>
 
             <table style = "width: 100%; margin-left: 0.5cm;">
                 <tbody>
                     <tr>
                         <td rowspan = "4" style = "width: 16%;">'.$QR.'</td>
-                        <td style = "font-size: 2.5mm; font-weight: bold; width: 22%;">
-                            Número de serie del certificado:
-                        </td>
-                        <td style = "font-size: 2.5mm; width: 22%;">
-                            '.$NoCertificado.'
-                        </td>
-                        <td style = "font-size: 2.5mm; font-weight: bold; width: 14%;">
-                            Fecha certificación:
-                        </td>
-                        <td class = "text-l" style = "font-size: 2.5mm">
-                            '.$FechaTimbrado.'
-                        </td>
-                    </tr>
-                    <tr>
-                        <td colspan = "4">
-                            <table>
+                        <td>
+                            <table class = "container" style = "overflow:wrap;">
                                 <tbody>
                                     <tr>
-                                        <td style = "width: 6%; font-size: 2.5mm; font-weight: bold;">UUID:</td>
-                                        <td style = "font-size: 2.5mm">'.$UUID_tfd.'&nbsp;</td>
-                                        <td style = "width: 17%; font-size: 2.5mm; font-weight: bold;">RFC certificación:</td>
-                                        <td style = "font-size: 2.5mm">'.$RFC_PAC.'</td>
+                                        <td style="font-size: 2.3mm;"><b>Sello digital del CFDI:</b></td>
+                                    </tr>
+                                    <tr>
+                                        <td style="font-size: 1.7mm;">'.$SelloCFD.'</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="font-size: 2.3mm;"><b>Sello digital del SAT:</b></td>
+                                    </tr>
+                                    <tr>
+                                        <td style="font-size: 1.7mm;">'.$SelloSAT.'</td>
                                     </tr>
                                 </tbody>
                             </table>
                         </td>
-                    </tr>
-                    <tr>
-                        <td colspan = "4" style = "font-size: 2.5mm">
-                         </td>
-                    </tr>
-                    <tr>
-                        <td colspan = "4" class = "text-r" style = "font-size: 2.5mm"></td>
                     </tr>
                 </tbody>
             </table>
@@ -967,7 +965,7 @@ class CfdiUtils
                         <td class="td1 text-c">'.$Version.'</td>
                         <td class="td1 text-c">'.$TranspInternac.'</td>
                         <td class="td1 text-c">'.$TotalDistRec.'</td>
-                        <td class="td1 text-c">'.$PesoBrutoTotal.' '.$UnidadPeso.'</td>
+                        <td class="td1 text-c">'.number_format($PesoBrutoTotal, (int) strpos(strrev($PesoBrutoTotal), "."), '.', ',').' '.$UnidadPeso.'</td>
                         <td class="td1 text-c">'.$NumTotalMercancias.'</td>
                     </tr>    
                 </tbody>
@@ -1000,8 +998,8 @@ class CfdiUtils
                     </tr>
                     <tr>
                         <td class="th2">Calle</td>
-                        <td class="th2">No. Exterior</td>
-                        <td class="th2">No. Interior</td>
+                        <td class="th2">No. exterior</td>
+                        <td class="th2">No. interior</td>
                         <td class="th2">Colonia</td>
                         <td class="th2">Localidad</td>
                         <td class="th2">Referencia</td>
@@ -1021,8 +1019,8 @@ class CfdiUtils
                     </tr>
                     <tr>
                         <td class="th2">Calle</td>
-                        <td class="th2">No. Exterior</td>
-                        <td class="th2">No. Interior</td>
+                        <td class="th2">No. exterior</td>
+                        <td class="th2">No. interior</td>
                         <td class="th2">Colonia</td>
                         <td class="th2">Localidad</td>
                         <td class="th2">Referencia</td>
@@ -1048,7 +1046,7 @@ class CfdiUtils
                         <td class="th2">Clave unidad</td>
                         <td class="th2">Material peligroso</td>
                         <td class="th2">Peso en kg</td>
-                        <td class="th2">Valor mercancia</td>
+                        <td class="th2">Valor mercancía</td>
                         <td class="th2">Moneda</td>
                     </tr>
                     '.$tabla_Mercancia.' 
@@ -1120,7 +1118,6 @@ class CfdiUtils
         ';
 
         $mpdf = new \Mpdf\Mpdf([
-            'tempDir' => __DIR__ . '/../../tmp',
             'mode' => 'c',
             'margin_left' => 10,
             'margin_right' => 10,

@@ -817,6 +817,26 @@ class DocumentController extends Controller
         return redirect("documents")->with(['message' => "El documento ha sido timbrado exitosamente", 'icon' => "success"]);
     }
 
+    public function regeneratePDF($id){
+        $pdf = $this->callRegeneratePDF($id);
+        if($pdf){
+            return redirect("documents")->with(['message' => "PDF regenerado", 'icon' => "success"]);
+        }else{
+            return redirect("documents")->with(['message' => "No se pudo regenerar el pdf", 'icon' => "error"]);
+        }
+    }
+
+    public function callRegeneratePDF($id){
+        try {
+            $oDocument = Document::find($id);
+            $oMongoDocument = MDocument::find($oDocument->mongo_document_id);
+            $pdf = CfdiUtils::updatePdf($oMongoDocument->_id, $oMongoDocument->xml_cfdi, $oDocument->carrier_id, $oMongoDocument);
+        } catch (\Throwable $th) {
+            return false;
+        }
+        return true;
+    }
+
     public function cancel(Request $request)
     {
         $id = $request->id;

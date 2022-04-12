@@ -351,8 +351,8 @@ class RequestCore {
                 $oConcept->oCustomAttributes->customerName = isset($oLocDest->nombreRFC) ? strtoupper($oLocDest->nombreRFC) : "";
                 $oConcept->oCustomAttributes->customerFiscalId = isset($oLocDest->rfcRemitenteDestinatario) ? $oLocDest->rfcRemitenteDestinatario : "";
                 $oConcept->oCustomAttributes->shippingOrders = isset($oLocDest->talones) ? $oLocDest->talones : "";
-                $oMunicipality = GralUtils::getMunicipalityByCode($oLocDest->domicilio->estado, $oLocDest->domicilio->municipio);
-                $oConcept->oCustomAttributes->destinyName = strtoupper(isset($oState->key_code) ? $oState->key_code : "".' - '.($oMunicipality == null ? "" : $oMunicipality->municipality_name));
+                $oMunicipality = GralUtils::getMunicipalityByCode($oLocDest->domicilio->estado, $oLocDest->domicilio->municipio);                
+                $oConcept->oCustomAttributes->destinyName = strtoupper(isset($oState->key_code) ? $oState->key_code.($oMunicipality == null ? "" : ' - '.$oMunicipality->municipality_name) : "".($oMunicipality == null ? "" : $oMunicipality->municipality_name));
                 if ($oVehicle != null) {
                     $rate_key = "";
                     

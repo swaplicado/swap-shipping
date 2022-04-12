@@ -141,6 +141,7 @@ Route::middleware(['auth', 'verified', 'menu'])->group( function () {
     Route::resource('documents', 'DocumentController');
     Route::put('documents/restore/{id}', 'DocumentController@restore')->name('documents.restore');
     Route::get('documents/sign/{id}', 'DocumentController@sign')->name('documents.sign');
+    Route::get('documents/pdf/{id}', 'DocumentController@regeneratePDF')->name('documents.pdf');
     Route::get('documents/cancel/{id}/{reason}/{ref?}', 'DocumentController@cancel')->name('documents.cancel');
 
     // Configuraciones
