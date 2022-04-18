@@ -227,90 +227,6 @@ class GralUtils {
       return $rate;
    }
 
-   public static function saveRates($carrier_id, $shipType, $veh_type_id, $locations, $conceptos, $origen_id = 1){
-      for($i = 0; $i < count($conceptos); $i++){
-         $state_id = States::where('key_code', $locations[$i + 1]['domicilio']['estado'])->value('id');
-                  
-         $mun_id = Municipalities::where([
-                                 ['key_code', $locations[$i + 1]['domicilio']['municipio']],
-                                 ['state_id',$state_id]
-                                    ])
-                                 ->value('id');
-         if($i < count($conceptos) - 1){
-            if($conceptos[$i]['isOfficialRate']){
-               if(!is_null($locations[$i + 1]['domicilio']['estado']) && !is_null($locations[$i + 1]['domicilio']['municipio'])){
-                  $zip_code = $locations[$i + 1]['domicilio']['codigoPostal'];
-                  $local_foreign = GralUtils::getShipType($state_id, $mun_id, $zip_code);
-                  $oRate = CarriersRate::where([
-                                          ['carrier_id', $carrier_id],
-                                          ['origen_id', $origen_id],
-                                          ['is_reparto', 1],
-                                          ['local_foreign', $local_foreign],
-                                          ['zone_mun_id', null],
-                                          ['mun_id', null],
-                                          ['zone_state_id', null],
-                                          ['state_id', null],
-                                          ['veh_type_id', $veh_type_id]
-                                          ])->first();
-                  
-                  if(!is_null($oRate)){
-                     $oRate->rate = $conceptos[$i]['valorUnitario'];
-                     $oRate->update();
-                  }else{
-                     $oRate = new CarriersRate;
-                     $oRate->carrier_id = $carrier_id;
-                     $oRate->origen_id = 1;
-                     $oRate->veh_type_id = $veh_type_id;
-                     $oRate->is_reparto = 1;
-                     $oRate->local_foreign = $local_foreign;
-                     $oRate->rate = $conceptos[$i]['valorUnitario'];
-                     $oRate->save();
-                  }
-               }
-            }
-         }else{
-            if($conceptos[$i]['isOfficialRate']){
-               if(!is_null($locations[$i + 1]['domicilio']['estado']) && !is_null($locations[$i + 1]['domicilio']['municipio'])){
-                  $zip_code = $locations[$i + 1]['domicilio']['codigoPostal'];
-                  $zone_mun_cp_id = \DB::table('f_mun_zones_cp')->where('zip_code', $zip_code)->value('mun_zone_id');
-                  $zone_mun_id = \DB::table('f_mun_zones')->where('id', $zone_mun_cp_id)->value('id');
-                  $zone_st_mun_id = \DB::table('f_state_zones_mun')->where('mun_id', $mun_id)->value('state_zone_id');
-                  $zone_st_id = \DB::table('f_state_zones')->where('id', $zone_st_mun_id)->value('id');
-                  
-                  $oRate = CarriersRate::where([
-                                          ['carrier_id', $carrier_id],
-                                          ['origen_id', $origen_id],
-                                          ['is_reparto', 0],
-                                          ['local_foreign', null],
-                                          ['zone_mun_id', $zone_mun_id],
-                                          ['mun_id', $mun_id],
-                                          ['zone_state_id', $zone_st_id],
-                                          ['state_id', $state_id],
-                                          ['veh_type_id', $veh_type_id]
-                                          ])->first();
-                  
-                  if(!is_null($oRate)){
-                     $oRate->rate = $conceptos[$i]['valorUnitario'];
-                     $oRate->update();
-                  }else{
-                     $oRate = new CarriersRate;
-                     $oRate->carrier_id = $carrier_id;
-                     $oRate->origen_id = 1;
-                     $oRate->veh_type_id = $veh_type_id;
-                     $oRate->state_id = $state_id;
-                     $oRate->zone_state_id = $zone_st_id;
-                     $oRate->mun_id = $mun_id;
-                     $oRate->zone_mun_id = $zone_mun_id;
-                     $oRate->id_rate = $conceptos[$i]['oCustomAttributes']->rateCode;
-                     $oRate->rate = $conceptos[$i]['valorUnitario'];
-                     $oRate->save();
-                  }
-               }
-            }
-         }
-      }
-   }
-
    public static function getRates($carrier_id, $state_key, $mun_key, $zip_code, $veh_type_id, $is_reparto = 0, $local_foreign = null, $origen_id = 1){
       $rateFlete = GralUtils::getInfoRate($carrier_id, $state_key, $mun_key, $zip_code, $veh_type_id, 0, $local_foreign, $origen_id);
       
@@ -321,5 +237,80 @@ class GralUtils {
       array_push($arrRates, $rateReparto->rate);
 
       return $arrRates;
+   }
+
+   public static function saveRates($carrier_id, $shipType, $veh_type_id, $locations, $conceptos, $origen_id = 1){
+      for($i = 0; $i < count($conceptos); $i++){
+         $state_id = States::where('key_code', $locations[$i + 1]['domicilio']['estado'])->value('id');
+                  
+         $mun_id = Municipalities::where([
+                                    ['key_code', $locations[$i + 1]['domicilio']['municipio']],
+                                    ['state_id',$state_id]
+                                 ]
+                                 )->value('id');
+         if($conceptos[$i]['isOfficialRate']){
+            if(!is_null($locations[$i + 1]['domicilio']['estado']) && !is_null($locations[$i + 1]['domicilio']['municipio'])){
+               $zip_code = $locations[$i + 1]['domicilio']['codigoPostal'];
+               $zone_mun_id = \DB::table('f_mun_zones_cp')->where('zip_code', $zip_code)->value('mun_zone_id');
+               $zone_st_id = \DB::table('f_state_zones_mun')->where('mun_id', $mun_id)->value('state_zone_id');
+               
+               if($conceptos[$i]['isDestino'] == true){
+                  $oRate = CarriersRate::where([
+                     ['carrier_id', $carrier_id],
+                     ['origen_id', $origen_id],
+                     ['is_reparto', 0],
+                     ['zone_mun_id', $zone_mun_id],
+                     ['mun_id', $mun_id],
+                     ['zone_state_id', null],
+                     ['state_id', $state_id],
+                     ['veh_type_id', $veh_type_id],
+                     ])->first();
+
+                  if(!is_null($oRate)){
+                     $oRate->rate = $conceptos[$i]['valorUnitario'];
+                     $oRate->update();
+                  }else{
+                     $oRate = new CarriersRate;
+                     $oRate->carrier_id = $carrier_id;
+                     $oRate->origen_id = $origen_id;
+                     $oRate->veh_type_id = $veh_type_id;
+                     $oRate->is_reparto = 0;
+                     $oRate->zone_mun_id = $zone_mun_id;
+                     $oRate->mun_id = $mun_id;
+                     $oRate->zone_state_id = is_null($mun_id) ? $zone_st_id : null;
+                     $oRate->state_id = $state_id;
+                     $oRate->id_rate = $conceptos[$i]['oCustomAttributes']->rateCodeOption;
+                     $oRate->rate = $conceptos[$i]['valorUnitario'];
+                     $oRate->save();
+                  }
+               }else{
+                  $local_foreign = GralUtils::getShipType($state_id, $mun_id, $zip_code);
+                  $oRate = CarriersRate::where([
+                     ['carrier_id', $carrier_id],
+                     ['origen_id', $origen_id],
+                     ['is_reparto', 1],
+                     ['Local_foreign', $local_foreign],
+                     ['veh_type_id', $veh_type_id],
+                     ])->first();
+                  
+                  if(!is_null($oRate)){
+                     $oRate->rate = $conceptos[$i]['valorUnitario'];
+                     $oRate->update();
+                  }else{
+                     $local_foreign = GralUtils::getShipType($state_id, $mun_id, $zip_code);
+
+                     $oRate = new CarriersRate;
+                     $oRate->carrier_id = $carrier_id;
+                     $oRate->origen_id = $origen_id;
+                     $oRate->veh_type_id = $veh_type_id;
+                     $oRate->is_reparto = 1;
+                     $oRate->Local_foreign = $local_foreign;
+                     $oRate->rate = $conceptos[$i]['valorUnitario'];
+                     $oRate->save();
+                  }
+               }
+            }
+         }
+      }
    }
 }

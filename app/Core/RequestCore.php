@@ -292,6 +292,7 @@ class RequestCore {
                 // $oConcept->valorUnitario = $oConfigurations->tarifaBase * $oState->rate;
                 $oConcept->valorUnitario = $rate;
                 $freightType = "Destino";
+                $oConcept->isDestino = true;
             }
             else {
                 $infoRate = GralUtils::getInfoRate(
@@ -309,6 +310,7 @@ class RequestCore {
                 // $oConcept->valorUnitario = $oConfigurations->tarifaBaseEscala * $oState->rate;
                 $oConcept->valorUnitario = $rate;
                 $freightType = "Reparto";
+                $oConcept->isDestino = false;
             }
             $rates = GralUtils::getRates(
                 $oCarrier->id_carrier,

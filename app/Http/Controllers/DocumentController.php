@@ -343,6 +343,7 @@ class DocumentController extends Controller
             }
 
             $oObjData = RequestCore::requestToCfdiObject($oDocument, $oRequestObj, $lCurs, $oVehicle);
+            $oObjData->conceptos = array_reverse($oObjData->conceptos);
             $array = json_decode(json_encode(clone $oObjData), true);
             foreach ($array as $key => $value) {
                 $oMongoDocument->$key = $value;
@@ -374,7 +375,6 @@ class DocumentController extends Controller
                 }
                 array_push($lSuburbs, $arrSuburbs);
             }
-            $oObjData->conceptos = array_reverse($oObjData->conceptos);
         }
 
         $lVehicles = $lVehicles->get();
@@ -726,8 +726,12 @@ class DocumentController extends Controller
         $oDocument->is_editing = true;
         $oDocument->dt_editing = null;
         $oDocument->is_processed = true;
-        // dd($oDocument, $oMongoDocument);
         GralUtils::saveRates($oDocument->carrier_id, $oDocument->ship_type, $oMongoDocument->vehKeyId, $locations, $oMongoDocument->conceptos);
+        $oCon = $oMongoDocument->conceptos;
+        for($i=0; $i<count($oCon); $i++){
+            $oCon[$i]['isOfficialRate'] = false; 
+        }
+        $oMongoDocument->conceptos = $oCon;
         $oDocument->save();
 
         $oMongoDocument->xml_cfdi = $sXml;

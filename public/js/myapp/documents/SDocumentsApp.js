@@ -253,10 +253,12 @@ var app = new Vue({
                     this.oData.conceptos[index].valorUnitario = oCon.rates[0];
                     this.oData.conceptos[index].oCustomAttributes.rateCode = oCon.oCustomAttributes.rateCodeOption;
                     this.oData.conceptos[index].description = oCon.description.replace("Reparto", "Destino");
+                    this.oData.conceptos[index].isDestino = true;
                 }else{
                     this.oData.conceptos[index].valorUnitario = oCon.rates[1];
                     this.oData.conceptos[index].oCustomAttributes.rateCode = "Reparto";
                     this.oData.conceptos[index].description = oCon.description.replace("Destino", "Reparto");
+                    this.oData.conceptos[index].isDestino = false;
                 }
             }
         },
