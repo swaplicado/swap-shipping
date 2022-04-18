@@ -13,9 +13,16 @@
                 <label for="clave_prod" class="form-label">Clave</label>
                 <input type="text" class="form-control" id="clave_prod" :value="oConcept.claveProdServ" readonly>
             </div>
-            <div class="col-md-7">
+            <div class="col-md-6">
                 <label for="descripcion" class="form-label">Descripción</label>
                 <input type="text" class="form-control" id="descripcion" v-model="oConcept.description">
+            </div>
+            <div class="col-md-1">
+                <label class="form-label" :for="'destino' + itemObjKey">
+                    Destino
+                </label>
+                <input class="form-check-input" type="radio" :id="'checkDestino' + itemObjKey"
+                 :value="itemObjKey" v-model="conceptId" @change="setTarifa">
             </div>
             <div class="col-md-3">
                 <label for="num_id" class="form-label">No Identificacion</label>

@@ -55,7 +55,8 @@ var app = new Vue({
         sShipType: oServerData.oData.shipType,
         oFigure: oServerData.oFigure,
         lSelectedTrailers: oServerData.oData.lTrailers != undefined && oServerData.oData.lTrailers.lenght > 0 ? oServerData.oData.lTrailers : [],
-        oCfdiData: {}
+        oCfdiData: {},
+        conceptId: null
     },
     mounted() {
         if (this.oData.vehKeyId > 0) {
@@ -244,6 +245,19 @@ var app = new Vue({
             }
             for (let oLocation of this.oData.oCartaPorte.ubicaciones) {
                 oLocation.IDUbicacion = oLocation.IDUbicacion.slice(0, 2) + shipDigit + oLocation.IDUbicacion.slice(3);
+            }
+        },
+        setTarifa(){
+            for(const [index, oCon] of this.oData.conceptos.entries()){
+                if(index == this.conceptId){
+                    this.oData.conceptos[index].valorUnitario = oCon.rates[0];
+                    this.oData.conceptos[index].oCustomAttributes.rateCode = oCon.oCustomAttributes.rateCodeOption;
+                    this.oData.conceptos[index].description = oCon.description.replace("Reparto", "Destino");
+                }else{
+                    this.oData.conceptos[index].valorUnitario = oCon.rates[1];
+                    this.oData.conceptos[index].oCustomAttributes.rateCode = "Reparto";
+                    this.oData.conceptos[index].description = oCon.description.replace("Destino", "Reparto");
+                }
             }
         },
         validateAll() {

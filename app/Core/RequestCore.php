@@ -310,6 +310,14 @@ class RequestCore {
                 $oConcept->valorUnitario = $rate;
                 $freightType = "Reparto";
             }
+            $rates = GralUtils::getRates(
+                $oCarrier->id_carrier,
+                $oLocDest->domicilio->estado,
+                $oLocDest->domicilio->municipio,
+                $oLocDest->domicilio->codigoPostal,
+                $oVehicle->veh_key_id,
+            );
+            $oConcept->rates = $rates;
             $oConcept->isOfficialRate = false;
 
             $oConcept->description = $oConfigurations->cfdi4_0->prodServDescripcion." - ".$freightType.
@@ -358,15 +366,23 @@ class RequestCore {
                     
                     if($freightType == "Reparto"){
                         $rate_key = "Reparto";
+                        $oConcept->oCustomAttributes->rateCodeOption = GralUtils::generateRateKey(
+                                                                                    $oLocDest->domicilio->estado,
+                                                                                    $oLocDest->domicilio->municipio,
+                                                                                    $oLocDest->domicilio->codigoPostal,
+                                                                                    $oVehicle->veh_key_id
+                                                                                );
                     }else if(!is_null($infoRate)){
                         if(!is_null($infoRate->id_rate)){
                             $rate_key = $infoRate->id_rate;
+                            $oConcept->oCustomAttributes->rateCodeOption = $rate_key;
                         }else{
                             $rate_key = GralUtils::generateRateKey(
                                 $oLocDest->domicilio->estado,
                                 $oLocDest->domicilio->municipio,
                                 $oLocDest->domicilio->codigoPostal,
-                                $oVehicle->veh_key_id);    
+                                $oVehicle->veh_key_id);
+                            $oConcept->oCustomAttributes->rateCodeOption = $rate_key;
                         }
                     }else{
                         $rate_key = GralUtils::generateRateKey(
@@ -374,11 +390,13 @@ class RequestCore {
                             $oLocDest->domicilio->municipio,
                             $oLocDest->domicilio->codigoPostal,
                             $oVehicle->veh_key_id);
+                        $oConcept->oCustomAttributes->rateCodeOption = $rate_key;
                     }
-                    $oConcept->oCustomAttributes->rateCode = $rate_key;
+                    $oConcept->oCustomAttributes->rateCode = $rate_key;                    
                 }
                 else {
                     $oConcept->oCustomAttributes->rateCode = "";
+                    $oConcept->oCustomAttributes->rateCodeOption = "";
                 }
             }
 

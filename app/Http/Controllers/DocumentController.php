@@ -374,6 +374,7 @@ class DocumentController extends Controller
                 }
                 array_push($lSuburbs, $arrSuburbs);
             }
+            $oObjData->conceptos = array_reverse($oObjData->conceptos);
         }
 
         $lVehicles = $lVehicles->get();
@@ -427,7 +428,7 @@ class DocumentController extends Controller
                                     ->get();
 
         $oConfigurations = \App\Utils\Configuration::getConfigurations();
-        
+
         return view('ship.documents.edit', [
                     'oConfigurations' => $oConfigurations,
                     'idDocument' => $oDocument->id_document,
@@ -725,6 +726,7 @@ class DocumentController extends Controller
         $oDocument->is_editing = true;
         $oDocument->dt_editing = null;
         $oDocument->is_processed = true;
+        // dd($oDocument, $oMongoDocument);
         GralUtils::saveRates($oDocument->carrier_id, $oDocument->ship_type, $oMongoDocument->vehKeyId, $locations, $oMongoDocument->conceptos);
         $oDocument->save();
 

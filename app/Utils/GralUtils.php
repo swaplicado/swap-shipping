@@ -310,4 +310,16 @@ class GralUtils {
          }
       }
    }
+
+   public static function getRates($carrier_id, $state_key, $mun_key, $zip_code, $veh_type_id, $is_reparto = 0, $local_foreign = null, $origen_id = 1){
+      $rateFlete = GralUtils::getInfoRate($carrier_id, $state_key, $mun_key, $zip_code, $veh_type_id, 0, $local_foreign, $origen_id);
+      
+      $rateReparto = GralUtils::getInfoRate($carrier_id, $state_key, $mun_key, $zip_code, $veh_type_id, 1, $local_foreign, $origen_id);
+
+      $arrRates=[];
+      array_push($arrRates, $rateFlete->rate);
+      array_push($arrRates, $rateReparto->rate);
+
+      return $arrRates;
+   }
 }
