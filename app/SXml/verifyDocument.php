@@ -40,8 +40,25 @@ class verifyDocument
                 if ($oDoc->is_editing && Carbon::parse($oDoc->dt_editing)->addMinutes(env('TIME_EDIT_MIN'))->lessThan(Carbon::now())) {
                     $oDoc->is_editing = false;
                     $oDoc->dt_editing = null;
-                    $oDoc->save();
+
+                    $oMongoDocument = MDocument::find($oDoc->mongo_document_id);
+                    if(!is_null($oMongoDocument)){
+                        $oMongoDocument->body_request = json_encode($info);
+                        $oMongoDocument->update();
+                    }
+
+                    $oDoc->update();
                 }
+            }
+            if ($oDoc != null && $oDoc->is_archive) {
+                $response = new \stdClass();
+                $response->code = 500;
+                $response->message = "EL DOCUMENTO SE ENCUENTRA ARCHIVADO";
+                $response->checked_values = $info;
+                $response->doc_id = $oDoc->id_document;
+                $response->mongo_doc_id = $oDoc->mongo_document_id;
+
+                return $response;
             }
             if ($oDoc != null && ($oDoc->is_signed || $oDoc->is_canceled || ($oDoc->is_processed && $oDoc->is_editing))) {
                 $response = new \stdClass();
