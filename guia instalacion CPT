@@ -1,0 +1,100 @@
+install CPT
+
+1.-Instalar mongodb 4.4
+1.1.-Descargar el tgz de https://www.mongodb.com/try/download/enterprise
+1.2.-Descomprimir el tgz
+1.3.-sudo cp <mongodb-install-directory>/bin/* /usr/local/bin/
+1.4.-sudo mkdir -p /var/lib/mongo
+1.5.-sudo mkdir -p /var/log/mongodb
+1.6.-sudo chown `whoami` /var/lib/mongo
+1.7.-sudo chown `whoami` /var/log/mongodb
+1.8.-Iniciar con mongod --dbpath /var/lib/mongo --logpath /var/log/mongodb/mongod.log --fork
+1.9.-Verificar que el servicio esta listo en el archivo log /var/log/mongodb/mongod.log debe aparecer [initandlisten] waiting for connections on port 27017
+
+2.-Instalar mysql-server
+2.1.-sudo apt install mysql-server
+2.2.-sudo mysql_secure_installation
+2.2.-Seleccionar nivel de seguridad de contraseña: Please enter 0 = LOW, 1 = MEDIUM and 2 = STRONG: 0
+2.3.-Independientemente de que opte por configurar el complemento para validar la contraseña, la siguiente solicitud 
+tendrá que ver con establecer una contraseña para el usuario root de MySQL. Introduzca y luego confirme una contraseña segura que elija:
+2.4.-ENTER para aceptar los valores predeterminados para todas las preguntas siguientes
+2.5.- Ajustar la autenticacion y privilegios de usuario:
+2.5.1.-sudo mysql
+2.5.2.-SELECT user,authentication_string,plugin,host FROM mysql.user; Si el plugin del usuario root esta en auth_socket proceder con los siguientes pasos:
+2.5.3.-ALTER USER 'root'@'localhost' IDENTIFIED WITH caching_sha2_password BY 'password';
+2.5.4.-FLUSH PRIVILEGES;
+2.5.5.-Comprobar que el plugin del usuario root esta en caching_sha2_password
+2.5.6.-Comprobar que pueda ingresar a mysql: mysql -u root -p
+
+3.-instalar php 7.4 con las extensiones:
+	sudo apt install php7.4-xml
+    sudo apt-get install php7.4-mbstring
+    sudo apt-get install php7.4-soap
+    sudo apt-get install php7.4-intl
+    sudo apt-get install php7.4-gd
+    sudo apt-get install php7.4-mongo
+    sudo apt-get install php7.4-mysql
+	
+
+4.-instalar apache2
+4.1.-sudo apt-get install apache2
+4.2.-Verificar servicio de apache ingresando en el navegador localhost, debera ver la pagina de bienvenida de apache
+4.3.-Configurar el firewall
+4.3.1.-Para ver la lista de aplicaciones en el ufw, sudo ufw app list
+4.3.2.-Habilita modo restrictivo habilitando el trafico solo en el puerto 80, sudo ufw allow 'Apache'
+4.3.3.-Verificar el cambio, sudo ufw status
+
+5.-Instalar Composer 2
+5.1.-sudo apt install php-cli unzip
+5.2.-cd ~
+5.3.-curl -sS https://getcomposer.org/installer -o /tmp/composer-setup.php
+5.4.-HASH=`curl -sS https://composer.github.io/installer.sig`
+5.5.-php -r "if (hash_file('SHA384', '/tmp/composer-setup.php') === '$HASH') { echo 'Installer verified'; } else { echo 'Installer corrupt'; unlink('composer-setup.php'); } echo PHP_EOL;"
+5.6.-sudo php /tmp/composer-setup.php --install-dir=/usr/bin --filename=composer
+5.7.-composer
+
+6.-Clonar proyecto
+6.1.-cd /var/www/html
+6.2.-sudo git clone https://github.com/swaplicado/swap-shipping
+6.3.-Sudo composer install
+
+7.-configurar apache:
+1.-sudo nano /etc/apache2/sites-available/CPT.conf
+En el archivo poner:
+    <VirtualHost *:80>
+             ServerName http://cartro.com.mx
+             ServerAdmin webmaster@thedomain.com
+             DocumentRoot /var/www/html/swap-shipping/public
+
+         <Directory />
+             Options FollowSymLinks
+             AllowOverride None
+         </Directory>
+
+         <Directory /var/www/html/swap-shipping>
+             AllowOverride All
+             Require all granted
+         </Directory>
+         ErrorLog ${APACHE_LOG_DIR}/error.log
+         CustomLog ${APACHE_LOG_DIR}/access.log combined
+     </VirtualHost>
+guardar el archivo.
+2.-sudo a2enmod rewrite 
+3.-sudo a2ensite CPT.conf
+4.-sudo systemctl restart apache2
+5.-Para habilitar la pagina con la ip local:
+5.1.-sudo nano /etc/apache2/sites-available/CPT_local.conf
+5.2.-El contenido del archivo sera el mismo que el del archivo CPT.conf
+5.3.-Cambiar ServerName http://cartro.com.mx por la ip local, ejemplo ServerName 10.83.30.2
+5.4.-sudo a2ensite CPT.conf CPT_local.conf
+5.5.-sudo systemctl reload  apache2
+
+Otorgar permisos:
+1.-sudo chown -R www-data.www-data /var/www/html/swap-shipping
+2.-sudo chmod -R 755 /var/www/html/swap-shipping
+3.-sudo chmod -R 777 /var/www/html/swap-shipping/storage
+
+Configurar .env:
+1.-APP_ENV=production
+2.-APP_DEBUG=true
+3.-APP_URL=http://cartro.com.mx:9090

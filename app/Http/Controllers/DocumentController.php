@@ -1077,4 +1077,66 @@ class DocumentController extends Controller
         }
         return redirect("documents")->with(['message' => $msg, 'icon' => $icon]);
     }
+
+    public function copy($id){
+        $oDocument = Document::find($id);
+        if(auth()->user()->isAdmin() || auth()->user()->isClient()) {
+            abort_unless(CfdiUtils::remisionistaCanEdit($oDocument->carrier_id), 401);
+        }else{
+            auth()->user()->authorizePermission(['117']);
+            auth()->user()->carrierAutorization($oDocument->carrier_id);
+        }
+        $success = true;
+        $error = "0";
+
+        try {
+            DB::transaction(function () use ($oDocument) {
+                $oMongoDocument = MDocument::findOrFail($oDocument->mongo_document_id);
+
+                $oMongoDocumentCopy = new MDocument();
+                $oMongoDocumentCopy->body_request = $oMongoDocument->body_request;
+                $oMongoDocumentCopy->xml_cfdi = null;
+                $oMongoDocumentCopy->carrier_id = $oMongoDocument->carrier_id;
+                $oMongoDocumentCopy->save();
+
+                $oDocumentCopy = new Document();
+                $oDocumentCopy->serie = "";
+                $oDocumentCopy->folio = "";
+                $oDocumentCopy->shipping_folio = $oDocument->shipping_folio;
+                $oDocumentCopy->scale_ticket = $oDocument->scale_ticket;
+                $oDocumentCopy->ship_type = $oDocument->ship_type;
+                $oDocumentCopy->requested_at = date('Y-m-d H:i:s');
+                $oDocumentCopy->generated_at = date('Y-m-d H:i:s');
+                $oDocumentCopy->comp_version = $oDocument->comp_version;
+                $oDocumentCopy->xml_version = $oDocument->xml_version;
+                $oDocumentCopy->is_processed = false;
+                $oDocumentCopy->is_signed = false;
+                $oDocumentCopy->is_canceled = false;
+                $oDocumentCopy->is_deleted = false;
+                $oDocumentCopy->is_editing = false;
+                $oDocumentCopy->dt_editing = null;
+                $oDocumentCopy->mongo_document_id = $oMongoDocumentCopy->id;
+                $oDocumentCopy->carrier_id = $oDocument->carrier_id;
+                $oDocumentCopy->veh_key_id = 1;
+                $oDocumentCopy->usr_gen_id = 1;
+                $oDocumentCopy->usr_sign_id = 1;
+                $oDocumentCopy->usr_can_id = 1;
+                $oDocumentCopy->usr_new_id = 1;
+                $oDocumentCopy->usr_upd_id = 1;
+                $oDocumentCopy->save();
+            });
+        } catch (QueryException $e) {
+            $success = false;
+            $error = messagesErros::sqlMessageError($e->errorInfo[2]);
+        }
+
+        if ($success) {
+            $msg = "Copia realizada con éxito del registro con embarque: ".$oDocument->shipping_folio;
+            $icon = "success";
+        } else {
+            $msg = "Error al realizar la copia del registro. Error: " . $error;
+            $icon = "error";
+        }
+        return redirect()->back()->with(['message' => $msg, 'icon' => $icon]);
+    }
 }

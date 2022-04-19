@@ -3107,6 +3107,12 @@ textarea.form-control-lg {
   border-color: #ff8b17;
 }
 
+.btn-purple {
+  color: #fff;
+  background-color: #ff2fbd;
+  border-color: #e428a8;
+}
+
 .btn-check:focus + .btn-danger, .btn-danger:focus {
   color: #fff;
   background-color: #bb2d3b;

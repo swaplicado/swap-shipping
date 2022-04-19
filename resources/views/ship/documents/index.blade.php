@@ -43,6 +43,7 @@
             ['id' => 'id_cancel', 'class' => 'danger', 'icon' => 'bx-block', 'url' => 'can', 'title' => 'Cancelar CFDI'],
             ['id' => 'id_stock', 'class' => 'secondary-danger', 'icon' => 'bx-archive', 'url' => 'arc', 'title' => 'Archivar documento'],
             ['id' => 'id_restore', 'class' => 'info', 'icon' => 'bx-archive-out', 'url' => 'arc', 'title' => 'Recuperar documento'],
+            ['id' => 'id_copy', 'class' => 'purple', 'icon' => 'bx-copy-alt', 'url' => 'cpy', 'title' => 'Hacer copia'],
         ],
         'moreFilters' => [
             '
@@ -156,7 +157,8 @@
                                         'editar' => 'documents.edit',
                                         'Pdf' => 'cfdiToPdf',
                                         'toStock' => 'documents.toStock',
-                                        'restore' => 'documents.restore'])
+                                        'restore' => 'documents.restore',
+                                        'copy' => 'documents.copy'])
 <script type="text/javascript">
 $(document).ready(function () {
     var column = table.column(3);

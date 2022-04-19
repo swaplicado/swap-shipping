@@ -144,6 +144,7 @@ Route::middleware(['auth', 'verified', 'menu'])->group( function () {
     Route::get('documents/cancel/{id}/{reason}/{ref?}', 'DocumentController@cancel')->name('documents.cancel');
     Route::get('documents/to_stock/{id}', 'DocumentController@toStock')->name('documents.toStock');
     Route::get('documents/restore/{id}', 'DocumentController@restore')->name('documents.restore');
+    Route::get('documents/copy/{id}', 'DocumentController@copy')->name('documents.copy');
 
     // Configuraciones
     Route::prefix('config')->group(function () {

@@ -100,7 +100,7 @@ class ApiDocumentController extends Controller
                 $oLog->update();
             }
             
-            return json_encode(['code' => $verify->code, 'message' => 'Documento guardado correctamente', 'data' => $verify], JSON_PRETTY_PRINT);
+            return json_encode(['code' => $verify->code, 'message' => 'Documento guardado correctamente', 'data' => $verify->checked_values], JSON_PRETTY_PRINT);
         }
         else {
             $oLog = new MRequestLog();

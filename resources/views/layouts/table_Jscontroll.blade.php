@@ -293,6 +293,38 @@
             })
         });
 
+        $('#id_copy').click(function  () {
+            if (table.row('.selected').data() == undefined) {
+                SGui.showError("Debe seleccionar un renglón");
+                return;
+            }
+
+            Swal.fire({
+                title: 'Desea copiar el registro?',
+                text: table.row('.selected').data()[13],
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Aceptar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    if(parseInt(table.row('.selected').data()[1]) == 0){
+                        var id = table.row('.selected').data()[0];
+                        var url = '{{route( isset($copy) ? $copy : "home", ":id")}}';
+                        url = url.replace(':id',id);
+                        window.location.href = url;
+                    } else {
+                        Swal.fire({
+                            icon: 'info',
+                            title: 'El registro está eliminado'
+                        })
+                    }
+                    
+                }
+            })
+        });
+
         $('#isDeleted').change( function() {
             table.draw();
         });
