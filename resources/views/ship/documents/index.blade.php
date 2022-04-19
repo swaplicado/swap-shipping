@@ -35,14 +35,14 @@
     ';
 @endphp
 
-@include('layouts.table_buttons', [ 'withOutEliminar' => true, 'withOutRecuperar' => true, 'withOutFilter' => true,
+@include('layouts.table_buttons', [ 'withOutEliminar' => true, 'withOutRecuperar' => true,
         'moreButtons' => [
             ['id' => 'id_sign', 'class' => 'dark', 'icon' => 'bx-bell', 'url' => '#', 'title' => 'Timbrar'],
             ['id' => 'id_down_xml', 'class' => 'primary', 'icon' => 'bx-download', 'url' => '#', 'title' => 'Descagar XML'],
             ['id' => 'id_down_pdf', 'class' => 'secondary', 'icon' => 'bxs-file-pdf', 'url' => '#', 'title' => 'Descagar PDF'],
             ['id' => 'id_cancel', 'class' => 'danger', 'icon' => 'bx-block', 'url' => 'can', 'title' => 'Cancelar CFDI'],
             ['id' => 'id_stock', 'class' => 'secondary-danger', 'icon' => 'bx-archive', 'url' => 'arc', 'title' => 'Archivar documento'],
-            ['id' => 'id_restore', 'class' => 'info', 'icon' => 'bx-archive-out', 'url' => 'arc', 'title' => 'Recuperar documento'],
+            ['id' => 'id_restore', 'class' => 'info', 'icon' => 'bxs-archive-out', 'url' => 'arc', 'title' => 'Recuperar documento'],
             ['id' => 'id_copy', 'class' => 'purple', 'icon' => 'bx-copy-alt', 'url' => 'cpy', 'title' => 'Hacer copia'],
         ],
         'moreFilters' => [

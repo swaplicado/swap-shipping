@@ -36,13 +36,13 @@
 <br>
 <div class="row">
     <div class="col-md-12">
-    <div class="col-md-2" style="float: left;">
-        <select class="form-select" name="isDeleted" id="isDeleted">
-            <option value="0" selected>Activos</option>
-            <option value="1">Eliminados</option>
-            <option value="2">Todos</option>
-        </select>
-    </div>
+        <div class="col-md-2" style="float: left;">
+            <select class="form-select" name="isDeleted" id="isDeleted">
+                <option value="0" selected>Activos</option>
+                <option value="1">Eliminados</option>
+                <option value="2">Todos</option>
+            </select>
+        </div>
     @if (isset($moreFilters))
         @foreach ($moreFilters as $filter)
             @php

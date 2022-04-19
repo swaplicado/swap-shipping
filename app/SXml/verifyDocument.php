@@ -24,7 +24,7 @@ class verifyDocument
 
             if ($oOriginLocation == null) {
                 $response = new \stdClass();
-                $response->code = 500;
+                $response->code = 401;
                 $response->message = "NO EXISTE EL ID ORIGEN";
                 $response->checked_values = $info->idOrigen;
 
@@ -52,7 +52,7 @@ class verifyDocument
             }
             if ($oDoc != null && $oDoc->is_archive) {
                 $response = new \stdClass();
-                $response->code = 500;
+                $response->code = 201;
                 $response->message = "EL DOCUMENTO SE ENCUENTRA ARCHIVADO";
                 $response->checked_values = $info;
                 $response->doc_id = $oDoc->id_document;
@@ -62,7 +62,7 @@ class verifyDocument
             }
             if ($oDoc != null && ($oDoc->is_signed || $oDoc->is_canceled || ($oDoc->is_processed && $oDoc->is_editing))) {
                 $response = new \stdClass();
-                $response->code = 500;
+                $response->code = 202;
                 $response->message = "EL DOCUMENTO YA FUE PROCESADO O SE ESTÁ EDITANDO";
                 $response->checked_values = $info;
                 $response->doc_id = $oDoc->id_document;
@@ -122,34 +122,35 @@ class verifyDocument
             $response->checked_values = null;
 
             $message = "";
-            is_null($result->rfcTransportista) ? $message = $message . "rfcTransportista not found in database. " : "";
-            is_null($result->moneda) ? $message = $message . "moneda not found in database. " : "";
+            is_null($result->rfcTransportista) ? [$message = $message . "rfcTransportista not found in database. ", $code=402] : "";
+            is_null($result->moneda) ? [$message = $message . "moneda not found in database. ", $code=403] : "";
 
             if (!is_null($result->ubicaciones)) {
-                $hasDestino ? "" : $message = $message . "ubicación Destino not found. ";
+                $hasDestino ? "" : [$message = $message . "ubicación Destino not found. ", $code=404];
                 foreach ($result->ubicaciones as $index => $u) {
-                    is_null($u->domicilio->estado) ? $message = $message . "estado[" . $index . "] not match with postal code. " : "";
-                    is_null($u->domicilio->pais) ? $message = $message . "pais[" . $index . "] not found in database. " : "";
-                    is_null($u->domicilio->codigoPostal) ? $message = $message . "codigoPostal[" . $index . "] not found in database. " : "";
+                    is_null($u->domicilio->estado) ? [$message = $message . "estado[" . $index . "] not match with postal code. ", $code=405] : "";
+                    is_null($u->domicilio->pais) ? [$message = $message . "pais[" . $index . "] not found in database. ", $code=406] : "";
+                    is_null($u->domicilio->codigoPostal) ? [$message = $message . "codigoPostal[" . $index . "] not found in database. ", $code=407] : "";
                 }
             }
             else {
                 $message = $message . "Node ubicaciones is null. ";
+                $code = 501;
             }
 
             if (!is_null($result->mercancia)) {
                 foreach ($result->mercancia->mercancias as $index => $m) {
-                    is_null($m->bienesTransp) ? $message = $message . "bienesTransp[" . $index . "] not found in database. " : "";
-                    is_null($m->claveUnidad) ? $message = $message . "claveUnidad[" . $index . "] not found in database. " : "";
-                    is_null($m->moneda) ? $message = $message . "moneda[" . $index . "] not found in database. " : "";
+                    is_null($m->bienesTransp) ? [$message = $message . "bienesTransp[" . $index . "] not found in database. ", $code = 408] : "";
+                    is_null($m->claveUnidad) ? [$message = $message . "claveUnidad[" . $index . "] not found in database. ", $code = 409] : "";
+                    is_null($m->moneda) ? [$message = $message . "moneda[" . $index . "] not found in database. ", $code = 410] : "";
                 }
             }
             else {
                 $message = $message . "Node mercancia is null. ";
+                $code = 502;
             }
 
-            $code = 0;
-            strlen($message) > 0 ? $code = 500 : $code = 200;
+            strlen($message) > 0 ? $code : $code = 200;
 
             $response->code = $code;
             $response->message = $message;
