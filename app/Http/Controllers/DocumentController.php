@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 use App\Models\Document;
 use App\Models\DocumentStamp;
@@ -33,8 +34,8 @@ class DocumentController extends Controller
                             ->join('f_carriers', 'f_carriers.id_carrier', '=', 'f_documents.carrier_id')
                             ->join('f_vehicles_keys', 'f_vehicles_keys.id_key', '=', 'f_documents.veh_key_id')
                             ->join('users', 'users.id', '=', 'f_documents.usr_gen_id')
-                            ->select('f_documents.*', 
-                                    'f_carriers.*', 
+                            ->select('f_documents.*',
+                                    'f_carriers.*',
                                     'f_vehicles_keys.key_code AS veh_key_code', 
                                     'f_vehicles_keys.description AS veh_key_description');
 
@@ -85,7 +86,9 @@ class DocumentController extends Controller
 
             // Por procesar
             case "1":
-                $lDocuments = $lDocuments->where('is_processed', false);
+                $lDocuments = $lDocuments->where('is_processed', false)
+                                            ->where('f_documents.is_deleted', false)
+                                            ->where('f_documents.is_archive', false);
                 $title = "por procesar";
                 $withDateFilter = false;
                 break;
@@ -93,7 +96,9 @@ class DocumentController extends Controller
             // Por timbrar
             case "2":
                 $lDocuments = $lDocuments->where('is_processed', true)
-                                            ->where('is_signed', false);
+                                            ->where('is_signed', false)
+                                            ->where('f_documents.is_deleted', false)
+                                            ->where('f_documents.is_archive', false);
                 $title = "por timbrar";
                 $withDateFilter = false;
                 break;
@@ -101,8 +106,20 @@ class DocumentController extends Controller
             // Timbrados
             case "3":
                 $lDocuments = $lDocuments->where('is_processed', true)
-                                            ->where('is_signed', true);
+                                            ->where('is_signed', true)
+                                            ->where('f_documents.is_deleted', false)
+                                            ->where('f_documents.is_archive', false);
                 $title = "timbradas";
+                $withDateFilter = true;
+                break;
+            
+                // Archviados
+            case "4":
+                $lDocuments = $lDocuments->where('f_documents.is_archive', true)
+                                            ->where('f_documents.is_signed', false)
+                                            ->where('f_documents.is_canceled', false)
+                                            ->where('f_documents.is_deleted', false);
+                $title = "archivadas";
                 $withDateFilter = true;
                 break;
             
@@ -234,6 +251,9 @@ class DocumentController extends Controller
         }
         if ($oDocument->is_canceled) {
             return redirect("documents")->with(['icon' => "error", 'message' => "El documento está cancelado, no se puede modificar"]);
+        }
+        if ($oDocument->is_archive) {
+            return redirect("documents")->with(['icon' => "error", 'message' => "El documento está archivado, no se puede modificar"]);
         }
 
         // Validación de entorno de transportista
@@ -755,6 +775,10 @@ class DocumentController extends Controller
         
         $oMongoDocument = MDocument::find($oDocument->mongo_document_id);
 
+        if ($oDocument->is_archive) {
+            return redirect("documents")->with(['icon' => "error", 'message' => "El documento está archivado, no se puede timbrar"]);
+        }
+
         if (! $oDocument->is_processed) {
             return redirect("documents")->with(['icon' => "error", 'message' => "El documento no ha sido procesado"]);
         }
@@ -849,9 +873,16 @@ class DocumentController extends Controller
         $oDocument = Document::find($id);
         if(auth()->user()->isAdmin() || auth()->user()->isClient()){
             abort_unless(CfdiUtils::remisionistaCanEdit($oDocument->carrier_id), 401);
+        }else{
+            auth()->user()->authorizePermission(['117']);
+            auth()->user()->carrierAutorization($oDocument->carrier_id);
         }
 
         $oMongoDocument = MDocument::find($oDocument->mongo_document_id);
+        if ($oDocument->is_archive) {
+            return redirect("documents")->with(['icon' => "error", 'message' => "El documento está archivado, no se puede cancelar"]);
+        }
+
         if (! $oDocument->is_processed) {
             return redirect("documents")->with(['icon' => "error", 'message' => "El documento no ha sido procesado"]);
         }
@@ -978,5 +1009,72 @@ class DocumentController extends Controller
 
             return redirect()->back()->with(['icon' => "error", 'message' => $log->idError."-".$log->message]);
         }
+    }
+
+    public function toStock($id){
+        $oDocument = Document::find($id);
+        if(auth()->user()->isAdmin() || auth()->user()->isClient()) {
+            abort_unless(CfdiUtils::remisionistaCanEdit($oDocument->carrier_id), 401);
+        }else{
+            auth()->user()->authorizePermission(['114']);
+            auth()->user()->carrierAutorization($oDocument->carrier_id);
+        }
+        $success = true;
+        $error = "0";
+
+        if($oDocument->is_signed == false && $oDocument->is_canceled == false){
+            try {
+                DB::transaction(function () use ($oDocument) {
+                    $oDocument->is_archive = 1;
+                    $oDocument->update();
+                });
+            } catch (QueryException $e) {
+                $success = false;
+                $error = messagesErros::sqlMessageError($e->errorInfo[2]);
+            }
+        }else{
+            $success = false;
+            $error = "El documento está timbrado o ha sido cancelado.";
+        }
+
+        if ($success) {
+            $msg = "Se archivó el registro con éxito";
+            $icon = "success";
+        } else {
+            $msg = "Error al archivar el registro. Error: " . $error;
+            $icon = "error";
+        }
+        return redirect()->back()->with(['message' => $msg, 'icon' => $icon]);
+    }
+
+    public function restore($id){
+        $oDocument = Document::find($id);
+        if(auth()->user()->isAdmin() || auth()->user()->isClient()) {
+            abort_unless(CfdiUtils::remisionistaCanEdit($oDocument->carrier_id), 401);
+        }else{
+            auth()->user()->authorizePermission(['114']);
+            auth()->user()->carrierAutorization($oDocument->carrier_id);
+        }
+        $success = true;
+        $error = "0";
+        
+        try {
+            DB::transaction(function () use ($oDocument) {
+                $oDocument->is_archive = 0;
+                $oDocument->update();
+            });
+        } catch (QueryException $e) {
+            $success = false;
+            $error = messagesErros::sqlMessageError($e->errorInfo[2]);
+        }
+
+        if ($success) {
+            $msg = "Se recuperó el registro con éxito";
+            $icon = "success";
+        } else {
+            $msg = "Error al recuperar el registro. Error: " . $error;
+            $icon = "error";
+        }
+        return redirect("documents")->with(['message' => $msg, 'icon' => $icon]);
     }
 }

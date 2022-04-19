@@ -45,11 +45,21 @@ class Menu {
                         </li>
                 ';
             }
+            
+            if($oUser->hasPermission('141')){
+                $route = route('documents', 4);
+                $menu = $menu.'
+                        <li>
+                            <a href="'.$route.'"><span class="icon bx bxs-folder bx-sm" aria-hidden="true"></span>Archivadas</a>
+                        </li>
+                ';
+            }
+
             if($oUser->hasPermission('141')){
                 $route = route('documents', 0);
                 $menu = $menu.'
                         <li>
-                            <a href="'.$route.'"><span class="icon bx bx-archive bx-sm" aria-hidden="true"></span>Todas</a>
+                            <a href="'.$route.'"><span class="icon bx bxs-folder-open bx-sm" aria-hidden="true"></span>Todas</a>
                         </li>
                 ';
             }

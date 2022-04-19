@@ -6,19 +6,23 @@
     <span class="icon bx bx-edit-alt"></span>
 </button>
 
-<form id="form_delete" class="d-inline" method="POST">
-    @csrf @method("delete")
-    <button id="btn_delete" type="button" class="btn btn-danger" style="border-radius: 50%; padding: 5px 10px;" title="Eliminar registro">
-        <span class="icon bx bx-trash"></span>
-    </button>
-</form>
+@if(!isset($withOutEliminar))
+    <form id="form_delete" class="d-inline" method="POST">
+        @csrf @method("delete")
+        <button id="btn_delete" type="button" class="btn btn-danger" style="border-radius: 50%; padding: 5px 10px;" title="Eliminar registro">
+            <span class="icon bx bx-trash"></span>
+        </button>
+    </form>
+@endif
 
-<form id="form_recover" class="d-inline" method="POST">
-    @csrf @method("put")
-    <button id="btn_recover" type="button" class="btn btn-info" style="border-radius: 50%; padding: 5px 10px;" title="Recuperar registro">
-        <span class="icon bx bx-recycle"></span>
-    </button>
-</form>
+@if(!isset($withOutRecuperar))
+    <form id="form_recover" class="d-inline" method="POST">
+        @csrf @method("put")
+        <button id="btn_recover" type="button" class="btn btn-info" style="border-radius: 50%; padding: 5px 10px;" title="Recuperar registro">
+            <span class="icon bx bx-recycle"></span>
+        </button>
+    </form>
+@endif
 
 @if (isset($moreButtons))
     @foreach ($moreButtons as $button)

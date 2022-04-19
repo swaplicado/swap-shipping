@@ -35,12 +35,14 @@
     ';
 @endphp
 
-@include('layouts.table_buttons', [
+@include('layouts.table_buttons', [ 'withOutEliminar' => true, 'withOutRecuperar' => true, 'withOutFilter' => true,
         'moreButtons' => [
             ['id' => 'id_sign', 'class' => 'dark', 'icon' => 'bx-bell', 'url' => '#', 'title' => 'Timbrar'],
             ['id' => 'id_down_xml', 'class' => 'primary', 'icon' => 'bx-download', 'url' => '#', 'title' => 'Descagar XML'],
             ['id' => 'id_down_pdf', 'class' => 'secondary', 'icon' => 'bxs-file-pdf', 'url' => '#', 'title' => 'Descagar PDF'],
             ['id' => 'id_cancel', 'class' => 'danger', 'icon' => 'bx-block', 'url' => 'can', 'title' => 'Cancelar CFDI'],
+            ['id' => 'id_stock', 'class' => 'secondary-danger', 'icon' => 'bx-archive', 'url' => 'arc', 'title' => 'Archivar documento'],
+            ['id' => 'id_restore', 'class' => 'info', 'icon' => 'bx-archive-out', 'url' => 'arc', 'title' => 'Recuperar documento'],
         ],
         'moreFilters' => [
             '
@@ -81,6 +83,7 @@
                 <th>id</th>
                 <th>is_deleted</th>
                 <th>id carrier</th>
+                <th>is_archive</th>
                 <th>Estatus</th>
                 {{-- <th>Version CFDI</th>
                 <th>Version carta porte</th> --}}
@@ -111,7 +114,8 @@
                 <td>{{ $doc->id_document }}</td>
                 <td>{{ $doc->is_deleted }}</td>
                 <td>{{$doc->id_carrier}}</td>
-                <td>{{ (! $doc->is_processed) ? "PENDIENTE" : ($doc->is_canceled ? "CANCELADO" : ($doc->is_signed ? "TIMBRADO" : "PROCESADO")) }}</td>
+                <td>{{$doc->is_archive}}</td>
+                <td>{{ $doc->is_archive ? "ARCHIVADO" : ((! $doc->is_processed) ? "PENDIENTE" : ($doc->is_canceled ? "CANCELADO" : ($doc->is_signed ? "TIMBRADO" : "PROCESADO"))) }}</td>
                 {{-- <td>{{ $doc->xml_version }}</td>
                 <td>{{ $doc->comp_version }}</td> --}}
                 <td>{{ $doc->fiscal_id }}</td>
@@ -149,10 +153,16 @@
 @include('layouts.table_Jscontroll', ['table_id' => 't_documents', 
                                         'signRoute' => 'documents.sign',
                                         'cancelRoute' => 'documents.cancel',
-                                        'editar' => 'documents.edit', 
-                                        'eliminar' => 'documents.destroy', 
-                                        'recuperar' => 'documents.restore',
-                                        'Pdf' => 'cfdiToPdf'])
+                                        'editar' => 'documents.edit',
+                                        'Pdf' => 'cfdiToPdf',
+                                        'toStock' => 'documents.toStock',
+                                        'restore' => 'documents.restore'])
+<script type="text/javascript">
+$(document).ready(function () {
+    var column = table.column(3);
+    column.visible( false );
+});
+</script>
 <script type="text/javascript">
     moment.locale('es');
 

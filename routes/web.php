@@ -139,10 +139,11 @@ Route::middleware(['auth', 'verified', 'menu'])->group( function () {
     // Rutas Documentos
     Route::get('documents/{id?}', 'DocumentController@index')->name('documents');
     Route::resource('documents', 'DocumentController');
-    Route::put('documents/restore/{id}', 'DocumentController@restore')->name('documents.restore');
     Route::get('documents/sign/{id}', 'DocumentController@sign')->name('documents.sign');
     Route::get('documents/pdf/{id}', 'DocumentController@regeneratePDF')->name('documents.pdf');
     Route::get('documents/cancel/{id}/{reason}/{ref?}', 'DocumentController@cancel')->name('documents.cancel');
+    Route::get('documents/to_stock/{id}', 'DocumentController@toStock')->name('documents.toStock');
+    Route::get('documents/restore/{id}', 'DocumentController@restore')->name('documents.restore');
 
     // Configuraciones
     Route::prefix('config')->group(function () {

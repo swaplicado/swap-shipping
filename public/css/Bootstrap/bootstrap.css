@@ -3100,6 +3100,13 @@ textarea.form-control-lg {
   background-color: #bb2d3b;
   border-color: #b02a37;
 }
+
+.btn-secondary-danger {
+  color: #fff;
+  background-color: #f18100;
+  border-color: #ff8b17;
+}
+
 .btn-check:focus + .btn-danger, .btn-danger:focus {
   color: #fff;
   background-color: #bb2d3b;

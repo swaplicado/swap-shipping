@@ -1,4 +1,5 @@
 <script>
+    var table = '';
     $(document).ready(function () {
         
         $.fn.dataTable.ext.search.push(
@@ -40,9 +41,7 @@
             }
         );
 
-        
-
-        var table = $('#{{$table_id}}').DataTable({
+        table = $('#{{$table_id}}').DataTable({
             language: {
                 "sProcessing":     "Procesando...",
                 "sLengthMenu":     "Mostrar _MENU_ registros",
@@ -165,7 +164,7 @@
                 if (result.isConfirmed) {
                     if(parseInt(table.row('.selected').data()[1]) == 0){
                         var id = table.row('.selected').data()[0];
-                        var url = '{{route($eliminar, ":id")}}';
+                        var url = '{{route( isset($eliminar) ? $eliminar : "home", ":id")}}';
                         url = url.replace(':id',id);
 
                         var fm = document.getElementById('form_delete');
@@ -200,7 +199,7 @@
                 if (result.isConfirmed) {
                     if(parseInt(table.row('.selected').data()[1]) != 0){
                         var id = table.row('.selected').data()[0];
-                        var url = '{{route($recuperar, ":id")}}';
+                        var url = '{{route( isset($recuperar) ? $recuperar : "home", ":id")}}';
                         url = url.replace(':id',id);
 
                         var fm = document.getElementById('form_recover');
@@ -228,6 +227,70 @@
             url = url.replace(':id',id);
             // window.location.href = url;
             window.open(url,'_blank');
+        });
+
+        $('#id_stock').click(function  () {
+            if (table.row('.selected').data() == undefined) {
+                SGui.showError("Debe seleccionar un renglón");
+                return;
+            }
+
+            Swal.fire({
+                title: 'Desea archivar?',
+                text: table.row('.selected').data()[13],
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Aceptar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    if(parseInt(table.row('.selected').data()[3]) == 0){
+                        var id = table.row('.selected').data()[0];
+                        var url = '{{route( isset($toStock) ? $toStock : "home", ":id")}}';
+                        url = url.replace(':id',id);
+                        window.location.href = url;
+                    } else {
+                        Swal.fire({
+                            icon: 'info',
+                            title: 'El registro esta archivado'
+                        })
+                    }
+                    
+                }
+            })
+        });
+
+        $('#id_restore').click(function  () {
+            if (table.row('.selected').data() == undefined) {
+                SGui.showError("Debe seleccionar un renglón");
+                return;
+            }
+
+            Swal.fire({
+                title: 'Desea recuperar?',
+                text: table.row('.selected').data()[13],
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Aceptar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    if(parseInt(table.row('.selected').data()[3]) != 0){
+                        var id = table.row('.selected').data()[0];
+                        var url = '{{route( isset($restore) ? $restore : "home", ":id")}}';
+                        url = url.replace(':id',id);
+                        window.location.href = url;
+                    } else {
+                        Swal.fire({
+                            icon: 'info',
+                            title: 'El registro no está archivado'
+                        })
+                    }
+                    
+                }
+            })
         });
 
         $('#isDeleted').change( function() {
