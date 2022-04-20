@@ -15,6 +15,22 @@ class VerifyEmail extends VerifyEmailBase
     {
         $this->tempPass = $tempPass;
     }
+
+    protected function secondaryVerificationUrl($notifiable)
+    {
+        $forceRuta = URL::forceRootUrl('10.83.30.2');
+
+        $ruta = URL::signedRoute(
+            'verification.verify',
+            [
+                'id' => $notifiable->getKey(),
+                'hash' => sha1($notifiable),
+            ]
+        );
+
+        return $ruta;
+    }
+
 //    use Queueable;
 
     // change as you want
@@ -37,10 +53,10 @@ class VerifyEmail extends VerifyEmailBase
         }else{
             return (new MailMessage)
                 ->subject(Lang::getFromJson('Correo de verificación'))
-                ->line(Lang::getFromJson('Por favor haga click en el boton para verificar su dirección de correo.'))
+                ->line(Lang::getFromJson('Si se encuentra dentro de la planta de Cartro:'))
                 ->action(
-                    Lang::getFromJson('Verificar dirección de correo'),
-                    $this->verificationUrl($notifiable)
+                    [Lang::getFromJson('Click aquí para verificar su dirección de correo'), Lang::getFromJson('Click aquí para verificar su dirección de correo')],
+                    [$this->secondaryVerificationUrl($notifiable), $this->verificationUrl($notifiable)]
                 )
                 ->line(Lang::getFromJson('Si usted no ha creado una cuenta en CPT ignore este mensaje.'));    
         }
