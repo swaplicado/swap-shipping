@@ -40,30 +40,23 @@ class VerifyEmail extends VerifyEmailBase
             return call_user_func(static::$toMailCallback, $notifiable);
         }
         if(!is_null($this->tempPass)){
-            $ruta = $this->verificationUrl($notifiable);
-            $ruta_local = str_replace('http://cartro.com.mx:9090', '10.83.30.2', $ruta);
-            
             return (new MailMessage)
                 ->subject(Lang::getFromJson('Correo de verificación'))
                 ->line(Lang::getFromJson('Por favor haga click en el boton para verificar su dirección de correo.'))
                 ->line(Lang::getFromJson('Su contraseña actual es "'.$this->tempPass.'" , le recomendamos cambie su contraseña
                 una vez ingrese al sistema por primera vez.'))
-                ->line(Lang::getFromJson('Si se encuentra fuera de la planta de Cartro:'))
                 ->action(
-                    [Lang::getFromJson('Click aquí para verificar su dirección de correo'), Lang::getFromJson('Click aquí para verificar su dirección de correo')],
-                    [$ruta, $ruta_local]
+                    Lang::getFromJson('Verificar dirección de correo'),
+                    $this->verificationUrl($notifiable)
                 )
-                ->line(Lang::getFromJson('Si usted no ha creado una cuenta en CPT ignore este mensaje.')); 
+                ->line(Lang::getFromJson('Si usted no ha creado una cuenta en CPT ignore este mensaje.'));    
         }else{
-            $ruta = $this->verificationUrl($notifiable);
-            $ruta_local = str_replace('http://cartro.com.mx:9090', '10.83.30.2', $ruta);
-            dd($ruta, $ruta_local);
             return (new MailMessage)
                 ->subject(Lang::getFromJson('Correo de verificación'))
-                ->line(Lang::getFromJson('Si se encuentra fuera de la planta de Cartro:'))
+                ->line(Lang::getFromJson('Si se encuentra dentro de la planta de Cartro:'))
                 ->action(
                     [Lang::getFromJson('Click aquí para verificar su dirección de correo'), Lang::getFromJson('Click aquí para verificar su dirección de correo')],
-                    [$ruta, $ruta_local]
+                    [$this->verificationUrl($notifiable), $this->secondaryVerificationUrl($notifiable)]
                 )
                 ->line(Lang::getFromJson('Si usted no ha creado una cuenta en CPT ignore este mensaje.'));    
         }
