@@ -15,6 +15,21 @@ class VerifyEmail extends VerifyEmailBase
     {
         $this->tempPass = $tempPass;
     }
+
+    protected function verificationUrl($notifiable)
+    {
+        $forceRuta = URL::forceRootUrl(env('APP_URL'));
+
+        $ruta = URL::signedRoute(
+            'verification.verify',
+            [
+                'id' => $notifiable->getKey(),
+                'hash' => sha1($notifiable),
+            ]
+        );
+
+        return $ruta;
+    }
 //    use Queueable;
 
     // change as you want
