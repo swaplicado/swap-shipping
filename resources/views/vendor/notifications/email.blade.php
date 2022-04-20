@@ -31,7 +31,7 @@
 @component('mail::button', ['url' => $actionUrl[0], 'color' => $color])
 {{ $actionText[0] }}
 @endcomponent
-@lang('Si se encuentra fuera de la planta de Cartro:')
+@lang('Si se encuentra dentro de la planta de Cartro:')
 @component('mail::button', ['url' => $actionUrl[1], 'color' => $color])
 {{ $actionText[1] }}
 @endcomponent
