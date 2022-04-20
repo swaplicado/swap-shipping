@@ -28,12 +28,8 @@
             $color = 'primary';
     }
 ?>
-@component('mail::button', ['url' => $actionUrl[0], 'color' => $color])
-{{ $actionText[0] }}
-@endcomponent
-@lang('Si se encuentra fuera de la planta de Cartro:')
-@component('mail::button', ['url' => $actionUrl[1], 'color' => $color])
-{{ $actionText[1] }}
+@component('mail::button', ['url' => $actionUrl, 'color' => $color])
+{{ $actionText }}
 @endcomponent
 @endisset
 
@@ -55,13 +51,11 @@
 @isset($actionText)
 @slot('subcopy')
 @lang(
-    "Si tiene algun problema al presionar \":actionText\" boton, copia y pega la siguiente dirección\n".
-    'en tu navegador web: [:actionURL](:actionURL)'."\n si se encuentra dentro de la planta de cartro copia
-    y pega la siguiente direccion en tu navegadoor web: [:actionURLsecond](:actionURL)",
+    "Si tiene algun problema al presionar \":actionText\" botonn, copia y pega la siguiente dirección\n".
+    'en tu navegador web: [:actionURL](:actionURL)',
     [
-        'actionText' => $actionText[0],
-        'actionURL' => $actionUrl[0],
-        'actionURLsecond' => $actionUrl[1],
+        'actionText' => $actionText,
+        'actionURL' => $actionUrl,
     ]
 )
 @endslot
