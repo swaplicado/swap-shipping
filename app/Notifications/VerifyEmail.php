@@ -57,7 +57,7 @@ class VerifyEmail extends VerifyEmailBase
         }else{
             $ruta = $this->verificationUrl($notifiable);
             $ruta_local = str_replace('http://cartro.com.mx:9090', '10.83.30.2', $ruta);
-            dd($ruta, $ruta_local);
+            
             return (new MailMessage)
                 ->subject(Lang::getFromJson('Correo de verificación'))
                 ->line(Lang::getFromJson('Si se encuentra fuera de la planta de Cartro:'))
