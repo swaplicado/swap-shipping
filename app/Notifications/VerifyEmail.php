@@ -56,7 +56,7 @@ class VerifyEmail extends VerifyEmailBase
                 ->line(Lang::getFromJson('Si se encuentra dentro de la planta de Cartro:'))
                 ->action(
                     [Lang::getFromJson('Click aquí para verificar su dirección de correo'), Lang::getFromJson('Click aquí para verificar su dirección de correo')],
-                    [$this->verificationUrl($notifiable), $this->secondaryVerificationUrl($notifiable)]
+                    [$this->secondaryVerificationUrl($notifiable), $this->verificationUrl($notifiable)]
                 )
                 ->line(Lang::getFromJson('Si usted no ha creado una cuenta en CPT ignore este mensaje.'));    
         }
