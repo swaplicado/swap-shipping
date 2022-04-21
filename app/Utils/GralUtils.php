@@ -233,8 +233,9 @@ class GralUtils {
       $rateReparto = GralUtils::getInfoRate($carrier_id, $state_key, $mun_key, $zip_code, $veh_type_id, 1, $local_foreign, $origen_id);
 
       $arrRates=[];
-      array_push($arrRates, $rateFlete->rate);
-      array_push($arrRates, $rateReparto->rate);
+      
+      array_push($arrRates, !is_null($rateFlete) ? $rateFlete->rate : 0);
+      array_push($arrRates, !is_null($rateReparto) ? $rateReparto->rate : 0);
 
       return $arrRates;
    }
