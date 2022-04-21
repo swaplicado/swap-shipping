@@ -26,6 +26,8 @@ Route::get('/logoutFromVerify', function(){
 
 Auth::routes(['verify' => true]);
 
+Route::get('/local/email/verify/{id}/{hash}', 'Auth\VerificationController@verify_local')->name('verify_local');
+
 Route::post('/login', 'Auth\LoginController@authenticate')->name('MyLogin');
 
 Route::middleware(['auth', 'verified', 'menu'])->group( function () {

@@ -4,6 +4,11 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\VerifiesEmails;
+use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\DB;
+use App\User;
+use Illuminate\Auth\Events\Verified;
+use Illuminate\Auth\Access\AuthorizationException;
 
 class VerificationController extends Controller
 {
@@ -26,6 +31,28 @@ class VerificationController extends Controller
      * @var string
      */
     protected $redirectTo = '/home';
+
+    public function verify_local($id, $hash)
+    {
+
+        $user = User::findOrFail($id);
+
+        $hashUser = sha1($user);
+
+        if (!hash_equals($hashUser, $hash)) {
+            throw new AuthorizationException;
+        }
+
+        if ($user->hasVerifiedEmail()) {
+            return redirect($this->redirectPath());
+        }
+
+        if ($user->markEmailAsVerified()) {
+            event(new Verified($user));
+        }
+
+        return redirect($this->redirectPath())->with('verified', true);
+    }
 
     /**
      * Create a new controller instance.
