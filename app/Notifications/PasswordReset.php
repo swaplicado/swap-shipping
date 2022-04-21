@@ -7,6 +7,7 @@ use Illuminate\Notifications\Notification;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Support\Facades\Lang;
+use Illuminate\Support\Facades\URL;
 
 class PasswordReset extends Notification
 {
@@ -34,6 +35,23 @@ class PasswordReset extends Notification
         return ['mail'];
     }
 
+    protected function SecondResetPassUrl($token){
+        $forceRuta = URL::forceRootUrl('http://10.83.30.2');
+        
+        $ruta = route('password.reset', ['token' => $token]);
+
+        return $ruta;
+    }
+
+    protected function ResetPassUrl($token)
+    {
+        $forceRuta = URL::forceRootUrl(env('APP_URL'));
+
+        $ruta = route('password.reset', ['token' => $token]);
+
+        return $ruta;
+    }
+
     /**
      * Get the mail representation of the notification.
      *
@@ -45,7 +63,7 @@ class PasswordReset extends Notification
         return (new MailMessage)
             ->subject(Lang::getFromJson('Reinicio de contraseña'))
             ->line('Has recibido este email porque recibimos una petición para reiniciar la contraseña de tu cuenta.')
-            ->action('Reiniciar contraseña', url('password/reset', $this->token))
+            ->action(['Reiniciar contraseña', 'Reiniciar contraseña'], [$this->ResetPassUrl($this->token), $this->SecondResetPassUrl($this->token)])
             ->line('Si no solicitaste el reinicio de la contraseña, ignora este email.');
     }
 
