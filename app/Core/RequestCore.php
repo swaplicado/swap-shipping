@@ -361,7 +361,12 @@ class RequestCore {
                 $oConcept->oCustomAttributes->customerName = isset($oLocDest->nombreRFC) ? strtoupper($oLocDest->nombreRFC) : "";
                 $oConcept->oCustomAttributes->customerFiscalId = isset($oLocDest->rfcRemitenteDestinatario) ? $oLocDest->rfcRemitenteDestinatario : "";
                 $oConcept->oCustomAttributes->shippingOrders = isset($oLocDest->talones) ? $oLocDest->talones : "";
-                $oMunicipality = GralUtils::getMunicipalityByCode($oLocDest->domicilio->estado, $oLocDest->domicilio->municipio);                
+                if($oLocDest->domicilio->municipio){
+                    $oMunicipality = GralUtils::getMunicipalityByCode($oLocDest->domicilio->estado, $oLocDest->domicilio->municipio);                
+                }else{
+                    $oMunicipality = null;
+                }
+                
                 $oConcept->oCustomAttributes->destinyName = strtoupper(isset($oState->key_code) ? $oState->key_code.($oMunicipality == null ? "" : ' - '.$oMunicipality->municipality_name) : "".($oMunicipality == null ? "" : $oMunicipality->municipality_name));
                 if ($oVehicle != null) {
                     $rate_key = "";
@@ -410,7 +415,11 @@ class RequestCore {
              */
             if ($oLocSource->tipoUbicacion == "Origen") {
                 $oLocSource->distanciaRecorrida = SFormats::formatNumber(0, 3);
-                $oLocDest->distanciaRecorrida = SFormats::formatNumber($oMun->distance, 3);
+                if(!is_null($oMun)){
+                    $oLocDest->distanciaRecorrida = SFormats::formatNumber($oMun->distance, 3);
+                }else{
+                    $oLocDest->distanciaRecorrida = 0;
+                }
             }
             else {
                 if ($oLocSource->domicilio->municipio == $oLocDest->domicilio->municipio) {
@@ -425,8 +434,11 @@ class RequestCore {
             $iSource++;
             $iDestination++;
         }
-
-        $oObjData->shipType = GralUtils::getShipType($oState->id, $oMun->id, $oLocDest->domicilio->codigoPostal);
+        if(!is_null($oMun)){
+            $oObjData->shipType = GralUtils::getShipType($oState->id, $oMun->id, $oLocDest->domicilio->codigoPostal);
+        }else{
+            $oObjData->shipType = 'L';
+        }
 
         $oObjData->conceptos = $lConcepts;
 
@@ -507,10 +519,17 @@ class RequestCore {
             $oDate = Carbon::now();
             $location->fechaHoraSalidaLlegada = $oDate->format('Y-m-d').'T'.$oDate->format('H:i:s');
 
-            $location->IDUbicacion = $startId.
-                                    "1".
-                                    str_pad($location->domicilio->estadoId, 2, "0", STR_PAD_LEFT).
-                                    $location->domicilio->municipio;
+            if(!is_null($location->domicilio->municipio)){
+                $location->IDUbicacion = $startId.
+                                        "1".
+                                        str_pad($location->domicilio->estadoId, 2, "0", STR_PAD_LEFT).
+                                        $location->domicilio->municipio;
+            }else{
+                $location->IDUbicacion = $startId.
+                                        "1".
+                                        str_pad($location->domicilio->estadoId, 2, "0", STR_PAD_LEFT).
+                                        '000';
+            }
         }
 
         /**

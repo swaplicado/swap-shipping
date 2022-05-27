@@ -89,6 +89,7 @@ class verifyDocument
 
                 $ubicacion = array(
                     "tipoUbicacion" => $u->tipoUbicacion,
+                    "rfcRemitenteDestinatario" => $u->rfcRemitenteDestinatario,
                 );
 
                 $u->domicilio = (object) $u->domicilio;
@@ -131,6 +132,7 @@ class verifyDocument
                     is_null($u->domicilio->estado) ? [$message = $message . "estado[" . $index . "] not match with postal code. ", $code=405] : "";
                     is_null($u->domicilio->pais) ? [$message = $message . "pais[" . $index . "] not found in database. ", $code=406] : "";
                     is_null($u->domicilio->codigoPostal) ? [$message = $message . "codigoPostal[" . $index . "] not found in database. ", $code=407] : "";
+                    is_null($u->rfcRemitenteDestinatario) ? [$message = $message."rfcRemitenteDestinatario[".$index."] is null. ", $code=408] : "";
                 }
             }
             else {
