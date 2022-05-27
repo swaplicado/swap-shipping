@@ -100,7 +100,7 @@ class ApiDocumentController extends Controller
                 $oLog->update();
             }
             
-            return json_encode(['code' => $verify->code, 'message' => 'Documento guardado correctamente', 'data' => $data], JSON_PRETTY_PRINT);
+            return json_encode(['code' => $verify->code, 'message' => 'Documento guardado correctamente', 'data' => $request->all()], JSON_PRETTY_PRINT);
         }
         else {
             $oLog = new MRequestLog();
@@ -113,7 +113,7 @@ class ApiDocumentController extends Controller
             $oLog->dt_request = date('Y-m-d H:i:s');
             $oLog->save();
 
-            return json_encode(['code' => $verify->code, 'message' => $verify->message, 'data' => $data], JSON_PRETTY_PRINT);
+            return json_encode(['code' => $verify->code, 'message' => $verify->message, 'data' => $request->all()], JSON_PRETTY_PRINT);
         }
     }
 }
