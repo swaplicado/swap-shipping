@@ -105,8 +105,8 @@ class ApiDocumentController extends Controller
         else {
             $oLog = new MRequestLog();
             $oLog->shipping_folio = $data["embarque"];
-            $oLog->request_body = json_encode($data);
-            $oLog->response_code = 500;
+            $oLog->request_body = json_encode($request->all());
+            $oLog->response_code = $verify->code;
             $oLog->response_message = $verify->message;
             $oLog->document_id = isset($verify->doc_id) ? $verify->doc_id : null;
             $oLog->mongo_document_id = isset($verify->mongo_doc_id) ? $verify->mongo_doc_id : null;
