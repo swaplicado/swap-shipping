@@ -595,7 +595,7 @@ class CfdiUtils
             if($u['TipoUbicacion'] == "Origen"){
                 $IDUbicacion_r = $u['IDUbicacion'];
                 $CP_Rfc_r = $u['RFCRemitenteDestinatario'];
-                $CP_Nombre_r = $u['NombreRemitenteDestinatario'];
+                $CP_Nombre_r = $Nombre_R;
                 $CP_FechaHoraSalidaLlegada_r = $u['FechaHoraSalidaLlegada'];
             } else {
                 $IDUbicacion_d = $u['IDUbicacion'];
