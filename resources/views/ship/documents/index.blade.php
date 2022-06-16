@@ -126,7 +126,7 @@
                 <td title="{{ isset($doc->srcAddress) ? $doc->srcAddress->estadoName.' / '.$doc->srcAddress->municipioName : "" }}">{{ $doc->idLocSrc }}</td>
                 <td title="{{ isset($doc->destAddress) ? $doc->destAddress->estadoName.' / '.$doc->destAddress->municipioName : "" }}">{{ $doc->idLocDest }}</td>
                 <td>{{ $doc->serie }}</td>
-                <td>{{ $doc->folio > 0 ? str_pad($doc->folio, 7, "0", STR_PAD_LEFT) : "" }}</td>
+                <td>{{ strlen($doc->folio) > 0 ? str_pad($doc->folio, 7, "0", STR_PAD_LEFT) : "" }}</td>
                 <td>{{ str_pad($doc->shipping_folio, 7, "0", STR_PAD_LEFT) }}</td>
                 <td>{{ str_pad($doc->scale_ticket, 7, "0", STR_PAD_LEFT) }}</td>
                 @if($enableTotales)
