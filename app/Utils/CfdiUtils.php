@@ -710,11 +710,11 @@ class CfdiUtils
                                         <td colspan = "2" class = "text-l"><b>Emisor: </b><span>'.$Nombre_E.'</span></td>
                                     </tr>
                                     <tr>
-                                        <td class = "text-l"><b>RFC emisor:</b><span>'.$Rfc_E.'</span></td>
-                                        <td class = "text-r">'.(!is_null($Clave_proveedor) ? '<b>Clave proveedor:</b><span>'.$Clave_proveedor.'</span>' : '').'</td>
+                                        <td class = "text-l"><b>RFC emisor: </b><span>'.$Rfc_E.'</span></td>
+                                        <td class = "text-r">'.(!is_null($Clave_proveedor) ? '<b>Clave proveedor: </b><span>'.$Clave_proveedor.'</span>' : '').'</td>
                                     </tr>
                                     <tr>
-                                        <td colspan = "2" class = "text-l"><b>Régimen fiscal emisor:</b><span>'.$RegimenFiscal_E.'</span></td>
+                                        <td colspan = "2" class = "text-l"><b>Régimen fiscal emisor: </b><span>'.$RegimenFiscal_E.'</span></td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -723,12 +723,12 @@ class CfdiUtils
                             <p style = "font-size: 3mm; margin:0px; outline:none;">FACTURA</p>
                                 <p style = "font-size: 3mm; margin:0px; outline:none;">'.
                                     (!is_null($serie) && $serie != '' ? 
-                                        '<b style = "font-size: 3mm;">Serie:</b>'.$serie.'&nbsp;'
+                                        '<b style = "font-size: 3mm;">Serie: </b>'.$serie.'&nbsp;'
                                         : ''
                                     )
                                     .''.
                                     (!is_null($Folio) && $Folio != '' ? 
-                                        '<b style = "font-size: 3mm;">Folio:</b>'.$Folio
+                                        '<b style = "font-size: 3mm;">Folio: </b>'.$Folio
                                         : ''
                                     )
                             .'</p>
