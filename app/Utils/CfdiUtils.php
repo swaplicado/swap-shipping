@@ -701,7 +701,7 @@ class CfdiUtils
                     <tr>
                         <td class = "border" style = "width: 15%; text-align: center">'.
                             // (!is_null($logo_name) ? '<img src="./logos/'.$logo_name.'" style="max-width: 2cm; max-height: 1.5cm">' : '')
-                            (!is_null($logo) ? '<img src="data:image/'.$logo->extension.';base64,'.$logo->image_64.'" style="max-width: 2cm; max-height: 1.5cm">' : '')
+                            (!is_null($logo) ? '<img src="data:image/'.$logo->extension.';base64,'.$logo->image_64.'" style="max-width: 2cm; max-height: 1.5cm; min-width: 1cm; min-height: 1cm">' : '')
                         .'</td>
                         <td colspan="3" class = "border" style = "width: 54%;">
                             <table style = "width: 100%;">
@@ -721,20 +721,17 @@ class CfdiUtils
                         </td>
                         <td class = "border text-c" style = "width: 30%;">
                             <p style = "font-size: 3mm; margin:0px; outline:none;">FACTURA</p>
-                            '.
-                            
-                            (!is_null($serie) && $serie != '' ? '<p style = "font-size: 3mm; margin:0px; outline:none;">
-                                                    <b style = "font-size: 3mm;">Serie:</b>
-                                                    '.
-                                                    $serie
-                                                    .'&nbsp;<b style = "font-size: 3mm">Folio:</b>
-                                                    '.
-                                                    $Folio
-                                                    .'
-                                                </p>'
-                            : '')
-
-                            .'
+                                <p style = "font-size: 3mm; margin:0px; outline:none;">'.
+                                    (!is_null($serie) && $serie != '' ? 
+                                        '<b style = "font-size: 3mm;">Serie:</b>'.$serie.'&nbsp;'
+                                        : ''
+                                    )
+                                    .''.
+                                    (!is_null($Folio) && $Folio != '' ? 
+                                        '<b style = "font-size: 3mm;">Folio:</b>'.$Folio
+                                        : ''
+                                    )
+                            .'</p>
                         </td>
                     </tr>
                     <tr>
