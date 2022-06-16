@@ -109,7 +109,10 @@
                     "visible": false,
                     "searchable": true
                 }
-            ]
+            ],
+            "initComplete": function(){ 
+                $("#T_config").show(); 
+            }
         });
 
         $('#T_config tbody').on('click', 'tr', function () {
