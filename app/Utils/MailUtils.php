@@ -10,7 +10,7 @@ class MailUtils {
     
     public static function getClientMail(){
         $data = Configuration::getConfigurations();
-        return $data->email;
+        return explode(";", $data->email);
     }
 
     public static function getCarrierMail(){
