@@ -234,6 +234,9 @@ class XmlGeneration {
             $nodeUbicacion->setAttribute('TipoUbicacion', "Destino");
             $nodeUbicacion->setAttribute('IDUbicacion', $aUbicacion["IDUbicacion"]);
             $nodeUbicacion->setAttribute('RFCRemitenteDestinatario', $aUbicacion["rFCRemitenteDestinatario"]);
+            if ($aUbicacion["nombreRFC"] != null && strlen($aUbicacion["nombreRFC"]) > 0) {
+                $nodeUbicacion->setAttribute('NombreRemitenteDestinatario', $aUbicacion["nombreRFC"]);
+            }
             $oDateUD = Carbon::parse($aUbicacion["fechaHoraSalidaLlegada"]);
             $nodeUbicacion->setAttribute('FechaHoraSalidaLlegada', $oDateUD->format('Y-m-d').'T'.$oDateUD->format('H:i:s'));
             $nodeUbicacion->setAttribute('DistanciaRecorrida', SFormats::formatNumber($aUbicacion["distanciaRecorrida"], 3));

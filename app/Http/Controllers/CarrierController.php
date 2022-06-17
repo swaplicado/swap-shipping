@@ -198,12 +198,13 @@ class CarrierController extends Controller
         // auth()->user()->authorizeRoles(['user', 'admin']);
         auth()->user()->authorizePermission(['213']);
         auth()->user()->carrierAutorization($id);
-        $data = Carrier::where('id_carrier', $id)->first();
-        $data->each(function ($data) {
+        $data = Carrier::findOrFail($id);
+        if(!is_null($data)){
             $data->users;
             $data->tax_regime;
             $data->prod_serv;
-        });
+        }
+        
         $tax_regimes = Tax_regimes::selectRaw('CONCAT(key_code, " - ", description) AS kd, id')->pluck('id', 'kd');
         $prod_serv = ProdServ::where('is_active', 1)->selectRaw('CONCAT(key_code, " - ", description) AS kd, id')->pluck('id', 'kd');
         
