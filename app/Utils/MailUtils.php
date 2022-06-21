@@ -19,9 +19,10 @@ class MailUtils
         return $mails;
     }
 
-    public static function getCarrierMail()
+    public static function getCarrierMail($carrierId = 0)
     {
-        $type = UserVsTypes::where([['is_deleted', 0], ['user_id', auth()->user()->id]])->first();
+        $type = UserVsTypes::where([['is_deleted', 0], [($carrierId == 0 ? 'user_id' : 'carrier_id'), ($carrierId == 0 ? auth()->user()->id : $carrierId)]])->first();
+
         if (!is_null($type->carrier_id)) {
             $carrier = $type->carrier()->first();
             $user = $carrier->users()->first();
@@ -47,11 +48,11 @@ class MailUtils
                             ->where(($carrierId == 0 ? 'user_id' : 'carrier_id'), ($carrierId == 0 ? auth()->user()->id : $carrierId))
                             ->first();
 
-        if ($type->is_principal) {
+        if ($type->is_principal && auth()->user()->isCarrier()) {
             array_push($mails, MailUtils::getUserMail());
         }
         else {
-            array_push($mails, MailUtils::getCarrierMail());
+            array_push($mails, MailUtils::getCarrierMail($carrierId));
             array_push($mails, MailUtils::getUserMail());
         }
         return $mails;
