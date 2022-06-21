@@ -49,7 +49,7 @@ class CfdiUtils
         return $pdf;
     }
 
-    public static function index($id){
+    public static function index($id) {
         $MDocumentId = Document::where('id_document', $id)->value('mongo_document_id');
 
         $pdf = MDocument::where('_id', $MDocumentId)->value('pdf');

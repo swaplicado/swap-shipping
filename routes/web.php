@@ -147,6 +147,7 @@ Route::middleware(['auth', 'verified', 'menu'])->group( function () {
     Route::get('documents/to_stock/{id}', 'DocumentController@toStock')->name('documents.toStock');
     Route::get('documents/restore/{id}', 'DocumentController@restore')->name('documents.restore');
     Route::get('documents/copy/{id}', 'DocumentController@copy')->name('documents.copy');
+    Route::get('documents/forwardmail/{id}', 'DocumentController@forwardMail')->name('documents.forward_mail');
 
     // Configuraciones
     Route::prefix('config')->group(function () {

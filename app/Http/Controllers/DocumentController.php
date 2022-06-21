@@ -1004,7 +1004,7 @@ class DocumentController extends Controller
         }
     }
 
-    public function toStock($id){
+    public function toStock($id) {
         $oDocument = Document::find($id);
         if(auth()->user()->isAdmin() || auth()->user()->isClient()) {
             abort_unless(CfdiUtils::remisionistaCanEdit($oDocument->carrier_id), 401);
@@ -1040,7 +1040,7 @@ class DocumentController extends Controller
         return redirect()->back()->with(['message' => $msg, 'icon' => $icon]);
     }
 
-    public function restore($id){
+    public function restore($id) {
         $oDocument = Document::find($id);
         if(auth()->user()->isAdmin() || auth()->user()->isClient()) {
             abort_unless(CfdiUtils::remisionistaCanEdit($oDocument->carrier_id), 401);
@@ -1071,7 +1071,7 @@ class DocumentController extends Controller
         return redirect("documents")->with(['message' => $msg, 'icon' => $icon]);
     }
 
-    public function copy($id){
+    public function copy($id) {
         $oDocument = Document::find($id);
         if(auth()->user()->isAdmin() || auth()->user()->isClient()) {
             abort_unless(CfdiUtils::remisionistaCanEdit($oDocument->carrier_id), 401);
@@ -1131,5 +1131,29 @@ class DocumentController extends Controller
             $icon = "error";
         }
         return redirect()->back()->with(['message' => $msg, 'icon' => $icon]);
+    }
+
+    /**
+     * Reenviar correo con PDF y XML
+     *
+     * @param [type] $id
+     * @return void
+     */
+    public function forwardMail($id) {
+        $oDocument = Document::find($id);
+        $oMongoDocument = MDocument::where('_id', $oDocument->mongo_document_id)->first();
+        $pdf = $oMongoDocument->pdf;
+
+        // enviar correo
+        $mails = MailUtils::getMails($oDocument->carrier_id);
+        $comercial_name = MailUtils::getComercialName($oDocument->carrier_id);
+        foreach ($mails as $m) {
+            Mail::to($m)->send(new SendXmlPdf($oMongoDocument->xml_cfdi, $pdf, $comercial_name, $oMongoDocument->folio, $oMongoDocument->serie, $oMongoDocument->uuid));
+        }
+
+        $msg = "Correo reenviado con éxito";
+        $icon = "success";
+
+        return redirect("documents")->with(['message' => $msg, 'icon' => $icon]);
     }
 }

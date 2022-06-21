@@ -44,6 +44,7 @@
             ['id' => 'id_stock', 'class' => 'secondary-danger', 'icon' => 'bx-archive', 'url' => 'arc', 'title' => 'Archivar documento'],
             ['id' => 'id_restore', 'class' => 'info', 'icon' => 'bxs-archive-out', 'url' => 'arc', 'title' => 'Recuperar documento'],
             ['id' => 'id_copy', 'class' => 'purple', 'icon' => 'bx-copy-alt', 'url' => 'cpy', 'title' => 'Hacer copia'],
+            ['id' => 'id_forward_mail', 'class' => 'brown', 'icon' => 'bx-mail-send', 'url' => '#', 'title' => 'Reenviar correo'],
         ],
         'moreFilters' => [
             '
@@ -158,7 +159,8 @@
                                         'Pdf' => 'cfdiToPdf',
                                         'toStock' => 'documents.toStock',
                                         'restore' => 'documents.restore',
-                                        'copy' => 'documents.copy'])
+                                        'copy' => 'documents.copy',
+                                        'forwardMail' => 'documents.forward_mail'])
 <script type="text/javascript">
 $(document).ready(function () {
     var column = table.column(3);

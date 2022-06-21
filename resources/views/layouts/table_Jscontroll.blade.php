@@ -93,6 +93,9 @@
             table.$('tr.selected').removeClass('selected');
         });
 
+        /**
+         * Timbrar un registro
+         */
         $('#id_sign').click(function () {
             if (table.row('.selected').data() == undefined) {
                 SGui.showError("Debe seleccionar un renglón");
@@ -105,6 +108,9 @@
             window.location.href = url;
         });
 
+        /**
+         * Cancelar un registro
+         */
         $('#id_cancel').click(function () {
             if (table.row('.selected').data() == undefined) {
                 SGui.showError("Debe seleccionar un renglón");
@@ -116,6 +122,9 @@
             $("#cancelModal").modal('show');
         });
 
+        /**
+         * Cancelar un registro
+         */
         $('#id_cancel_confirm').click(function () {
             let e = document.getElementById("cancel_reason");
             let uuidss = document.getElementById("uuid_rel")
@@ -134,6 +143,9 @@
             }
         });
         
+        /**
+         * Editar un registro
+         */
         $('#btn_edit').click(function () {
             if (table.row('.selected').data() == undefined) {
                 SGui.showError("Debe seleccionar un renglón");
@@ -146,6 +158,9 @@
             window.location.href = url;
         });
 
+        /**
+         * Borrar un registro
+         */
         $('#btn_delete').click(function  () {
             if (table.row('.selected').data() == undefined) {
                 SGui.showError("Debe seleccionar un renglón");
@@ -153,7 +168,7 @@
             }
 
             Swal.fire({
-                title: 'Desea eliminar?',
+                title: '¿Desea eliminar el registro?',
                 text: table.row('.selected').data()[2],
                 icon: 'warning',
                 showCancelButton: true,
@@ -181,6 +196,9 @@
             })
         });
 
+        /**
+         * Recuperar un registro
+         */
         $('#btn_recover').click( function () {
             if (table.row('.selected').data() == undefined) {
                 SGui.showError("Debe seleccionar un renglón");
@@ -188,7 +206,7 @@
             }
 
             Swal.fire({
-                title: 'Desea recuperar?',
+                title: '¿Desea recuperar el registro?',
                 text: table.row('.selected').data()[2],
                 icon: 'question',
                 showCancelButton: true,
@@ -216,6 +234,9 @@
             })
         });
 
+        /**
+         * Descargar PDF
+         */
         $('#id_down_pdf').click(function () {
             if (table.row('.selected').data() == undefined) {
                 SGui.showError("Debe seleccionar un renglón");
@@ -229,6 +250,9 @@
             window.open(url,'_blank');
         });
 
+        /**
+         * Archivar un registro
+         */
         $('#id_stock').click(function  () {
             if (table.row('.selected').data() == undefined) {
                 SGui.showError("Debe seleccionar un renglón");
@@ -236,7 +260,7 @@
             }
 
             Swal.fire({
-                title: 'Desea archivar?',
+                title: '¿Desea archivar el documento?',
                 text: table.row('.selected').data()[13],
                 icon: 'warning',
                 showCancelButton: true,
@@ -261,6 +285,9 @@
             })
         });
 
+        /**
+         * Recuperar un registro
+         */
         $('#id_restore').click(function  () {
             if (table.row('.selected').data() == undefined) {
                 SGui.showError("Debe seleccionar un renglón");
@@ -268,7 +295,7 @@
             }
 
             Swal.fire({
-                title: 'Desea recuperar?',
+                title: '¿Desea recuperar?',
                 text: table.row('.selected').data()[13],
                 icon: 'warning',
                 showCancelButton: true,
@@ -293,6 +320,9 @@
             })
         });
 
+        /**
+         * Copiar un registro
+         */
         $('#id_copy').click(function  () {
             if (table.row('.selected').data() == undefined) {
                 SGui.showError("Debe seleccionar un renglón");
@@ -300,7 +330,7 @@
             }
 
             Swal.fire({
-                title: 'Desea copiar el registro?',
+                title: '¿Desea copiar el registro?',
                 text: table.row('.selected').data()[13],
                 icon: 'warning',
                 showCancelButton: true,
@@ -321,6 +351,33 @@
                         })
                     }
                     
+                }
+            })
+        });
+
+        /**
+         * Reenviar correo
+         */
+        $('#id_forward_mail').click(function  () {
+            if (table.row('.selected').data() == undefined) {
+                SGui.showError("Debe seleccionar un renglón");
+                return;
+            }
+
+            Swal.fire({
+                title: '¿Desea reenviar el documento?',
+                text: table.row('.selected').data()[13],
+                icon: 'success',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Aceptar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    let id = table.row('.selected').data()[0];
+                    let url = '{{ route( isset($forwardMail) ? $forwardMail : "home", ":id") }}';
+                    url = url.replace(':id',id);
+                    window.location.href = url;
                 }
             })
         });
