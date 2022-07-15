@@ -832,8 +832,14 @@ class DocumentController extends Controller
         // generar pdf
         $pdf = CfdiUtils::updatePdf($oMongoDocument->_id, $oMongoDocument->xml_cfdi, $oDocument->carrier_id, $oMongoDocument);
         // enviar correo
-        $mails = MailUtils::getMails();
-        $comercial_name = MailUtils::getComercialName();
+        if(auth()->user()->isCarrier()){
+            $mails = MailUtils::getMails();
+            $comercial_name = MailUtils::getComercialName();
+        }else{
+            $mails = MailUtils::getMails($oDocument->carrier_id);
+            $comercial_name = MailUtils::getComercialName($oDocument->carrier_id);
+        }
+        
         foreach ($mails as $m) {
             Mail::to($m)->send(new SendXmlPdf($oMongoDocument->xml_cfdi, $pdf, $comercial_name, $oMongoDocument->folio, $oMongoDocument->serie, $oMongoDocument->uuid));
         }
