@@ -24,6 +24,7 @@ use Illuminate\Support\Facades\Mail;
 use App\Mail\SendXmlPdf;
 use App\Utils\MailUtils;
 use App\Utils\GralUtils;
+use App\Core\SATCore;
 
 class DocumentController extends Controller
 {
