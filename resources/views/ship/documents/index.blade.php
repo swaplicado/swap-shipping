@@ -124,8 +124,8 @@
                 <td>{{ $doc->fullname }}</td>
                 <td>{{ $doc->ship_type }}</td>
                 <td title="{{ $doc->veh_key_description }}">{{ $doc->veh_key_code }}</td>
-                <td title="{{ isset($doc->srcAddress) ? $doc->srcAddress->estadoName.' / '.$doc->srcAddress->municipioName : "" }}">{{ $doc->idLocSrc }}</td>
-                <td title="{{ isset($doc->destAddress) ? $doc->destAddress->estadoName.' / '.$doc->destAddress->municipioName : "" }}">{{ $doc->idLocDest }}</td>
+                <td title="{{ isset($doc->srcAddress) ? $doc->srcAddress->estadoName.' / '.$doc->srcAddress->municipioName : "" }}">{{ isset($doc->idLocSrc) ?  $doc->idLocSrc : ''}}</td>
+                <td title="{{ isset($doc->destAddress) ? $doc->destAddress->estadoName.' / '.$doc->destAddress->municipioName : "" }}">{{ isset($doc->idLocDest) ?  $doc->idLocDest : ''}}</td>
                 <td>{{ $doc->serie }}</td>
                 <td>{{ strlen($doc->folio) > 0 ? str_pad($doc->folio, 7, "0", STR_PAD_LEFT) : "" }}</td>
                 <td>{{ str_pad($doc->shipping_folio, 7, "0", STR_PAD_LEFT) }}</td>
