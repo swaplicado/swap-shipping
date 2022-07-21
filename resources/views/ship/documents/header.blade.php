@@ -21,13 +21,13 @@
 <div class="row">
     <div class="col-md-4">
         <label for="forma_pago" class="form-label">Forma Pago*</label>
-        <select class="form-select" id="forma_pago" v-model="oData.formaPago">
+        <select :disabled="! bEnablePay" class="form-select" id="forma_pago" v-model="oData.formaPago">
             <option v-for="pf in lPayForms" :value="pf.key_code">@{{ pf._description }}</option>
         </select>
     </div>
     <div class="col-md-5">
         <label for="metodo_pago" class="form-label">Método Pago*</label>
-        <select class="form-select" id="metodo_pago" v-model="oData.metodoPago">
+        <select :disabled="! bEnablePay" class="form-select" id="metodo_pago" v-model="oData.metodoPago">
             <option v-for="pm in lPayMethods" :value="pm.key_code">@{{ pm._description }}</option>
         </select>
     </div>

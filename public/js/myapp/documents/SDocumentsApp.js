@@ -54,6 +54,7 @@ var app = new Vue({
         bCustomAtts: oServerData.bCustomAtts,
         sShipType: oServerData.oData.shipType,
         oFigure: oServerData.oFigure,
+        bEnablePay: oServerData.enablePay,
         lSelectedTrailers: oServerData.oData.lTrailers != undefined && oServerData.oData.lTrailers.lenght > 0 ? oServerData.oData.lTrailers : [],
         oCfdiData: {},
         conceptId: null
@@ -98,8 +99,8 @@ var app = new Vue({
             this.onChangeAmount();
         },
         addTrailer() {
-            if(this.oVehicle != null && this.oVehicle != undefined){
-                if(this.oVehicle.vcfg_trailer != 0){
+            if (this.oVehicle != null && this.oVehicle != undefined) {
+                if (this.oVehicle.vcfg_trailer != 0) {
                     this.lSelectedTrailers.push({ oTrailer: 0 });
                 }
             }
@@ -107,7 +108,7 @@ var app = new Vue({
         removeTrailer(index) {
             this.lSelectedTrailers.splice(this.lSelectedTrailers.indexOf(index), 1);
         },
-        cleanTrailer(){
+        cleanTrailer() {
             this.lSelectedTrailers = [];
         },
         formatCurrency(value) {
@@ -227,14 +228,14 @@ var app = new Vue({
         setLocationsIds() {
             let shipDigit = 0;
             if (this.oTrailer != null) {
-                if(this.oVehicle.vcfg_trailer != 0){
-                    for(let trailer of this.oTrailer){
-                        this.lSelectedTrailers.push( { oTrailer: trailer } );
+                if (this.oVehicle.vcfg_trailer != 0) {
+                    for (let trailer of this.oTrailer) {
+                        this.lSelectedTrailers.push({ oTrailer: trailer });
                     }
-                }else if(this.oVehicle.vcfg_trailer == 0){
-                    this.cleanTrailer();    
+                } else if (this.oVehicle.vcfg_trailer == 0) {
+                    this.cleanTrailer();
                 }
-            }else{
+            } else {
                 this.cleanTrailer();
             }
             for (const oVehKey of this.lVehicleKeys) {
@@ -247,14 +248,14 @@ var app = new Vue({
                 oLocation.IDUbicacion = oLocation.IDUbicacion.slice(0, 2) + shipDigit + oLocation.IDUbicacion.slice(3);
             }
         },
-        setTarifa(){
-            for(const [index, oCon] of this.oData.conceptos.entries()){
-                if(index == this.conceptId){
+        setTarifa() {
+            for (const [index, oCon] of this.oData.conceptos.entries()) {
+                if (index == this.conceptId) {
                     this.oData.conceptos[index].valorUnitario = oCon.rates[0];
                     this.oData.conceptos[index].oCustomAttributes.rateCode = oCon.oCustomAttributes.rateCodeOption;
                     this.oData.conceptos[index].description = oCon.description.replace("Reparto", "Destino");
                     this.oData.conceptos[index].isDestino = true;
-                }else{
+                } else {
                     this.oData.conceptos[index].valorUnitario = oCon.rates[1];
                     this.oData.conceptos[index].oCustomAttributes.rateCode = "Reparto";
                     this.oData.conceptos[index].description = oCon.description.replace("Destino", "Reparto");
@@ -335,8 +336,8 @@ var app = new Vue({
                     this.clickAndFocus("btnLocations", "dateTimeLocId" + index);
                     return false;
                 }
-                if(this.lSuburbs[index].length > 0){
-                    if(loc.domicilio.colonia == null){
+                if (this.lSuburbs[index].length > 0) {
+                    if (loc.domicilio.colonia == null) {
                         SGui.showError("Debe seleccionar una colonia en la ubicación " + (index + 1));
                         this.clickAndFocus("btnLocations", "distanceId" + index);
                         return false;
@@ -363,7 +364,7 @@ var app = new Vue({
                 }
             }
 
-            if(this.lSelectedTrailers.length > 0){
+            if (this.lSelectedTrailers.length > 0) {
                 for (let i = 0; i < this.lSelectedTrailers.length; i++) {
                     if (this.lSelectedTrailers[i].oTrailer.id_trailer == undefined) {
                         SGui.showError("No se seleccionó un remolque");
@@ -373,20 +374,20 @@ var app = new Vue({
                 }
             }
 
-            if(this.oVehicle.vcfg_trailer == 1){
+            if (this.oVehicle.vcfg_trailer == 1) {
                 var haveTrailer = false;
-                if(this.lSelectedTrailers.length < 1){
+                if (this.lSelectedTrailers.length < 1) {
                     SGui.showError("El tipo de autotransporte seleccionado requiere de un remolque");
                     this.clickAndFocus("btnTransport", "labRems");
                     return false;
-                }else if(this.lSelectedTrailers.length > 0){
+                } else if (this.lSelectedTrailers.length > 0) {
                     for (let i = 0; i < this.lSelectedTrailers.length; i++) {
                         if (this.lSelectedTrailers[i].oTrailer != 0) {
                             haveTrailer = true;
                         }
                     }
                 }
-                if(!haveTrailer){
+                if (!haveTrailer) {
                     SGui.showError("El tipo de autotransporte seleccionado requiere de un remolque");
                     this.clickAndFocus("btnTransport", "labRems");
                     return false;
