@@ -26,13 +26,13 @@ class VerifyEmail extends VerifyEmailBase
                 'hash' => sha1($notifiable),
             ]
         );
-
+        $forceRuta = URL::forceRootUrl(env('APP_URL'));
         return $ruta;
     }
 
     protected function verificationUrl($notifiable)
     {
-        $forceRuta = URL::forceRootUrl(env('APP_URL'));
+        // $forceRuta = URL::forceRootUrl(env('APP_URL'));
 
         $ruta = URL::signedRoute(
             'verification.verify',

@@ -163,7 +163,7 @@ class DriverController extends Controller
 
                     $user->roles()->attach(Role::where('id', $rol)->first());
                     $user->tempPass = $request->password;
-                    $user->sendEmailVerificationNotification();
+                    // $user->sendEmailVerificationNotification();
                 }
 
                 $Driver = Driver::create([
