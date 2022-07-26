@@ -148,6 +148,7 @@ Route::middleware(['auth', 'verified', 'menu'])->group( function () {
     Route::get('documents/restore/{id}', 'DocumentController@restore')->name('documents.restore');
     Route::get('documents/copy/{id}', 'DocumentController@copy')->name('documents.copy');
     Route::get('documents/forwardmail/{id}', 'DocumentController@forwardMail')->name('documents.forward_mail');
+    Route::get('documents/download_xml/{id}', 'DocumentController@download_XML')->name('documents.download_xml');
 
     // Configuraciones
     Route::prefix('config')->group(function () {

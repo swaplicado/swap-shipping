@@ -150,8 +150,10 @@ class User extends Authenticatable implements MustVerifyEmail
     }
 
     public function carrierAutorization($carriers){
-        if(!($this->isAdmin() || $this->isClient())){
+        if(!($this->isAdmin() || $this->isClient() || $this->isDriver())){
             abort_unless($this->hasAnyCarrier($carriers), 401);
+        }else if($this->isDriver()){
+            abort_unless($this->driverHasAnyCarrier($carriers), 401);
         }
         return true;
     }
@@ -170,9 +172,28 @@ class User extends Authenticatable implements MustVerifyEmail
         }
         return false;
     }
+
+    public function driverHasAnyCarrier($carriers) {
+        if (is_array($carriers)) {
+            foreach ($carriers as $carrier) {
+                if ($this->driverHasCarrier($carrier)) {
+                    return true;
+                }
+            }
+        } else {
+            if ($this->driverHasCarrier($carriers)) {
+                return true; 
+            }   
+        }
+        return false;
+    }
     
     public function hasCarrier($carrier) {
         return $this->carrier()->first()->id_carrier == $carrier;
+    }
+
+    public function driverHasCarrier($carrier){
+        return $this->driver()->first()->carrier_id == $carrier;
     }
 
     public function sendEmailVerificationNotification()

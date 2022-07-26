@@ -1148,19 +1148,37 @@ class DocumentController extends Controller
      */
     public function forwardMail($id) {
         $oDocument = Document::find($id);
-        $oMongoDocument = MDocument::where('_id', $oDocument->mongo_document_id)->first();
-        $pdf = $oMongoDocument->pdf;
-
-        // enviar correo
-        $mails = MailUtils::getMails($oDocument->carrier_id);
-        $comercial_name = MailUtils::getComercialName($oDocument->carrier_id);
-        foreach ($mails as $m) {
-            Mail::to($m)->send(new SendXmlPdf($oMongoDocument->xml_cfdi, $pdf, $comercial_name, $oMongoDocument->folio, $oMongoDocument->serie, $oMongoDocument->uuid));
+        if($oDocument->is_processed || $oDocument->is_signed || $oDocument->is_canceled){
+            $oMongoDocument = MDocument::where('_id', $oDocument->mongo_document_id)->first();
+            $pdf = $oMongoDocument->pdf;
+    
+            // enviar correo
+            $mails = MailUtils::getMails($oDocument->carrier_id);
+            $comercial_name = MailUtils::getComercialName($oDocument->carrier_id);
+            foreach ($mails as $m) {
+                Mail::to($m)->send(new SendXmlPdf($oMongoDocument->xml_cfdi, $pdf, $comercial_name, $oMongoDocument->folio, $oMongoDocument->serie, $oMongoDocument->uuid));
+            }
+    
+            $msg = "Correo reenviado con éxito";
+            $icon = "success";
+        }else{
+            $msg = "Correo no enviado, el documento no ha sido procesado";
+            $icon = "error";
         }
 
-        $msg = "Correo reenviado con éxito";
-        $icon = "success";
-
         return redirect("documents")->with(['message' => $msg, 'icon' => $icon]);
+    }
+
+    public function download_XML($id){
+        $oDocument = Document::find($id);
+        if($oDocument->is_processed || $oDocument->is_signed || $oDocument->is_canceled){
+            $oMongoDocument = MDocument::where('_id', $oDocument->mongo_document_id)->first();
+            $data = $oMongoDocument->xml_cfdi;
+            header('Content-Type: application/xml');
+            header("Content-Disposition: attachment; filename=\"XML.xml\"");
+            echo $data;
+        }else{
+            return redirect()->back()->with(['message' => 'No es posible descargar el XML, el documento no ha sido procesado', 'icon' => 'error']);
+        }
     }
 }

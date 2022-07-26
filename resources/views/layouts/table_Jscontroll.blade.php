@@ -251,6 +251,22 @@
         });
 
         /**
+         * Descargar XML
+         */
+        $('#id_down_xml').click(function () {
+            if (table.row('.selected').data() == undefined) {
+                SGui.showError("Debe seleccionar un renglón");
+                return;
+            }
+            
+            var id = table.row('.selected').data()[0];
+            var url = '{{route( isset($downloadXML) ? $downloadXML : "home", ":id")}}';
+            url = url.replace(':id',id);
+            window.location.href = url;
+            // window.open(url,'_blank');
+        });
+
+        /**
          * Archivar un registro
          */
         $('#id_stock').click(function  () {

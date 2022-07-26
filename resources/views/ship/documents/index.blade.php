@@ -160,7 +160,8 @@
                                         'toStock' => 'documents.toStock',
                                         'restore' => 'documents.restore',
                                         'copy' => 'documents.copy',
-                                        'forwardMail' => 'documents.forward_mail'])
+                                        'forwardMail' => 'documents.forward_mail',
+                                        'downloadXML' => 'documents.download_xml'])
 <script type="text/javascript">
 $(document).ready(function () {
     var column = table.column(3);
