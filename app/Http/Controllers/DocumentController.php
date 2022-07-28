@@ -1148,7 +1148,7 @@ class DocumentController extends Controller
      */
     public function forwardMail($id) {
         $oDocument = Document::find($id);
-        if($oDocument->is_processed || $oDocument->is_signed || $oDocument->is_canceled){
+        if(($oDocument->is_processed || $oDocument->is_signed || $oDocument->is_canceled) && !$oDocument->is_archive){
             $oMongoDocument = MDocument::where('_id', $oDocument->mongo_document_id)->first();
             $pdf = $oMongoDocument->pdf;
     

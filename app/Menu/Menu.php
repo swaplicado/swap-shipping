@@ -279,6 +279,40 @@ class Menu {
             ';
         }
 
+        if($oUser->hasAnyRole('admin')){
+            $menu = $menu.'
+            <li>
+                <a href="'.route('userManualAdmin').'" target="_blank">
+                    <span class="icon bx bx-book bx-sm" aria-hidden="true"></span>Manual de usuario
+                </a>
+            </li>
+            ';
+        }else if($oUser->hasAnyRole('user')){
+            $menu = $menu.'
+            <li>
+                <a href="'.route('userManualRemi').'" target="_blank">
+                    <span class="icon bx bx-book bx-sm" aria-hidden="true"></span>Manual de usuario
+                </a>
+            </li>
+            ';
+        }else if($oUser->hasAnyRole('carrier')){
+            $menu = $menu.'
+            <li>
+                <a href="'.route('userManualCarrier').'" target="_blank">
+                    <span class="icon bx bx-book bx-sm" aria-hidden="true"></span>Manual de usuario
+                </a>
+            </li>
+            ';
+        }else if($oUser->hasAnyRole(['driverT1', 'driverT2', 'driverT3'])){
+            $menu = $menu.'
+            <li>
+                <a href="'.route('userManualDriver').'" target="_blank">
+                    <span class="icon bx bx-book bx-sm" aria-hidden="true"></span>Manual de usuario
+                </a>
+            </li>
+            ';
+        }
+
         return $menu;
     }
 }

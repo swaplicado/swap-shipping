@@ -297,4 +297,40 @@ class UserController extends Controller
 
         return redirect('users')->with(['message' => $msg, 'icon' => $icon]);
     }
+
+    public function getUserManualAdmin(){
+        if(auth()->user()->isAdmin()){
+            $pathToFile = public_path()."/manual/Manual_CPT_ADMIN.pdf";
+            return response()->download($pathToFile);
+        }else{
+            return abort(404);
+        }
+    }
+
+    public function getUserManualRemi(){
+        if(auth()->user()->isClient()){
+            $pathToFile = public_path()."/manual/Manual_CPT_REMISIONISTA.pdf";
+            return response()->download($pathToFile);
+        }else{
+            return abort(404);
+        }
+    }
+
+    public function getUserManualCarrier(){
+        if(auth()->user()->isCarrier()){
+            $pathToFile = public_path()."/manual/Manual_CPT_TRANSPORTISTA.pdf";
+            return response()->download($pathToFile);
+        }else{
+            return abort(404);
+        }
+    }
+
+    public function getUserManualDriver(){
+        if(auth()->user()->isDriver()){
+            $pathToFile = public_path()."/manual/Manual_CPT_CHOFER.pdf";
+            return response()->download($pathToFile);
+        }else{
+            return abort(404);
+        }
+    }
 }

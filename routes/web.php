@@ -35,6 +35,12 @@ Route::middleware(['auth', 'verified', 'menu'])->group( function () {
     Route::get('/home', 'HomeController@index')->name('home')->middleware('home');
     Route::get('/logout', 'Auth\LoginController@logout');
 
+    // Rutas manual de usuario
+    Route::get('/userManual/admin', 'UserController@getUserManualAdmin')->name('userManualAdmin');
+    Route::get('/userManual/remi', 'UserController@getUserManualRemi')->name('userManualRemi');
+    Route::get('/userManual/carrier', 'UserController@getUserManualCarrier')->name('userManualCarrier');
+    Route::get('/userManual/driver', 'UserController@getUserManualDriver')->name('userManualDriver');
+
     // Rutas Choferes
     Route::get('/drivers', 'DriverController@index')->name('drivers');
     Route::get('/drivers/create', 'DriverController@create')->name('crear_driver')->middleware('form');
