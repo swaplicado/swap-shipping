@@ -55,6 +55,28 @@
     </div>
 </div>
 <br>
+<div class="div" v-if="! oVehicle.is_own">
+    <div class="row">
+        <div class="col-md-5">
+            <label for="trans_part">Tipo SAT:</label>
+            <input type="text" id="trans_part" class="form-control" :title="oVehicle.oFigTranCfg.desc_trans_part" 
+                    :value="oVehicle.oFigTranCfg.key_trans_part + ' - ' + oVehicle.oFigTranCfg.desc_trans_part" readonly>
+        </div>
+        <div class="col-md-5">
+            <label for="figure_type_id">Relación:</label>
+            <input type="text" id="figure_type_id" class="form-control" :title="oVehicle.oFigTranCfg.desc_figure_type" 
+                    :value="oVehicle.oFigTranCfg.key_figure_type + ' - ' + oVehicle.oFigTranCfg.desc_figure_type" readonly>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-10">
+            <label for="figure_type_id">Figura de transporte:</label>
+            <input type="text" id="figure_type_id" class="form-control" :title="oVehicle.oFigTranCfg.fiscal_id + ' - ' + oVehicle.oFigTranCfg.fullname" 
+                    :value="oVehicle.oFigTranCfg.fiscal_id + ' - ' + oVehicle.oFigTranCfg.fullname" readonly>
+        </div>
+    </div>
+    <br>
+</div>
 <div class="row">
     <div class="col-md-2">
         <label>Seguros:</label>
@@ -99,6 +121,28 @@
     <div class="col-md-1">
         <label>Eliminar</label>
         <button type="button" class="btn btn-danger" v-on:click="removeTrailer(lSelectedTrailers.indexOf(selTrailer))">X</button>
+    </div>
+    <div class="div" v-if="! selTrailer.oTrailer.is_own">
+        <div class="row">
+            <div class="col-md-5">
+                <label for="trans_part">Tipo SAT:</label>
+                <input type="text" id="trans_part" class="form-control input-sm" :title="selTrailer.oTrailer.oFigTranCfg.desc_trans_part" 
+                        :value="selTrailer.oTrailer.oFigTranCfg.key_trans_part + ' - ' + selTrailer.oTrailer.oFigTranCfg.desc_trans_part" readonly>
+            </div>
+            <div class="col-md-5">
+                <label for="figure_type_id">Relación:</label>
+                <input type="text" id="figure_type_id" class="form-control input-sm" :title="selTrailer.oTrailer.oFigTranCfg.desc_figure_type" 
+                        :value="selTrailer.oTrailer.oFigTranCfg.key_figure_type + ' - ' + selTrailer.oTrailer.oFigTranCfg.desc_figure_type" readonly>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-10 form-group form-group-sm">
+                <label for="figure_type_id">Figura de transporte:</label>
+                <input type="text" id="figure_type_id" class="form-control input-sm" :title="selTrailer.oTrailer.oFigTranCfg.fiscal_id + ' - ' + selTrailer.oTrailer.oFigTranCfg.fullname" 
+                        :value="selTrailer.oTrailer.oFigTranCfg.fiscal_id + ' - ' + selTrailer.oTrailer.oFigTranCfg.fullname" readonly>
+            </div>
+        </div>
+        <br>
     </div>
 </div>
 <br>

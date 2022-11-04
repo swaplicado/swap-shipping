@@ -19,6 +19,8 @@ Route::get('/login', function () {
     return view('auth/login');
 });
 
+Route::get('/error', 'GeneralController@error');
+
 Route::get('/logoutFromVerify', function(){
     Auth::logout();
     return redirect('/');
@@ -49,6 +51,15 @@ Route::middleware(['auth', 'verified', 'menu'])->group( function () {
     Route::put('/drivers/{id}', 'DriverController@update')->name('actualizar_driver');
     Route::delete('/drivers/{id}', 'DriverController@destroy')->name('eliminar_driver');
     Route::put('/drivers/recover/{id}', 'DriverController@recover')->name('recuperar_driver');
+
+    // Rutas figuras de transporte
+    Route::get('/tfigures', 'TFigureController@index')->name('tfigures');
+    Route::get('/tfigures/create', 'TFigureController@create')->name('crear_figure')->middleware('form');
+    Route::post('/tfigures', 'TFigureController@store')->name('guardar_figure');
+    Route::get('/tfigures/{id}/edit', 'TFigureController@edit')->name('editar_figure');
+    Route::put('/tfigures/{id}', 'TFigureController@update')->name('actualizar_figure');
+    Route::delete('/tfigures/{id}', 'TFigureController@destroy')->name('eliminar_figure');
+    Route::put('/tfigures/recover/{id}', 'TFigureController@recover')->name('recuperar_figure');
 
     // Rutas Transportistas
     Route::get('/carriers', 'CarrierController@index')->name('carriers');

@@ -110,7 +110,7 @@
     <div class="accordion-item">
       <h2 class="accordion-header" id="headingFigure">
         <button id="btnFigure" class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFigure" aria-expanded="false" aria-controls="collapseFigure">
-          Figura de transporte
+          Chofer
         </button>
       </h2>
       <div id="collapseFigure" class="accordion-collapse collapse" aria-labelledby="headingFigure" data-bs-parent="#accordionCfdi">

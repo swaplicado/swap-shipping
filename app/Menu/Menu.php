@@ -4,13 +4,14 @@ namespace App\Menu;
 
 use App\User;
 
-class Menu {
+class Menu
+{
 
     public static function createMenu($oUser = null)
     {
         $menu = "";
-        if($oUser->hasAnyPermission(['100'])){
-            $menu = $menu.'
+        if ($oUser->hasAnyPermission(['100'])) {
+            $menu = $menu . '
                 <li>
                     <a class="show-cat-btn" href="##">
                         <span class="icon bx bx-file bx-sm" aria-hidden="true"></span>Cartas Porte
@@ -21,126 +22,137 @@ class Menu {
                     </a>
                     <ul class="cat-sub-menu">
             ';
-            if($oUser->hasPermission('111')){
+            if ($oUser->hasPermission('111')) {
                 $route = route('documents', 1);
-                $menu = $menu.'
+                $menu = $menu . '
                         <li>
-                            <a href="'.$route.'"><span class="icon bx bx-file-blank bx-sm" aria-hidden="true"></span>Por procesar</a>
+                            <a href="' . $route . '"><span class="icon bx bx-file-blank bx-sm" aria-hidden="true"></span>Por procesar</a>
                         </li>
                 ';
             }
-            if($oUser->hasPermission('121')){
+            if ($oUser->hasPermission('121')) {
                 $route = route('documents', 2);
-                $menu = $menu.'
+                $menu = $menu . '
                         <li>
-                            <a href="'.$route.'"><span class="icon bx bxs-file-blank bx-sm" aria-hidden="true"></span>Por timbrar</a>
+                            <a href="' . $route . '"><span class="icon bx bxs-file-blank bx-sm" aria-hidden="true"></span>Por timbrar</a>
                         </li>
                 ';
             }
-            if($oUser->hasPermission('131')){
+            if ($oUser->hasPermission('131')) {
                 $route = route('documents', 3);
-                $menu = $menu.'
+                $menu = $menu . '
                         <li>
-                            <a href="'.$route.'"><span class="icon bx bxs-file-plus bx-sm" aria-hidden="true"></span>Timbradas</a>
+                            <a href="' . $route . '"><span class="icon bx bxs-file-plus bx-sm" aria-hidden="true"></span>Timbradas</a>
                         </li>
                 ';
             }
-            
-            if($oUser->hasPermission('141')){
+
+            if ($oUser->hasPermission('141')) {
                 $route = route('documents', 4);
-                $menu = $menu.'
+                $menu = $menu . '
                         <li>
-                            <a href="'.$route.'"><span class="icon bx bxs-folder bx-sm" aria-hidden="true"></span>Archivadas</a>
+                            <a href="' . $route . '"><span class="icon bx bxs-folder bx-sm" aria-hidden="true"></span>Archivadas</a>
                         </li>
                 ';
             }
 
-            if($oUser->hasPermission('141')){
+            if ($oUser->hasPermission('141')) {
                 $route = route('documents', 0);
-                $menu = $menu.'
+                $menu = $menu . '
                         <li>
-                            <a href="'.$route.'"><span class="icon bx bxs-folder-open bx-sm" aria-hidden="true"></span>Todas</a>
+                            <a href="' . $route . '"><span class="icon bx bxs-folder-open bx-sm" aria-hidden="true"></span>Todas</a>
                         </li>
                 ';
             }
 
-            $menu =  $menu.'
+            $menu = $menu . '
                     </ul>
                 </li>
             ';
         }
 
-        if($oUser->hasAnyPermission(['200'])){
-            if($oUser->isCarrier()){
-                $menu = $menu.'
+        if ($oUser->hasAnyPermission(['200'])) {
+            if ($oUser->isCarrier()) {
+                $menu = $menu . '
                     <li>
-                        <a href="'.route('editar_carrierFiscalData', $oUser->carrier()->first()->id_carrier).'">
+                        <a href="' . route('editar_carrierFiscalData', $oUser->carrier()->first()->id_carrier) . '">
                             <span class="icon bx bxs-user-rectangle bx-sm" aria-hidden="true"></span>Mis datos fiscales
                         </a>
                     </li>
                 ';
             }
-            if($oUser->hasPermission('211')){
+            if ($oUser->hasPermission('211')) {
                 $route = route('carriers');
-                $menu = $menu.'
+                $menu = $menu . '
                         <li>
-                            <a href="'.$route.'"><span class="icon bx bxs-group bx-sm" aria-hidden="true"></span>Transportistas</a>
+                            <a href="' . $route . '"><span class="icon bx bxs-group bx-sm" aria-hidden="true"></span>Transportistas</a>
                         </li>
                 ';
             }
-            if($oUser->hasPermission('221')){
+            if ($oUser->hasPermission('221')) {
                 $route = route('vehicles');
-                $menu = $menu.'
+                $menu = $menu . '
                         <li>
-                            <a href="'.$route.'"><span class="icon bx bxs-key bx-sm" aria-hidden="true"></span>Vehículos</a>
+                            <a href="' . $route . '"><span class="icon bx bxs-key bx-sm" aria-hidden="true"></span>Vehículos</a>
                         </li>
                 ';
             }
-            if($oUser->hasPermission('231')){
+            if ($oUser->hasPermission('231')) {
                 $route = route('trailers');
-                $menu = $menu.'
+                $menu = $menu . '
                         <li>
-                            <a href="'.$route.'"><span class="icon bx bxs-package bx-sm" aria-hidden="true"></span>Remolques</a>
+                            <a href="' . $route . '"><span class="icon bx bxs-package bx-sm" aria-hidden="true"></span>Remolques</a>
                         </li>
                 ';
             }
         }
 
-        if($oUser->hasAnyPermission(['300'])){
-            if($oUser->user_type_id == 4){
-                $menu = $menu.'
+        if ($oUser->hasAnyPermission(['300'])) {
+            if ($oUser->user_type_id == 4) {
+                $menu = $menu . '
                     <li>
-                        <a href="'.route('editar_driver', $oUser->driver()->first()->id_trans_figure).'">
+                        <a href="' . route('editar_driver', $oUser->driver()->first()->id_trans_figure) . '">
                             <span class="icon bx bxs-user-rectangle bx-sm" aria-hidden="true"></span>Mis datos fiscales
                         </a>
                     </li>
                 ';
             }
             $route = route('drivers');
-            $menu = $menu.'
+            $menu = $menu . '
                 <li>
-                    <a href="'.$route.'">
+                    <a href="' . $route . '">
                         <span class="icon bx bxs-id-card bx-sm" aria-hidden="true"></span>Choferes
                     </a>
                 </li>
             ';
         }
-
-        if($oUser->hasAnyPermission(['240'])){
-            $menu = $menu.'
+        
+        if ($oUser->hasAnyPermission(['300'])) {
+            $route = route('tfigures');
+            $menu = $menu . '
+                <li>
+                    <a href="' . $route . '">
+                        <span class="icon bx bxs-face bx-sm" aria-hidden="true"></span>Figuras transp.
+                    </a>
+                </li>
             ';
-            if($oUser->hasPermission('241')){
+        }
+
+        if ($oUser->hasAnyPermission(['240'])) {
+            $menu = $menu . '
+            ';
+            if ($oUser->hasPermission('241')) {
                 $route = route('parners');
-                $menu = $menu.'
+                $menu = $menu . '
                         <li>
-                            <a href="'.$route.'"><span class="icon bx bxs-group bx-sm" aria-hidden="true"></span>Administradores</a>
+                            <a href="' . $route . '"><span class="icon bx bxs-group bx-sm" aria-hidden="true"></span>Administradores</a>
                         </li>
                 ';
             }
         }
 
-        if($oUser->hasAnyPermission(['400'])){
-            $menu = $menu.'
+        if ($oUser->hasAnyPermission(['400'])) {
+            $menu = $menu . '
                 <li>
                     <a class="show-cat-btn" href="##">
                         <span class="icon bx bxs-book-content bx-sm" aria-hidden="true"></span>Catálogos
@@ -151,7 +163,7 @@ class Menu {
                     </a>
                     <ul class="cat-sub-menu">
             ';
-            if($oUser->hasPermission('411')){
+            if ($oUser->hasPermission('411')) {
                 $route = route('states');
                 // $menu = $menu.'
                 //         <li>
@@ -159,37 +171,37 @@ class Menu {
                 //         </li>
                 // ';
                 $route = route('municipalities');
-                $menu = $menu.'
+                $menu = $menu . '
                         <li>
-                            <a href="'.$route.'"><span class="icon bx bx-map-alt bx-sm" aria-hidden="true"></span>Municipios</a>
+                            <a href="' . $route . '"><span class="icon bx bx-map-alt bx-sm" aria-hidden="true"></span>Municipios</a>
                         </li>
                 ';
             }
-            if($oUser->hasPermission('421')){
+            if ($oUser->hasPermission('421')) {
                 $route = route('insurances');
-                $menu = $menu.'
+                $menu = $menu . '
                         <li>
-                            <a href="'.$route.'"><span class="icon bx bx-clinic bx-sm" aria-hidden="true"></span>Aseguradoras</a>
+                            <a href="' . $route . '"><span class="icon bx bx-clinic bx-sm" aria-hidden="true"></span>Aseguradoras</a>
                         </li>
                 ';
             }
-            if($oUser->hasPermission('431')){
+            if ($oUser->hasPermission('431')) {
                 $route = route('series');
-                $menu = $menu.'
+                $menu = $menu . '
                         <li>
-                            <a href="'.$route.'"><span class="icon bx bx-sort-a-z bx-sm" aria-hidden="true"></span>Series</a>
+                            <a href="' . $route . '"><span class="icon bx bx-sort-a-z bx-sm" aria-hidden="true"></span>Series</a>
                         </li>
                 ';
             }
 
-            $menu =  $menu.'
+            $menu = $menu . '
                     </ul>
                 </li>
             ';
         }
 
-        if($oUser->hasAnyPermission(['500'])){
-            $menu = $menu.'
+        if ($oUser->hasAnyPermission(['500'])) {
+            $menu = $menu . '
                 <li>
                     <a class="show-cat-btn" href="##">
                         <span class="icon bx bxs-user bx-sm" aria-hidden="true"></span>Usuarios
@@ -200,46 +212,46 @@ class Menu {
                     </a>
                     <ul class="cat-sub-menu">
             ';
-            if($oUser->hasPermission('511')){
+            if ($oUser->hasPermission('511')) {
                 $route = route('users');
-                $menu = $menu.'
+                $menu = $menu . '
                         <li>
-                            <a href="'.$route.'"><span class="icon bx bxs-user-detail bx-sm" aria-hidden="true"></span>Ver usuarios</a>
+                            <a href="' . $route . '"><span class="icon bx bxs-user-detail bx-sm" aria-hidden="true"></span>Ver usuarios</a>
                         </li>
                 ';
             }
-            if($oUser->hasPermission('611')){
+            if ($oUser->hasPermission('611')) {
                 $route = route('role');
-                $menu = $menu.'
+                $menu = $menu . '
                         <li>
-                            <a href="'.$route.'"><span class="icon bx bxs-user-badge bx-sm" aria-hidden="true"></span>Roles de usuarios</a>
+                            <a href="' . $route . '"><span class="icon bx bxs-user-badge bx-sm" aria-hidden="true"></span>Roles de usuarios</a>
                         </li>
                 ';
             }
 
-            $menu =  $menu.'
+            $menu = $menu . '
                     </ul>
                 </li>
             ';
         }
 
-        if($oUser->hasAnyPermission(['701'])){
-            $menu = $menu.'
+        if ($oUser->hasAnyPermission(['701'])) {
+            $menu = $menu . '
             <li>
-                <a href="'.route('config.taxes').'">
+                <a href="' . route('config.taxes') . '">
                     <span class="icon bx bxs-category bx-sm" aria-hidden="true"></span>Conf. impuestos
                 </a>
             </li>
             ';
         }
 
-        if($oUser->hasAnyPermission(['800'])){
+        if ($oUser->hasAnyPermission(['800'])) {
             $tar_mun = route('fletes_rates', ['id' => 1]);
             $tar_zm = route('fletes_rates', ['id' => 2]);
             $tar_zst = route('fletes_rates', ['id' => 3]);
             $tar_st = route('fletes_rates', ['id' => 4]);
             $tar_rep = route('fletes_rates', ['id' => 5]);
-            $menu = $menu.'
+            $menu = $menu . '
                 <li>
                     <a class="show-cat-btn" href="##">
                         <span class="icon bx bx-dollar bx-sm" aria-hidden="true"></span>Tarifas destinos
@@ -250,63 +262,66 @@ class Menu {
                     </a>
                     <ul class="cat-sub-menu">
                     <li>
-                        <a href="'.$tar_mun.'"><span class="icon bx bx-dollar-circle bx-sm" aria-hidden="true"></span>Tarifas mun.</a>
+                        <a href="' . $tar_mun . '"><span class="icon bx bx-dollar-circle bx-sm" aria-hidden="true"></span>Tarifas mun.</a>
                     </li>
                     <li>
-                        <a href="'.$tar_zm.'"><span class="icon bx bxs-dollar-circle bx-sm" aria-hidden="true"></span>Tarifas zona mun.</a>
+                        <a href="' . $tar_zm . '"><span class="icon bx bxs-dollar-circle bx-sm" aria-hidden="true"></span>Tarifas zona mun.</a>
                     </li>
                     <li>
-                        <a href="'.$tar_zst.'"><span class="icon bx bxs-coin bx-sm" aria-hidden="true"></span>Tarifas zona est.</a>
+                        <a href="' . $tar_zst . '"><span class="icon bx bxs-coin bx-sm" aria-hidden="true"></span>Tarifas zona est.</a>
                     </li>
                     <li>
-                        <a href="'.$tar_st.'"><span class="icon bx bx-coin bx-sm" aria-hidden="true"></span>Tarifas estado</a>
+                        <a href="' . $tar_st . '"><span class="icon bx bx-coin bx-sm" aria-hidden="true"></span>Tarifas estado</a>
                     </li>
                     </ul>
                 </li>
                 <li>
-                    <a href="'.$tar_rep.'"><span class="icon bx bx-money-withdraw bx-sm" aria-hidden="true"></span>Tarifas repartos</a>
+                    <a href="' . $tar_rep . '"><span class="icon bx bx-money-withdraw bx-sm" aria-hidden="true"></span>Tarifas repartos</a>
                 </li>
             ';
         }
 
-        if($oUser->hasAnyPermission(['000'])){
-            $menu = $menu.'
+        if ($oUser->hasAnyPermission(['000'])) {
+            $menu = $menu . '
             <li>
-                <a href="'.route('config').'">
+                <a href="' . route('config') . '">
                     <span class="icon bx bxs-cog bx-sm" aria-hidden="true"></span>Configuración
                 </a>
             </li>
             ';
         }
 
-        if($oUser->hasAnyRole('admin')){
-            $menu = $menu.'
+        if ($oUser->hasAnyRole('admin')) {
+            $menu = $menu . '
             <li>
-                <a href="'.route('userManualAdmin').'" target="_blank">
+                <a href="' . route('userManualAdmin') . '" target="_blank">
                     <span class="icon bx bx-book bx-sm" aria-hidden="true"></span>Manual de usuario
                 </a>
             </li>
             ';
-        }else if($oUser->hasAnyRole('user')){
-            $menu = $menu.'
+        }
+        else if ($oUser->hasAnyRole('user')) {
+            $menu = $menu . '
             <li>
-                <a href="'.route('userManualRemi').'" target="_blank">
+                <a href="' . route('userManualRemi') . '" target="_blank">
                     <span class="icon bx bx-book bx-sm" aria-hidden="true"></span>Manual de usuario
                 </a>
             </li>
             ';
-        }else if($oUser->hasAnyRole('carrier')){
-            $menu = $menu.'
+        }
+        else if ($oUser->hasAnyRole('carrier')) {
+            $menu = $menu . '
             <li>
-                <a href="'.route('userManualCarrier').'" target="_blank">
+                <a href="' . route('userManualCarrier') . '" target="_blank">
                     <span class="icon bx bx-book bx-sm" aria-hidden="true"></span>Manual de usuario
                 </a>
             </li>
             ';
-        }else if($oUser->hasAnyRole(['driverT1', 'driverT2', 'driverT3'])){
-            $menu = $menu.'
+        }
+        else if ($oUser->hasAnyRole(['driverT1', 'driverT2', 'driverT3'])) {
+            $menu = $menu . '
             <li>
-                <a href="'.route('userManualDriver').'" target="_blank">
+                <a href="' . route('userManualDriver') . '" target="_blank">
                     <span class="icon bx bx-book bx-sm" aria-hidden="true"></span>Manual de usuario
                 </a>
             </li>

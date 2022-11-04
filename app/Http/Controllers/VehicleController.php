@@ -2,18 +2,20 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Support\Facades\DB;
-use App\Models\Vehicle;
+use App\Models\Carrier;
+use App\Models\FigureT;
 use App\Models\Insurances;
 use App\Models\Sat\LicenceSct;
 use App\Models\Sat\VehicleConfig;
-use App\Models\Carrier;
+use App\Models\TransFigCfg;
+use App\Models\TransportPart;
+use App\Models\Vehicle;
 use App\Models\VehicleKey;
-use Illuminate\Http\Request;
-use Illuminate\Database\QueryException;
 use App\Utils\messagesErros;
+use Illuminate\Database\QueryException;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Validator;
-use Auth;
 
 class VehicleController extends Controller
 {
@@ -30,7 +32,7 @@ class VehicleController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\View\View
      */
     public function index()
     {
@@ -57,13 +59,14 @@ class VehicleController extends Controller
     /**
      * Show the form for creating a new resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\View\View
      */
     public function create()
     {
         // auth()->user()->authorizeRoles(['user', 'admin', 'carrier']);
         auth()->user()->authorizePermission(['222']);
         $data = new Vehicle;
+        $data->is_own = true;
         $data->LicenceSct = new LicenceSct;
         $data->VehicleConfig = new VehicleConfig;
         $data->Carrier = new Carrier;
@@ -72,14 +75,29 @@ class VehicleController extends Controller
         $VehicleConfig = VehicleConfig::selectRaw('CONCAT(key_code, " - ", description) AS kd, id')->pluck('id', 'kd');
         $lVehicleKeys = VehicleKey::get();
 
-        if(auth()->user()->isCarrier()){
-            $Insurances = Insurances::where('carrier_id', auth()->user()->carrier()->first()->id_carrier)->pluck('id_insurance', 'full_name');
-        } else if (auth()->user()->isAdmin() || auth()->user()->isClient()){
+        $lFigures = FigureT::select('id_trans_figure',
+                                    'fullname',
+                                    'fiscal_id',
+                                    'carrier_id'
+                                )
+                            ->where('is_deleted', false);
+
+        if (auth()->user()->isCarrier()) {
+            $idCarrier = auth()->user()->carrier()->first()->id_carrier;
+            $Insurances = Insurances::where('carrier_id', $idCarrier)->pluck('id_insurance', 'full_name');
+            $lFigures = $lFigures->where('carrier_id', $idCarrier);
+        }
+        else if (auth()->user()->isAdmin() || auth()->user()->isClient()) {
             // $Insurances = Insurances::pluck('id_insurance', 'full_name');
             $Insurances = Insurances::get();
         }
         
         $carriers = Carrier::where('is_deleted', 0)->orderBy('fullname', 'ASC')->pluck('id_carrier', 'fullname');
+        $lFigures = $lFigures->get();
+
+        $lTransParts = TransportPart::select('id', 'key_code', 'description')
+                                    ->whereIn('id', [1, 2, 3, 6])
+                                    ->get();
 
         return view('ship/vehicles/create', [
                         'data' => $data, 
@@ -87,6 +105,8 @@ class VehicleController extends Controller
                         'VehicleConfig' => $VehicleConfig, 
                         'insurances' => $Insurances, 
                         'carriers' => $carriers,
+                        'lFigures' => $lFigures,
+                        'lTransParts' => $lTransParts,
                         'lVehicleKeys' => $lVehicleKeys
                     ]);
     }
@@ -94,7 +114,7 @@ class VehicleController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
@@ -121,23 +141,43 @@ class VehicleController extends Controller
         
         $user_id = (auth()->check()) ? auth()->user()->id : null;
         try {
-            DB::transaction(function () use ($request, $user_id) {
-                $vehicle = Vehicle::create([
-                    'alias' => $request->alias,                    
-                    'plates' => mb_strtoupper($request->plates, 'UTF-8'),
-                    'year_model' => $request->year_model,
-                    'license_sct_num' => mb_strtoupper($request->license_sct_num, 'UTF-8'),
-                    'policy' => mb_strtoupper($request->policy, 'UTF-8'),
-                    'license_sct_id' => $request->license_sct_id,
-                    'veh_cfg_id' => $request->veh_cfg_id,
-                    'veh_key_id' => $request->veh_key_id,
-                    'carrier_id' => $request->carrier,
-                    'insurance_id' => $request->insurance,
-                    'usr_new_id' => $user_id,
-                    'usr_upd_id' => $user_id
-                ]);
-            });
-        } catch (QueryException $e) {
+            DB::beginTransaction();
+            
+            $vehicle = Vehicle::create([
+                'alias' => $request->alias,                    
+                'plates' => mb_strtoupper($request->plates, 'UTF-8'),
+                'year_model' => $request->year_model,
+                'license_sct_num' => mb_strtoupper($request->license_sct_num, 'UTF-8'),
+                'policy' => mb_strtoupper($request->policy, 'UTF-8'),
+                'is_own' => isset($request->is_own),
+                'license_sct_id' => $request->license_sct_id,
+                'veh_cfg_id' => $request->veh_cfg_id,
+                'veh_key_id' => $request->veh_key_id,
+                'trans_part_n_id' => null,
+                'carrier_id' => $request->carrier,
+                'insurance_id' => $request->insurance,
+                'usr_new_id' => $user_id,
+                'usr_upd_id' => $user_id
+            ]);
+
+            if (! $vehicle->is_own) {
+                $vehicle->trans_part_n_id = $request->trans_part_id;
+                $vehicle->save();
+
+                $oTrFigCfg = new TransFigCfg();
+
+                $oTrFigCfg->trans_part_id = $request->trans_part_id;
+                $oTrFigCfg->veh_tra_id = $vehicle->id_vehicle;
+                $oTrFigCfg->figure_type_id = $request->figure_type;
+                $oTrFigCfg->figure_trans_id = $request->figure_id;
+
+                $oTrFigCfg->save();
+            }
+
+            DB::commit();
+        }
+        catch (QueryException $e) {
+            DB::rollBack();
             $success = false;
             $error = messagesErros::sqlMessageError($e->errorInfo[2]);
         }
@@ -154,21 +194,11 @@ class VehicleController extends Controller
     }
 
     /**
-     * Display the specified resource.
-     *
-     * @param  \App\Carrier  $carrier
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Carrier $carrier)
-    {
-        //
-    }
-
-    /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Carrier  $carrier
-     * @return \Illuminate\Http\Response
+     * @param  \App\Models\Carrier $carrier
+     * 
+     * @return \Illuminate\View\View
      */
     public function edit($id)
     {
@@ -186,16 +216,37 @@ class VehicleController extends Controller
         $VehicleConfig = VehicleConfig::selectRaw('CONCAT(key_code, " - ", description) AS kd, id')->pluck('id', 'kd');
         $lVehicleKeys = VehicleKey::get();
         $Insurances = Insurances::where('carrier_id', $data->carrier_id)->pluck('id_insurance', 'full_name');
+
+        $lTransParts = TransportPart::select('id', 'key_code', 'description')
+                                        ->whereIn('id', [1, 2, 3, 6])
+                                        ->get();
+
+        $lFigures = FigureT::select('id_trans_figure',
+                                    'fullname',
+                                    'fiscal_id',
+                                    'carrier_id'
+                                )
+                            ->where('carrier_id', $data->carrier_id)
+                            ->where('is_deleted', false)
+                            ->get();
+
+        $oTransCfg = TransFigCfg::where('veh_tra_id', $id)->first();
         
-        return view('ship/vehicles/edit', ['data' => $data, 'LicenceSct' => $LicenceSct, 
-            'VehicleConfig' => $VehicleConfig, 'insurances' => $Insurances, 'lVehicleKeys' => $lVehicleKeys ]);
+        return view('ship/vehicles/edit', ['data' => $data,
+                                            'oTransCfg' => $oTransCfg,
+                                            'LicenceSct' => $LicenceSct,
+                                            'VehicleConfig' => $VehicleConfig,
+                                            'insurances' => $Insurances,
+                                            'lTransParts' => $lTransParts,
+                                            'lFigures' => $lFigures,
+                                            'lVehicleKeys' => $lVehicleKeys ]);
     }
 
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Carrier  $carrier
+     * @param  \Illuminate\Http\Request $request
+     * @param  \App\Models\Carrier $carrier
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, $id)
@@ -226,12 +277,22 @@ class VehicleController extends Controller
                 $Vehicle->year_model = $request->year_model;
                 $Vehicle->license_sct_num = mb_strtoupper($request->license_sct_num, 'UTF-8');
                 $Vehicle->policy = mb_strtoupper($request->policy, 'UTF-8');
+                $Vehicle->is_own = isset($request->is_own);
                 $Vehicle->license_sct_id = $request->license_sct_id;
                 $Vehicle->veh_cfg_id = $request->veh_cfg_id;
                 $Vehicle->veh_key_id = $request->veh_key_id;
+                $Vehicle->trans_part_n_id = $Vehicle->is_own ? null : $request->trans_part_id;
                 $Vehicle->usr_upd_id = $user_id;
 
                 $Vehicle->update();
+
+                $oTransCfg = TransFigCfg::where('veh_tra_id', $id)->first();
+
+                $oTransCfg->trans_part_id = $request->trans_part_id;
+                $oTransCfg->figure_type_id = $request->figure_type;
+                $oTransCfg->figure_trans_id = $request->figure_id;
+
+                $oTransCfg->update();
             });
         } catch (QueryException $e) {
             $success = false;
@@ -253,7 +314,7 @@ class VehicleController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Carrier  $carrier
+     * @param  \App\Models\Carrier $carrier
      * @return \Illuminate\Http\Response
      */
     public function destroy($id)

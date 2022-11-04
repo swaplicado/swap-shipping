@@ -1,6 +1,7 @@
 <?php namespace App\Core;
 
 use SoapClient;
+use Exception;
 
 class SATCore
 {
@@ -20,7 +21,7 @@ class SATCore
      * @param [type] $total_factura
      * @param [type] $uuid
      * 
-     * @return void
+     * @return \stdClass
      */
     public static function validateCfdi($rfcEmisor, $rfcReceptor, $totalFactura, $uuid)
     {
@@ -36,6 +37,7 @@ class SATCore
             $resp->success = false;
             $resp->message = "Error al conectar al servicio de validación de CFDI";
             $resp->error = $e->getMessage();
+
             return $resp;
         }
 
@@ -47,6 +49,6 @@ class SATCore
             return $response->ConsultaResult;
         }
 
-        dd($response);
+        return $response;
     }
 }

@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use App\Utils\messagesErros;
 use App\Models\CarriersRate;
 use App\Models\Sat\States;
 use App\Models\Sat\Municipalities;
@@ -52,12 +51,11 @@ class RatesController extends Controller
                 }
                 $title = 'Tarifas municipio';
                 return view('catalogos/rates/index',['rates' => $rates, 'mun' => $mun, 'veh' => $veh_types, 'id' => $id, 'title' => $title]);
-                break;
+
             case 2:
                 $rates = CarriersRate::where([['carrier_id', $carrier_id],['zone_mun_id', '!=', NULL]])->get();
                 $mun = \DB::table('f_mun_zones')
-                ->join('sat_municipalities',
-                        'f_mun_zones.mun_id', '=', 'sat_municipalities.id',)
+                ->join('sat_municipalities', 'f_mun_zones.mun_id', '=', 'sat_municipalities.id')
                 ->join('sat_states', 'f_mun_zones.state_id', '=', 'sat_states.id')
                 ->where('f_mun_zones.origen_id', 1)
                 ->select(
@@ -83,7 +81,7 @@ class RatesController extends Controller
                 }
                 $title = 'Tarifas zona municipio';
                 return view('catalogos/rates/index',['rates' => $rates, 'mun' => $mun, 'veh' => $veh_types, 'id' => $id, 'title' => $title]);
-                break;
+
             case 3:
                 $rates = CarriersRate::where([['carrier_id', $carrier_id],['zone_state_id', '!=', NULL]])->get();
                 $mun = \DB::table('f_state_zones')
@@ -99,7 +97,7 @@ class RatesController extends Controller
                 ->get();
                 $title = 'Tarifas zona estado';
                 return view('catalogos/rates/index',['rates' => $rates, 'mun' => $mun, 'veh' => $veh_types, 'id' => $id, 'title' => $title]);
-                break;
+                
             case 4:
                 $rates = CarriersRate::where([
                     ['carrier_id', $carrier_id],
@@ -117,7 +115,7 @@ class RatesController extends Controller
                 ->get();
                 $title = 'Tarifas estado';
                 return view('catalogos/rates/index',['rates' => $rates, 'mun' => $mun, 'veh' => $veh_types, 'id' => $id, 'title' => $title]);
-                break;
+                
             case 5:
                 $rates = CarriersRate::where([
                     ['carrier_id', $carrier_id],
@@ -129,7 +127,7 @@ class RatesController extends Controller
                     ['state_id', NULL]
                     ])->get();
                 return view('catalogos/rates/indexReparto', ['rates' => $rates, 'veh' => $veh_types]);
-                break;
+                
                 default:
                 # code...
                 break;

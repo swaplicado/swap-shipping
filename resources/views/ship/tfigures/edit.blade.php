@@ -8,31 +8,23 @@
 @include('layouts.nav-up')
 @endsection
 
-@section('headJs')
-    <script src="{{ asset('js/vue2/vue.js') }}"></script>
-    <script src="{{ asset('js/axios/axios.js') }}"></script>
-@endsection
-
 @section('content')
 <div class="container">
-    <div class="row justify-content-md-center" id="trailersApp">
+    <div class="row justify-content-md-center">
         <div class="col-lg-8">
             <div class="card">
                 <div class="card-header">
-                    <span>Editar remolque</span>
+                    <span>Editar chofer</span>
                 </div>
                 <div class="card-body">
                     <form onSubmit="document.getElementById('save').disabled=true; wait();"
-                    action="{{ route('actualizar_trailer', ['id' => $data->id_trailer]) }}" method="POST">
+                    action="{{ route('actualizar_figure', ['id' => $data->id_trans_figure]) }}" method="POST">
                         @csrf @method("put")
-                        @include('ship.trailers.form')
+                        @include('ship.tfigures.form')
                     </form>
                 </div>
             </div>
         </div>
     </div>
 </div>
-@endsection
-@section('scripts')
-@include('ship.trailers.js')
 @endsection

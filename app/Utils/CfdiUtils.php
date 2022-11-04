@@ -435,28 +435,30 @@ class CfdiUtils
 
             $UnitDescription = Units::where('key_code', $c['ClaveUnidad'])->value('description');
             $tabla_atributos_concepto = '';
-            $atributos_concepto[$index_concepto]['oCustomAttributes'] = (object) $atributos_concepto[$index_concepto]['oCustomAttributes'];
-            if(isset($atributos_concepto[$index_concepto]['oCustomAttributes']->shippingOrders)){
-                if(!is_null($atributos_concepto[$index_concepto]['oCustomAttributes']->shippingOrders)){
-                    if(strlen($atributos_concepto[$index_concepto]['oCustomAttributes']->shippingOrders) != 0){
-                        $tabla_atributos_concepto = '
-                            <tr>
-                                <td colspan = "6">
-                                    <table style = "width: 100%;">
-                                        <tbody>
-                                            <tr>
-                                                <td class = "td2" style="width: 15%;"><b>Orden embarque:</b></td>
-                                                <td class = "td2">'.$atributos_concepto[$index_concepto]['oCustomAttributes']->shippingOrders.'</td>
-                                                <td class = "td2" style="width: 10%;"><b>Destino:</b></td>
-                                                <td class = "td2">'.$atributos_concepto[$index_concepto]['oCustomAttributes']->destinyName.'</td>
-                                                <td class = "td2" style="width: 10%;"><b>Cliente:</b></td>
-                                                <td class = "td2">'.$atributos_concepto[$index_concepto]['oCustomAttributes']->customerName.'</td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </td>
-                            </tr>
-                        ';
+            if (isset($atributos_concepto[$index_concepto]['oCustomAttributes'])) {
+                $atributos_concepto[$index_concepto]['oCustomAttributes'] = (object) $atributos_concepto[$index_concepto]['oCustomAttributes'];
+                if(isset($atributos_concepto[$index_concepto]['oCustomAttributes']->shippingOrders)){
+                    if(!is_null($atributos_concepto[$index_concepto]['oCustomAttributes']->shippingOrders)){
+                        if(strlen($atributos_concepto[$index_concepto]['oCustomAttributes']->shippingOrders) != 0){
+                            $tabla_atributos_concepto = '
+                                <tr>
+                                    <td colspan = "6">
+                                        <table style = "width: 100%;">
+                                            <tbody>
+                                                <tr>
+                                                    <td class = "td2" style="width: 15%;"><b>Orden embarque:</b></td>
+                                                    <td class = "td2">'.$atributos_concepto[$index_concepto]['oCustomAttributes']->shippingOrders.'</td>
+                                                    <td class = "td2" style="width: 10%;"><b>Destino:</b></td>
+                                                    <td class = "td2">'.$atributos_concepto[$index_concepto]['oCustomAttributes']->destinyName.'</td>
+                                                    <td class = "td2" style="width: 10%;"><b>Cliente:</b></td>
+                                                    <td class = "td2">'.$atributos_concepto[$index_concepto]['oCustomAttributes']->customerName.'</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </td>
+                                </tr>
+                            ';
+                        }
                     }
                 }
             }

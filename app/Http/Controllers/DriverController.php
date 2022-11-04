@@ -2,23 +2,22 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Support\Facades\DB;
-use App\Models\Driver;
 use App\Models\Carrier;
-use App\Models\TpFigure;
+use App\Models\Driver;
+use App\Models\FAddress;
 use App\Models\Sat\FiscalAddress;
 use App\Models\Sat\States;
-use App\Models\FAddress;
-use Illuminate\Http\Request;
-use Illuminate\Database\QueryException;
-use Validator;
-use App\User;
+use App\Models\TpFigure;
 use App\Role;
+use App\User;
 use App\UserVsTypes;
-use Auth;
-use Illuminate\Support\Facades\Hash;
 use App\Utils\messagesErros;
+use Illuminate\Database\QueryException;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
+use Validator;
 
 class DriverController extends Controller
 {
@@ -39,16 +38,17 @@ class DriverController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\View\View
      */
     public function index()
     {
         // auth()->user()->authorizeRoles(['admin']);
         auth()->user()->authorizePermission(['311']);
-        if(auth()->user()->isCarrier()){
+        if (auth()->user()->isCarrier()) {
             $data = Driver::where('carrier_id', auth()->user()->carrier()->first()->id_carrier)->get();
-        } else if (auth()->user()->isAdmin() || auth()->user()->isClient()){
-            $data = Driver::get();    
+        }
+        else if (auth()->user()->isAdmin() || auth()->user()->isClient()) {
+            $data = Driver::get();
         }
 
         $data->each(function ($data) {
@@ -57,7 +57,7 @@ class DriverController extends Controller
             $data->User;
         });
 
-        $carriers = Carrier::where('is_deleted', 0)->select('id_carrier','fullname')->get();
+        $carriers = Carrier::where('is_deleted', 0)->select('id_carrier', 'fullname')->get();
 
         return view('ship/drivers/index', ['data' => $data, 'carriers' => $carriers]);
     }
@@ -65,7 +65,7 @@ class DriverController extends Controller
     /**
      * Show the form for creating a new resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\View\View
      */
     public function create()
     {
@@ -95,7 +95,7 @@ class DriverController extends Controller
     {
         // auth()->user()->authorizeRoles(['user', 'admin', 'carrier']);
         auth()->user()->authorizePermission(['312']);
-        if(auth()->user()->isCarrier()){
+        if (auth()->user()->isCarrier()) {
             $request->request->add(['carrier' => auth()->user()->carrier()->first()->id_carrier]);
         }
         $success = true;
@@ -115,7 +115,8 @@ class DriverController extends Controller
                 'rol' => 'required',
                 'password' => ['required', 'string', 'min:8', 'confirmed']
             ]);
-        } else{
+        }
+        else {
             $validator = Validator::make($request->all(), [
                 'fullname' => 'required',
                 'RFC' => 'required',
@@ -163,7 +164,7 @@ class DriverController extends Controller
 
                     $user->roles()->attach(Role::where('id', $rol)->first());
                     $user->tempPass = $request->password;
-                    // $user->sendEmailVerificationNotification();
+                // $user->sendEmailVerificationNotification();
                 }
 
                 $Driver = Driver::create([
@@ -202,7 +203,8 @@ class DriverController extends Controller
                     ]);
                 }
             });
-        } catch (QueryException $e) {
+        }
+        catch (QueryException $e) {
             $success = false;
             $error = messagesErros::sqlMessageError($e->errorInfo[2]);
         }
@@ -210,7 +212,8 @@ class DriverController extends Controller
         if ($success) {
             $msg = "Se guardó el registro con éxito";
             $icon = "success";
-        } else {
+        }
+        else {
             $msg = "Error al guardar el registro. Error: " . $error;
             $icon = "error";
         }
@@ -219,21 +222,10 @@ class DriverController extends Controller
     }
 
     /**
-     * Display the specified resource.
-     *
-     * @param  \App\Driver  $Driver
-     * @return \Illuminate\Http\Response
-     */
-    public function show()
-    {
-        //
-    }
-
-    /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Driver  $Driver
-     * @return \Illuminate\Http\Response
+     * @param  Driver  $Driver
+     * @return \Illuminate\View\View
      */
     public function edit($id)
     {
@@ -242,9 +234,10 @@ class DriverController extends Controller
         $data = Driver::where([['id_trans_figure', $id], ['is_deleted', 0]])->first();
         auth()->user()->carrierAutorization($data->carrier_id);
         $data->FAddress;
-        if(!is_null($data->UserVsTypes()->first())){
+        if (!is_null($data->UserVsTypes()->first())) {
             $data->users;
-        }else{
+        }
+        else {
             $data->users = null;
             $data->is_new = 0;
         }
@@ -252,6 +245,7 @@ class DriverController extends Controller
         $carriers = Carrier::where('is_deleted', 0)->orderBy('fullname', 'ASC')->pluck('id_carrier', 'fullname');
         $countrys = FiscalAddress::orderBy('description', 'ASC')->pluck('id', 'description');
         $states = States::pluck('id', 'state_name');
+
         return view('ship/drivers/edit', [
             'data' => $data, 'tp_figures' => $tp_figures, 'carriers' => $carriers,
             'countrys' => $countrys, 'states' => $states
@@ -262,7 +256,7 @@ class DriverController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Driver  $Driver
+     * @param  Driver  $Driver
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, $id)
@@ -272,7 +266,7 @@ class DriverController extends Controller
 
         $validator = Validator::make($request->all(), [
             'fullname' => 'required',
-            'RFC' => ['required', Rule::unique('f_trans_figures','fiscal_id')->ignore($id, 'id_trans_figure')],
+            'RFC' => ['required', Rule::unique('f_trans_figures', 'fiscal_id')->ignore($id, 'id_trans_figure')],
             'licence' => 'required',
             'tp_figure' => 'required|not_in:0',
             'country' => 'required|not_in:0',
@@ -282,7 +276,7 @@ class DriverController extends Controller
         $validator->setAttributeNames($this->attributeNames);
         $validator->validate();
 
-        if(!is_null($request->editEmail)){
+        if (!is_null($request->editEmail)) {
             $validator = Validator::make($request->all(), [
                 'email' => ['required', 'string', 'email', 'max:255', 'unique:users']
             ]);
@@ -324,24 +318,25 @@ class DriverController extends Controller
                 $address->state_id = $sta_id;
                 $address->usr_upd_id = $user_id;
 
-                if(!is_null($Driver->UserVsTypes()->first())){
+                if (!is_null($Driver->UserVsTypes()->first())) {
                     $user = User::findOrFail($Driver->users()->first()->id);
                     $user->username = mb_strtoupper($request->fullname, 'UTF-8');
                     $user->full_name = mb_strtoupper($request->fullname, 'UTF-8');
-                    if(!is_null($request->editEmail)){
-                        if($user->email != $request->email){
+                    if (!is_null($request->editEmail)) {
+                        if ($user->email != $request->email) {
                             $user->email = $request->email;
                             $user->email_verified_at = null;
                             $user->sendEmailVerificationNotification();
                         }
-                    }    
+                    }
                     $user->update();
                 }
 
                 $Driver->update();
                 $address->update();
             });
-        } catch (QueryException $e) {
+        }
+        catch (QueryException $e) {
             $success = false;
             $error = messagesErros::sqlMessageError($e->errorInfo[2]);
         }
@@ -349,7 +344,8 @@ class DriverController extends Controller
         if ($success) {
             $msg = "Se actualizó el registro con éxito";
             $icon = "success";
-        } else {
+        }
+        else {
             $msg = "Error al actualizar el registro. Error: " . $error;
             $icon = "error";
         }
@@ -359,7 +355,7 @@ class DriverController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Driver  $Driver
+     * @param  Driver  $Driver
      * @return \Illuminate\Http\Response
      */
     public function destroy(Request $request, $id)
@@ -373,7 +369,7 @@ class DriverController extends Controller
                 $Driver = Driver::findOrFail($id);
                 auth()->user()->carrierAutorization($Driver->carrier_id);
                 $address = FAddress::where('trans_figure_id', $id)->firstOrFail();
-                if(!is_null($Driver->users())){
+                if (!is_null($Driver->users())) {
                     $user = User::findOrFail($Driver->users()->first()->id);
                     $user->is_deleted = 1;
                     $UserVsTypes = UserVsTypes::where('trans_figure_id', $Driver->id_trans_figure)->firstOrFail();
@@ -385,16 +381,17 @@ class DriverController extends Controller
 
                 $address->is_deleted = 1;
                 $address->usr_upd_id = $user_id;
-                
+
 
                 $Driver->update();
                 $address->update();
-                if(!is_null($Driver->users())){
+                if (!is_null($Driver->users())) {
                     $user->update();
                     $UserVsTypes->update();
                 }
             });
-        } catch (QueryException $e) {
+        }
+        catch (QueryException $e) {
             $success = false;
             $error = messagesErros::sqlMessageError($e->errorInfo[2]);
         }
@@ -402,7 +399,8 @@ class DriverController extends Controller
         if ($success) {
             $msg = "Se eliminó el registro con éxito";
             $icon = "success";
-        } else {
+        }
+        else {
             $msg = "Error al eliminar el registro. Error: " . $error;
             $icon = "error";
         }
@@ -421,7 +419,7 @@ class DriverController extends Controller
                 $Driver = Driver::findOrFail($id);
                 auth()->user()->carrierAutorization($Driver->carrier_id);
                 $address = FAddress::where('trans_figure_id', $id)->firstOrFail();
-                if(!is_null($Driver->users())){
+                if (!is_null($Driver->users())) {
                     $user = User::findOrFail($Driver->users()->first()->id);
                     $user->is_deleted = 0;
                     $UserVsTypes = UserVsTypes::where('trans_figure_id', $Driver->id_trans_figure)->firstOrFail();
@@ -438,12 +436,13 @@ class DriverController extends Controller
 
                 $Driver->update();
                 $address->update();
-                if(!is_null($Driver->users())){
+                if (!is_null($Driver->users())) {
                     $user->update();
                     $UserVsTypes->update();
                 }
             });
-        } catch (QueryException $e) {
+        }
+        catch (QueryException $e) {
             $success = false;
             $error = messagesErros::sqlMessageError($e->errorInfo[2]);
         }
@@ -451,7 +450,8 @@ class DriverController extends Controller
         if ($success) {
             $msg = "Se recuperó el registro con éxito";
             $icon = "success";
-        } else {
+        }
+        else {
             $msg = "Error al recuperar el registro. Error: " . $error;
             $icon = "error";
         }

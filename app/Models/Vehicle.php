@@ -14,9 +14,11 @@ class Vehicle extends Model
         'year_model',
         'license_sct_num',
         'policy',
+        'is_own',
         'license_sct_id',
         'veh_cfg_id',
         'veh_key_id',
+        'trans_part_n_id',
         'carrier_id',
         'insurance_id',
         'is_deleted',
@@ -24,23 +26,28 @@ class Vehicle extends Model
         'usr_upd_id'
     ];
 
-    public function LicenceSct(){
+    public function LicenceSct()
+    {
         return $this->hasOne('App\Models\Sat\LicenceSct', 'id', 'license_sct_id');
     }
 
-    public function VehicleConfig(){
+    public function VehicleConfig()
+    {
         return $this->hasOne('App\Models\Sat\VehicleConfig', 'id', 'veh_cfg_id');
     }
 
-    public function VehicleKey(){
+    public function VehicleKey()
+    {
         return $this->hasOne('App\Models\VehicleKey', 'id_key', 'veh_key_id');
     }
 
-    public function Carrier(){
+    public function Carrier()
+    {
         return $this->hasOne('App\Models\Carrier', 'id_carrier', 'carrier_id');
     }
 
-    public function Insurance(){
+    public function Insurance()
+    {
         return $this->hasOne('App\Models\Insurances', 'id_insurance', 'insurance_id');
     }
 }

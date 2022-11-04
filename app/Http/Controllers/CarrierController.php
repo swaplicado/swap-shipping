@@ -2,27 +2,26 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Http\File;
 use App\Core\FinkokCore;
 use App\Models\Carrier;
-use Illuminate\Http\Request;
-use Illuminate\Database\QueryException;
-use Validator;
-use Auth;
-use stdClass;
-use App\User;
-use App\Role;
-use App\UserVsTypes;
-use App\Models\Sat\ProdServ;
-use App\Models\Sat\Tax_regimes;
-use Illuminate\Support\Facades\Hash;
-use App\Utils\messagesErros;
-use App\Utils\CfdUtils;
 use App\Models\Certificate;
 use App\Models\Manifest;
+use App\Models\Sat\ProdServ;
+use App\Models\Sat\Tax_regimes;
+use App\Role;
+use App\User;
+use App\UserVsTypes;
+use App\Utils\CfdUtils;
+use App\Utils\messagesErros;
+use Illuminate\Database\QueryException;
+use Illuminate\Http\File;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
+use stdClass;
+use Validator;
 
 class CarrierController extends Controller
 {
@@ -42,29 +41,30 @@ class CarrierController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\View\View
      */
     public function index()
     {
         // auth()->user()->authorizeRoles(['user', 'admin']);
         auth()->user()->authorizePermission(['211']);
-        if(auth()->user()->isCarrier()){
+        if (auth()->user()->isCarrier()) {
             $data = Carrier::where('id_carrier', auth()->user()->carrier()->first()->id_carrier)->get();
-        } else if (auth()->user()->isAdmin() || auth()->user()->isClient()){
-            $data = Carrier::get();    
         }
-        
+        else if (auth()->user()->isAdmin() || auth()->user()->isClient()) {
+            $data = Carrier::get();
+        }
+
         $data->each(function ($data) {
             $data->tax_regime;
         });
-        
-        foreach($data as $d){
+
+        foreach ($data as $d) {
             $d->Carrier = new stdClass();
             $d->Carrier->id_carrier = $d->id_carrier;
             $d->Carrier->fullname = $d->fullname;
         }
 
-        $carriers = Carrier::where('is_deleted', 0)->select('id_carrier','fullname')->get();
+        $carriers = Carrier::where('is_deleted', 0)->select('id_carrier', 'fullname')->get();
 
         return view('ship/carriers/index', ['data' => $data, 'carriers' => $carriers]);
     }
@@ -72,18 +72,20 @@ class CarrierController extends Controller
     /**
      * Show the form for creating a new resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\View\View
      */
     public function create()
     {
         // auth()->user()->authorizeRoles(['user', 'admin']);
         auth()->user()->authorizePermission(['212']);
+
         $data = new Carrier;
         $data->tax_regime = new Tax_regimes;
         $data->prod_serv = new ProdServ;
         $data->users = null;
         $tax_regimes = Tax_regimes::selectRaw('CONCAT(key_code, " - ", description) AS kd, id')->pluck('id', 'kd');
         $prod_serv = ProdServ::where('is_active', 1)->selectRaw('CONCAT(key_code, " - ", description) AS kd, id')->pluck('id', 'kd');
+
         return view('ship/carriers/create', ['data' => $data, 'tax_regimes' => $tax_regimes, 'prod_serv' => $prod_serv]);
     }
 
@@ -91,14 +93,15 @@ class CarrierController extends Controller
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * 
+     * @return \Illuminate\View\View
      */
     public function store(Request $request)
     {
         // auth()->user()->authorizeRoles(['user', 'admin']);
         auth()->user()->authorizePermission(['212']);
         $success = true;
-        $error = "0"; 
+        $error = "0";
 
         $validator = Validator::make($request->all(), [
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
@@ -117,7 +120,7 @@ class CarrierController extends Controller
         $values = json_decode($request->post('tax_regimes'));
         $tr_name = $values->name;
         $tr_id = $values->id;
-        
+
         $prodServ = json_decode($request->post('prod_serv'));
         $ps_name = $prodServ->name;
         $ps_id = $prodServ->id;
@@ -133,11 +136,10 @@ class CarrierController extends Controller
                     'user_type_id' => 3,
                     'is_carrier' => 1
                 ]);
-        
+
                 $user->roles()->attach(Role::where('id', 3)->first());
                 $user->tempPass = $request->password;
-                
-                is_null($request->carrier_stamp) ? $request->carrier_stamp = 0 : "";
+
                 $carrier = Carrier::create([
                     'fullname' => mb_strtoupper($request->fullname, 'UTF-8'),
                     'comercial_name' => mb_strtoupper($request->comercial_name, 'UTF-8'),
@@ -150,9 +152,9 @@ class CarrierController extends Controller
                     'prod_serv_id' => $ps_id,
                     'usr_new_id' => $user_id,
                     'usr_upd_id' => $user_id,
-                    'carrier_stamp' => $request->carrier_stamp
+                    'carrier_stamp' => isset($request->carrier_stamp) ? $request->carrier_stamp : 0
                 ]);
-                
+
                 $UserVsTypes = UserVsTypes::create([
                     'carrier_id' => $carrier->id_carrier,
                     'user_id' => $user->id,
@@ -160,7 +162,8 @@ class CarrierController extends Controller
                 ]);
                 $user->sendEmailVerificationNotification();
             });
-        } catch (QueryException $e) {
+        }
+        catch (QueryException $e) {
             $success = false;
             $error = messagesErros::sqlMessageError($e->errorInfo[2]);
         }
@@ -168,7 +171,8 @@ class CarrierController extends Controller
         if ($success) {
             $msg = "Se guardó el registro con éxito";
             $icon = "success";
-        } else {
+        }
+        else {
             $msg = "Error al guardar el registro Error: " . $error;
             $icon = "error";
         }
@@ -177,21 +181,10 @@ class CarrierController extends Controller
     }
 
     /**
-     * Display the specified resource.
-     *
-     * @param  \App\Carrier  $carrier
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Carrier $carrier)
-    {
-        //
-    }
-
-    /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Carrier  $carrier
-     * @return \Illuminate\Http\Response
+     * @param  Carrier  $carrier
+     * @return \Illuminate\View\View
      */
     public function edit($id)
     {
@@ -199,15 +192,15 @@ class CarrierController extends Controller
         auth()->user()->authorizePermission(['213']);
         auth()->user()->carrierAutorization($id);
         $data = Carrier::findOrFail($id);
-        if(!is_null($data)){
+        if (!is_null($data)) {
             $data->users;
             $data->tax_regime;
             $data->prod_serv;
         }
-        
+
         $tax_regimes = Tax_regimes::selectRaw('CONCAT(key_code, " - ", description) AS kd, id')->pluck('id', 'kd');
         $prod_serv = ProdServ::where('is_active', 1)->selectRaw('CONCAT(key_code, " - ", description) AS kd, id')->pluck('id', 'kd');
-        
+
         return view('ship/carriers/edit', ['data' => $data, 'tax_regimes' => $tax_regimes, 'prod_serv' => $prod_serv]);
     }
 
@@ -215,7 +208,7 @@ class CarrierController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Carrier  $carrier
+     * @param  Carrier  $carrier
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, $id)
@@ -228,7 +221,7 @@ class CarrierController extends Controller
 
         $validator = Validator::make($request->all(), [
             'fullname' => 'required',
-            'RFC' => ['required', Rule::unique('f_carriers','fiscal_id')->ignore($id, 'id_carrier')],
+            'RFC' => ['required', Rule::unique('f_carriers', 'fiscal_id')->ignore($id, 'id_carrier')],
             'tax_regimes' => 'required|not_in:0',
             'prod_serv' => 'required|not_in:0'
         ]);
@@ -236,14 +229,14 @@ class CarrierController extends Controller
         $validator->setAttributeNames($this->attributeNames);
         $validator->validate();
 
-        if(!is_null($request->editEmail)){
+        if (!is_null($request->editEmail)) {
             $validator = Validator::make($request->all(), [
                 'email' => ['required', 'string', 'email', 'max:255', 'unique:users']
             ]);
             $validator->setAttributeNames($this->attributeNames);
             $validator->validate();
         }
-        
+
         $user_id = (auth()->check()) ? auth()->user()->id : null;
 
         $values = json_decode($request->post('tax_regimes'));
@@ -269,8 +262,8 @@ class CarrierController extends Controller
 
                 $user->username = mb_strtoupper($request->fullname, 'UTF-8');
                 $user->full_name = mb_strtoupper($request->fullname, 'UTF-8');
-                if(!is_null($request->editEmail)){
-                    if($user->email != $request->email){
+                if (!is_null($request->editEmail)) {
+                    if ($user->email != $request->email) {
                         $user->email = $request->email;
                         $user->email_verified_at = null;
                         $user->sendEmailVerificationNotification();
@@ -280,7 +273,8 @@ class CarrierController extends Controller
                 $carrier->update();
                 $user->update();
             });
-        } catch (QueryException $e) {
+        }
+        catch (QueryException $e) {
             $success = false;
             $error = messagesErros::sqlMessageError($e->errorInfo[2]);
         }
@@ -288,7 +282,8 @@ class CarrierController extends Controller
         if ($success) {
             $msg = "Se actualizó el registro con éxito";
             $icon = "success";
-        } else {
+        }
+        else {
             $msg = "Error al actualizar el registro. Error: " . $error;
             $icon = "error";
         }
@@ -300,7 +295,8 @@ class CarrierController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Carrier  $carrier
+     * @param integer  $carrier
+     * 
      * @return \Illuminate\Http\Response
      */
     public function destroy($id)
@@ -327,7 +323,8 @@ class CarrierController extends Controller
                 $user->update();
                 $UserVsTypes->update();
             });
-        } catch (QueryException $e) {
+        }
+        catch (QueryException $e) {
             $success = false;
             $error = messagesErros::sqlMessageError($e->errorInfo[2]);
         }
@@ -335,7 +332,8 @@ class CarrierController extends Controller
         if ($success) {
             $msg = "Se eliminó el registro con éxito";
             $icon = "success";
-        } else {
+        }
+        else {
             $msg = "Error al eliminar el registro. Error: " . $error;
             $icon = "error";
         }
@@ -343,7 +341,7 @@ class CarrierController extends Controller
         return redirect('carriers')->with(['message' => $msg, 'icon' => $icon]);
     }
 
-    public function recover($id) 
+    public function recover($id)
     {
         // auth()->user()->authorizeRoles(['user', 'admin']);
         auth()->user()->authorizePermission(['215']);
@@ -367,7 +365,8 @@ class CarrierController extends Controller
                 $user->update();
                 $UserVsTypes->update();
             });
-        } catch (QueryException $e) {
+        }
+        catch (QueryException $e) {
             $success = false;
             $error = messagesErros::sqlMessageError($e->errorInfo[2]);
         }
@@ -375,7 +374,8 @@ class CarrierController extends Controller
         if ($success) {
             $msg = "Se recuperó el registro con éxito";
             $icon = "success";
-        } else {
+        }
+        else {
             $msg = "Error al recuperar el registro. Error: " . $error;
             $icon = "error";
         }
@@ -383,7 +383,8 @@ class CarrierController extends Controller
         return redirect('carriers')->with(['message' => $msg, 'icon' => $icon]);
     }
 
-    public function editFiscalData(Request $request, $id){
+    public function editFiscalData(Request $request, $id)
+    {
         auth()->user()->authorizePermission(['213']);
         auth()->user()->carrierAutorization($id);
         $data = Carrier::where('id_carrier', $id)->first();
@@ -392,27 +393,27 @@ class CarrierController extends Controller
         $data->prod_serv;
 
         $certificates = \DB::table('f_certificates AS c')
-                                ->join('users AS unew', 'unew.id', '=', 'c.usr_new_id')
-                                ->join('users AS uupd', 'uupd.id', '=', 'c.usr_upd_id')
-                                ->select('c.*', 'unew.username as unew_username', 'uupd.username as uupd_username')
-                                ->where('c.carrier_id', $id)
-                                ->orderBy('c.dt_valid_to', 'DESC')
-                                ->orderBy('c.dt_valid_from', 'DESC')
-                                ->get();
+            ->join('users AS unew', 'unew.id', '=', 'c.usr_new_id')
+            ->join('users AS uupd', 'uupd.id', '=', 'c.usr_upd_id')
+            ->select('c.*', 'unew.username as unew_username', 'uupd.username as uupd_username')
+            ->where('c.carrier_id', $id)
+            ->orderBy('c.dt_valid_to', 'DESC')
+            ->orderBy('c.dt_valid_from', 'DESC')
+            ->get();
 
         $tax_regimes = Tax_regimes::selectRaw('CONCAT(key_code, " - ", description) AS kd, id')->pluck('id', 'kd');
         $prod_serv = ProdServ::where('is_active', 1)->selectRaw('CONCAT(key_code, " - ", description) AS kd, id')->pluck('id', 'kd');
 
         $bManifestSigned = Manifest::where('carrier_id', $id)->where('is_signed', true)->count() > 0;
-        
+
         return view('ship/carriers/fiscalData', [
-                                                    'data' => $data, 
-                                                    'tax_regimes' => $tax_regimes, 
-                                                    'prod_serv' => $prod_serv,
-                                                    'certificates' => $certificates,
-                                                    'id' => $id,
-                                                    'bManifestSigned' => $bManifestSigned
-                                                ]);
+            'data' => $data,
+            'tax_regimes' => $tax_regimes,
+            'prod_serv' => $prod_serv,
+            'certificates' => $certificates,
+            'id' => $id,
+            'bManifestSigned' => $bManifestSigned
+        ]);
     }
 
     public function updateFiscalData(Request $request, $id)
@@ -424,7 +425,7 @@ class CarrierController extends Controller
         $error = "0";
 
         $validator = Validator::make($request->all(), [
-            'RFC' => ['required', Rule::unique('f_carriers','fiscal_id')->ignore($id, 'id_carrier')],
+            'RFC' => ['required', Rule::unique('f_carriers', 'fiscal_id')->ignore($id, 'id_carrier')],
             'tax_regimes' => 'required|not_in:0',
             'prod_serv' => 'required|not_in:0',
             'delega_CFDI' => 'required'
@@ -432,7 +433,7 @@ class CarrierController extends Controller
 
         $validator->setAttributeNames($this->attributeNames);
         $validator->validate();
-        
+
         $user_id = (auth()->check()) ? auth()->user()->id : null;
 
         $values = json_decode($request->post('tax_regimes'));
@@ -447,7 +448,7 @@ class CarrierController extends Controller
         try {
             DB::transaction(function () use ($request, $user_id, $id, $tr_id, $ps_id) {
                 $carrier = Carrier::findOrFail($id);
-                
+
                 $carrier->fiscal_id = mb_strtoupper($request->RFC, 'UTF-8');
                 $carrier->tax_regimes_id = $tr_id;
                 $carrier->prod_serv_id = $ps_id;
@@ -469,7 +470,8 @@ class CarrierController extends Controller
                 $carrier->delega_edit_stamp = $delega_edit_stamp;
                 $carrier->update();
             });
-        } catch (QueryException $e) {
+        }
+        catch (QueryException $e) {
             $success = false;
             $error = messagesErros::sqlMessageError($e->errorInfo[2]);
         }
@@ -477,7 +479,8 @@ class CarrierController extends Controller
         if ($success) {
             $msg = "Se actualizó el registro con éxito";
             $icon = "success";
-        } else {
+        }
+        else {
             $msg = "Error al actualizar el registro. Error: " . $error;
             $icon = "error";
         }
@@ -491,9 +494,9 @@ class CarrierController extends Controller
      * después guarda el log y elimina los certificados
      * 
      * @param  Request $request
-     * @return Response
+     * @return \Illuminate\Http\JsonResponse
      */
-    public function storeCertificate(Request $request)    
+    public function storeCertificate(Request $request)
     {
         $filePc = $request->file('pc');
         $fileNamePc = $filePc->getClientOriginalName();
@@ -503,7 +506,7 @@ class CarrierController extends Controller
 
         $carrier = Carrier::find($request->carrier);
 
-        $urlPc = Storage::putFileAs($destinationPath, new File($filePathPc), $carrier->fiscal_id.'_.cer');
+        $urlPc = Storage::putFileAs($destinationPath, new File($filePathPc), $carrier->fiscal_id . '_.cer');
 
         $certificate = CfdUtils::getCerData($urlPc);
 
@@ -528,19 +531,19 @@ class CarrierController extends Controller
         }
 
         $filePv = $request->file('pv');
-    
+
         $fileNamePv = $filePv->getClientOriginalName();
         $fileExtensionPv = $filePv->getClientOriginalExtension();
         $filePathPv = $filePv->getRealPath();
 
-        $urlPv = Storage::putFileAs($destinationPath, new File($filePathPv), $oCarrier->fiscal_id.'_.key');
+        $urlPv = Storage::putFileAs($destinationPath, new File($filePathPv), $oCarrier->fiscal_id . '_.key');
 
         $response = FinkokCore::regCertificates($urlPc, $urlPv, $request->pw, $oCarrier->fiscal_id);
 
-        if (! $response['success']) {
+        if (!$response['success']) {
             Storage::disk('local')->delete($urlPc);
             Storage::disk('local')->delete($urlPv);
-            
+
             return redirect(route('editar_carrierFiscalData', ['id' => $oCarrier->id_carrier]))->with(['message' => $response['message'], 'icon' => 'error']);
         }
 
@@ -554,12 +557,12 @@ class CarrierController extends Controller
             $oCertificate->carrier_id = $oCarrier->id_carrier;
             $oCertificate->usr_new_id = auth()->user()->id;
             $oCertificate->usr_upd_id = auth()->user()->id;
-    
+
             $oCertificate->save();
         }
 
-        CfdUtils::encryptFile(Storage::disk('local')->path($urlPc), substr(Storage::disk('local')->path($urlPc), 0, strlen(Storage::disk('local')->path($urlPc)) - 4).'cer.enc', env('FL_KEY'));
-        CfdUtils::encryptFile(Storage::disk('local')->path($urlPv), substr(Storage::disk('local')->path($urlPv), 0, strlen(Storage::disk('local')->path($urlPv)) - 4).'key.enc', env('FL_KEY'));
+        CfdUtils::encryptFile(Storage::disk('local')->path($urlPc), substr(Storage::disk('local')->path($urlPc), 0, strlen(Storage::disk('local')->path($urlPc)) - 4) . 'cer.enc', env('FL_KEY'));
+        CfdUtils::encryptFile(Storage::disk('local')->path($urlPv), substr(Storage::disk('local')->path($urlPv), 0, strlen(Storage::disk('local')->path($urlPv)) - 4) . 'key.enc', env('FL_KEY'));
 
         Storage::disk('local')->delete($urlPc);
         Storage::disk('local')->delete($urlPv);
@@ -575,7 +578,7 @@ class CarrierController extends Controller
             return redirect()->back()->with(['message' => 'No se encontró el transportista', 'icon' => 'error']);
         }
 
-        if (! isset($request->is_signed) || $request->is_signed == null) {
+        if (!isset($request->is_signed) || $request->is_signed == null) {
             return redirect()->back()->with(['message' => 'No se confirmó la firma de manifiesto', 'icon' => 'error']);
         }
 
@@ -588,11 +591,11 @@ class CarrierController extends Controller
         $oSignManifest->save();
 
         return redirect(route('editar_carrierFiscalData', ['id' => $oCarrier->id_carrier]))
-                    ->with(
-                        [
-                            'message' => 'El manifiesto fue firmado correctamente', 
-                            'icon' => 'success'
-                        ]
-                    );
+            ->with(
+                    [
+                        'message' => 'El manifiesto fue firmado correctamente',
+                        'icon' => 'success'
+                    ]
+        );
     }
 }

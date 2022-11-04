@@ -3,15 +3,20 @@
 use Illuminate\Support\Facades\Storage;
 use SoapClient;
 use App\Utils\CfdUtils;
-use App\Utils\FileUtils;
 use App\Models\Certificate;
-use App\Core\SATCore;
 
 class FinkokCore {
 
     public static function signCfdi($xml = "") {
         $username = FinkokCore::getFinkokUser();
         $password = FinkokCore::getFinkokPass();
+
+        if (is_null($username) || is_null($password) ) {
+            $error = ["error_code" => "Local", 
+                        "message" => "El usuario y/o contraseña para timbrado no se han podido leer correctamente."];
+
+            return $error;
+        }
                     
         // $xml_content = base64_encode($xml); # En base64
         $xml_content = $xml;
@@ -24,9 +29,17 @@ class FinkokCore {
         );
         
         # Petición al web service
-        $client = new SoapClient((env('APP_ENV') === "local" ? env('FINKOK_URL_STAMP_LOCAL') :
-                                (env('APP_ENV') === "production" ? env('FINKOK_URL_STAMP_PRODUCTION') : ''))
-                                , array('trace' => 1));
+        $wsdlUrl = (env('APP_ENV') === "local" ? env('FINKOK_URL_STAMP_LOCAL') :
+                    (env('APP_ENV') === "production" ? env('FINKOK_URL_STAMP_PRODUCTION') : ''));
+
+        if (is_null($wsdlUrl) || $wsdlUrl === "") {
+            $error = ["error_code" => "Local", 
+                        "message" => "No se pudo obtener la URL de timbrado."];
+
+            return $error;
+        }
+
+        $client = new SoapClient($wsdlUrl);
         
         $result = $client->__soapCall("sign_stamp", array($params));
         
@@ -64,6 +77,10 @@ class FinkokCore {
 
         $username = FinkokCore::getFinkokUser();
         $password = FinkokCore::getFinkokPass();
+
+        if (is_null($username) || is_null($password) ) {
+            return redirect("error")->with(['error_message' => "El usuario y/o contraseña para timbrado no se han podido leer correctamente."]);
+        }
         
         $params = array(
             "reseller_username" => $username,
@@ -127,6 +144,10 @@ class FinkokCore {
         $username = FinkokCore::getFinkokUser();
         $password = FinkokCore::getFinkokPass();
 
+        if (is_null($username) || is_null($password) ) {
+            return redirect("error")->with(['error_message' => "El usuario y/o contraseña para timbrado no se han podido leer correctamente."]);
+        }
+
         $taxpayer = $oCarrier->fiscal_id;
         
         # Read the x509 certificate file on PEM format and encode it on base64
@@ -145,6 +166,7 @@ class FinkokCore {
         # In newer PHP versions the SoapLib class automatically converts FILE parameters to base64, so the next line is not needed, otherwise uncomment it
         #$key_content = base64_encode($key_content);
 
+        $folioRef = "";
         $client = new SoapClient((env('APP_ENV') === "local" ? env('FINKOK_URL_CANCEL_LOCAL') :
                                 (env('APP_ENV') === "production" ? env('FINKOK_URL_CANCEL_PRODUCTION') : ''))
                                 , array('trace' => 1));

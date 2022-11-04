@@ -30,7 +30,7 @@
                 <small class="text-muted">De 1 hasta 100 caracteres alfanuméricos.</small>
             </div>
         </div>
-        <div v-if="bCustomAtts" class="row">
+        <div v-if="bCustomAtts && oConcept.oCustomAttributes != undefined" class="row">
             <div class="col-md-3">
                 <label class="form-label">Folios de embarque</label>
                 <input type="text" :title="oConcept.oCustomAttributes.shippingOrders" class="form-control" v-model="oConcept.oCustomAttributes.shippingOrders">

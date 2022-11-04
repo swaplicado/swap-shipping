@@ -33,6 +33,13 @@ Vue.component('my-currency-input', {
     }
 });
 
+class SVehicleAux {
+    constructor() {
+        this.is_own = true;
+        this.oFigTranCfg = new Object();
+    }
+}
+
 var app = new Vue({
     el: '#cfdi_app',
     data: {
@@ -101,7 +108,7 @@ var app = new Vue({
         addTrailer() {
             if (this.oVehicle != null && this.oVehicle != undefined) {
                 if (this.oVehicle.vcfg_trailer != 0) {
-                    this.lSelectedTrailers.push({ oTrailer: 0 });
+                    this.lSelectedTrailers.push({ oTrailer: new SVehicleAux() });
                 }
             }
         },

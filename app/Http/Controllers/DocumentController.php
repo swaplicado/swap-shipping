@@ -2,29 +2,28 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Support\Facades\DB;
-use Carbon\Carbon;
+use App\Core\FinkokCore;
+use App\Core\RequestCore;
+use App\Core\SATCore;
+use App\Http\Controllers\Controller;
+use App\Mail\SendXmlPdf;
+use App\Models\Carrier;
 use App\Models\Document;
 use App\Models\DocumentStamp;
 use App\Models\M\MDocument;
 use App\Models\M\MSignLog;
-use App\Models\M\MRequestLog;
-use App\Models\Carrier;
 use App\Models\VehicleKey;
-use Illuminate\Http\Request;
-use Illuminate\Http\Response;
-use App\Http\Controllers\Controller;
 use App\SXml\XmlGeneration;
-use App\SXml\transformJson;
-use App\Core\RequestCore;
-use App\Core\FinkokCore;
 use App\Utils\CfdiUtils;
-use App\Utils\SFormats;
-use Illuminate\Support\Facades\Mail;
-use App\Mail\SendXmlPdf;
-use App\Utils\MailUtils;
 use App\Utils\GralUtils;
-use App\Core\SATCore;
+use App\Utils\MailUtils;
+use App\Utils\messagesErros;
+use App\Utils\SFormats;
+use Carbon\Carbon;
+use Illuminate\Database\QueryException;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 
 class DocumentController extends Controller
 {
@@ -229,7 +228,7 @@ class DocumentController extends Controller
      *
      * @param integer $idDocument
      * 
-     * @return view
+     * @return \Illuminate\View\View
      */
     public function edit($idDocument)
     {
@@ -284,6 +283,7 @@ class DocumentController extends Controller
                                 'v.veh_cfg_id',
                                 'v.veh_key_id',
                                 'v.carrier_id',
+                                'v.is_own',
                                 'vcfg.key_code AS vcfg_key_code',
                                 'vcfg.description AS vcfg_description',
                                 'vcfg.trailer AS vcfg_trailer',
@@ -305,6 +305,30 @@ class DocumentController extends Controller
                             ->where('t.carrier_id', $oCarrier->id_carrier)
                             ->get();
 
+        foreach ($lTrailers as $oTr) {
+            if (! $oTr->is_own) {
+                // Agrega la información configurada del dueño o arrendatario del vehículo
+                $oFigTranCfg = \DB::table('f_trans_figures_cfg AS tfc')
+                                    ->join('sat_transp_parts AS tp', 'tfc.trans_part_id', '=', 'tp.id')
+                                    ->join('sat_figure_types AS fty', 'tfc.figure_type_id', '=', 'fty.id')
+                                    ->join('f_trans_figures AS tf', 'tfc.figure_trans_id', '=', 'tf.id_trans_figure')
+                                    ->where('tfc.veh_tra_id', $oTr->id_trailer)
+                                    ->whereIn('tp.id', [4, 5])
+                                    ->select('tfc.*', 
+                                            'tp.key_code AS key_trans_part',
+                                            'tp.description AS desc_trans_part',
+                                            'fty.key_code AS key_figure_type',
+                                            'fty.description AS desc_figure_type',
+                                            'tf.fullname',
+                                            'tf.fiscal_id'
+                                        )
+                                    ->orderBy('tfc.id', 'DESC')
+                                    ->first();
+
+                $oTr->oFigTranCfg = $oFigTranCfg;
+            }
+        }
+
         // si el documento ya está procesado obtiene los datos de la base de datos
         $iVehKeyId = 0;
         if ($oDocument->is_processed) {
@@ -313,7 +337,7 @@ class DocumentController extends Controller
             $oVehicle = $oObjData->oVehicle;
             $oFigure = $oObjData->oFigure;
             $oTrailer = [];
-            foreach($oObjData->lTrailers as $trailer){
+            foreach ($oObjData->lTrailers as $trailer) {
                 array_push($oTrailer, $trailer['oTrailer']);
             }
 
@@ -349,17 +373,41 @@ class DocumentController extends Controller
                                     ->where('v.carrier_id', $oCarrier->id_carrier)
                                     ->first();
 
-            $plates = $this->getArrayFromString($oRequestObj->placaRemolque);
+            if (! $oVehicle->is_own) {
+                // Agrega la información configurada del dueño o arrendatario del vehículo
+                $oFigTranCfg = \DB::table('f_trans_figures_cfg AS tfc')
+                                    ->join('sat_transp_parts AS tp', 'tfc.trans_part_id', '=', 'tp.id')
+                                    ->join('sat_figure_types AS fty', 'tfc.figure_type_id', '=', 'fty.id')
+                                    ->join('f_trans_figures AS tf', 'tfc.figure_trans_id', '=', 'tf.id_trans_figure')
+                                    ->where('tfc.veh_tra_id', $oVehicle->id_vehicle)
+                                    ->whereIn('tp.id', [1, 2, 3, 6])
+                                    ->select('tfc.*', 
+                                            'tp.key_code AS key_trans_part',
+                                            'tp.description AS desc_trans_part',
+                                            'fty.key_code AS key_figure_type',
+                                            'fty.description AS desc_figure_type',
+                                            'tf.fullname',
+                                            'tf.fiscal_id'
+                                        )
+                                    ->orderBy('tfc.id', 'DESC')
+                                    ->first();
+
+                $oVehicle->oFigTranCfg = $oFigTranCfg;
+            }
+
+            $plates = $this->getArrayFromString(isset($oRequestObj->placaRemolque) ? $oRequestObj->placaRemolque : "");
             $lTra = clone $lTrailers;
             $oTrailer = [];
 
-            foreach($plates as $p){
+            foreach ($plates as $p) {
                 $Trailer = $lTra->where('plates', $p)
                                     ->where('carrier_id', $oCarrier->id_carrier)
                                     ->first();
-                if(is_null($Trailer)){
+
+                if (is_null($Trailer)) {
                     $Trailer = new \stdClass();
                 }
+
                 array_push($oTrailer, $Trailer);
             }
 
@@ -400,6 +448,30 @@ class DocumentController extends Controller
 
         $lVehicles = $lVehicles->get();
 
+        foreach ($lVehicles as $oVeh) {
+            if (! $oVeh->is_own) {
+                // Agrega la información configurada del dueño o arrendatario del vehículo
+                $oFigTranCfg = \DB::table('f_trans_figures_cfg AS tfc')
+                                    ->join('sat_transp_parts AS tp', 'tfc.trans_part_id', '=', 'tp.id')
+                                    ->join('sat_figure_types AS fty', 'tfc.figure_type_id', '=', 'fty.id')
+                                    ->join('f_trans_figures AS tf', 'tfc.figure_trans_id', '=', 'tf.id_trans_figure')
+                                    ->where('tfc.veh_tra_id', $oVeh->id_vehicle)
+                                    ->whereIn('tp.id', [1, 2, 3, 6])
+                                    ->select('tfc.*', 
+                                            'tp.key_code AS key_trans_part',
+                                            'tp.description AS desc_trans_part',
+                                            'fty.key_code AS key_figure_type',
+                                            'fty.description AS desc_figure_type',
+                                            'tf.fullname',
+                                            'tf.fiscal_id'
+                                        )
+                                    ->orderBy('tfc.id', 'DESC')
+                                    ->first();
+
+                $oVeh->oFigTranCfg = $oFigTranCfg;
+            }
+        }
+
         $lVehicleKeys = VehicleKey::get();
 
         // Obtiene las figuras de transporte que tiene dados de alta el transportista
@@ -412,6 +484,7 @@ class DocumentController extends Controller
                                         'fa.description AS fiscal_address_description',
                                         'fa.key_code AS fiscal_address_key_code')
                             ->where('f.carrier_id', $oCarrier->id_carrier)
+                            ->where('ft.id', 1)
                             ->where('is_deleted', false)
                             ->get();
 
@@ -511,7 +584,7 @@ class DocumentController extends Controller
      * @param Request $request
      * @param integer $idDocument
      * 
-     * @return redirect
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function update(Request $request, $idDocument)
     {
@@ -573,7 +646,7 @@ class DocumentController extends Controller
             $aConcept["description"] = $oClientConcept->description;
             $aConcept["unidad"] = $oClientConcept->unidad;
             $aConcept["numIdentificacion"] = $oClientConcept->numIndentificacion;
-            if (env('WITH_CUSTOM_ATTRIBUTES')) {
+            if (env('WITH_CUSTOM_ATTRIBUTES') && isset($oClientConcept->oCustomAttributes)) {
                 $aConcept["oCustomAttributes"] = $oClientConcept->oCustomAttributes;
             }
             
@@ -760,12 +833,12 @@ class DocumentController extends Controller
     public function sign($id)
     {
         $oDocument = Document::find($id);
-        if(auth()->user()->isAdmin() || auth()->user()->isClient()) {
-            abort_unless(CfdiUtils::remisionistaCanEdit($oDocument->carrier_id), 401);
-        }else{
-            auth()->user()->authorizePermission(['116']);
-            auth()->user()->carrierAutorization($oDocument->carrier_id);
-        }
+        // if(auth()->user()->isAdmin() || auth()->user()->isClient()) {
+        //     abort_unless(CfdiUtils::remisionistaCanEdit($oDocument->carrier_id), 401);
+        // }else{
+        //     auth()->user()->authorizePermission(['116']);
+        //     auth()->user()->carrierAutorization($oDocument->carrier_id);
+        // }
         
         $oMongoDocument = MDocument::find($oDocument->mongo_document_id);
 
@@ -814,8 +887,11 @@ class DocumentController extends Controller
         $oDocStamp = new DocumentStamp();
         $oDocStamp->dt_stamp = date('Y-m-d H:i:s');
         $oDocStamp->stamp_type = "timbre";
+        $oDocStamp->increase = 0;
+        $oDocStamp->decrement = 1;
         $oDocStamp->document_id = $oDocument->id_document;
-        $oDocStamp->usr_new_id = \Auth::user()->id;
+        $oDocStamp->carrier_id = $oDocument->carrier_id;
+        $oDocStamp->user_by_id = \Auth::user()->id;
         $oDocStamp->save();
 
         // Guardar log de evento de timbrado en MongoDB
@@ -992,8 +1068,11 @@ class DocumentController extends Controller
             $oDocStamp = new DocumentStamp();
             $oDocStamp->dt_stamp = date('Y-m-d H:i:s');
             $oDocStamp->stamp_type = "cancelacion";
+            $oDocStamp->increase = 0;
+            $oDocStamp->decrement = 1;
             $oDocStamp->document_id = $oDocument->id_document;
-            $oDocStamp->usr_new_id = \Auth::user()->id;
+            $oDocStamp->carrier_id = $oDocument->carrier_id;
+            $oDocStamp->user_by_id = \Auth::user()->id;
             $oDocStamp->save();
 
             return redirect("documents")->with(['message' => "El documento ha sido cancelado exitosamente", 'icon' => "success"]);

@@ -2,9 +2,6 @@
 
 use Carbon\Carbon;
 use DOMDocument;
-use DOMAttr;
-use XSLTProcessor;
-use phpseclib\Crypt\RSA;
 use App\Utils\SFormats;
 
 class XmlGeneration {
@@ -339,11 +336,15 @@ class XmlGeneration {
             }
         }
 
-        // FiguraTransporte
+        /**
+         * Figuras transporte
+         */
+
+        // FiguraTransporte (Chofer)
         $nodeFiguraTransporte = $dom->createElement('cartaporte20:FiguraTransporte');
         $nodeCartaPorte->appendChild($nodeFiguraTransporte);
 
-        // TiposFigura
+        // TiposFigura (Chofer)
         $nodeTiposFigura = $dom->createElement('cartaporte20:TiposFigura');
         $nodeTiposFigura->setAttribute('TipoFigura', $oMongoDocument->oFigure["figure_type_key_code"]);
         $nodeTiposFigura->setAttribute('RFCFigura', $oMongoDocument->oFigure["fiscal_id"]);
@@ -351,14 +352,40 @@ class XmlGeneration {
         $nodeTiposFigura->setAttribute('NombreFigura', $oMongoDocument->oFigure["fullname"]);
         $nodeFiguraTransporte->appendChild($nodeTiposFigura);
 
-        // PartesTransporte
-        // $nodePartesTransporte = $dom->createElement('cartaporte20:PartesTransporte');
-        // $nodePartesTransporte->setAttribute('ParteTransporte', "PT04");
-        // $nodeTiposFigura->appendChild($nodePartesTransporte);
+        if (! $oMongoDocument->oVehicle["is_own"]) {
+            // TiposFigura (Vehículo)
+            $nodeTiposFiguraVeh = $dom->createElement('cartaporte20:TiposFigura');
+            $nodeTiposFiguraVeh->setAttribute('TipoFigura', $oMongoDocument->oVehicle["oFigTranCfg"]["key_figure_type"]);
+            $nodeTiposFiguraVeh->setAttribute('RFCFigura', $oMongoDocument->oVehicle["oFigTranCfg"]["fiscal_id"]);
+            $nodeTiposFiguraVeh->setAttribute('NombreFigura', $oMongoDocument->oVehicle["oFigTranCfg"]["fullname"]);
+            $nodeFiguraTransporte->appendChild($nodeTiposFiguraVeh);
+
+            // PartesTransporte (Vehículo)
+            $nodePartesTransporteVeh = $dom->createElement('cartaporte20:PartesTransporte');
+            $nodePartesTransporteVeh->setAttribute('ParteTransporte', $oMongoDocument->oVehicle["oFigTranCfg"]["key_trans_part"]);
+            $nodeTiposFiguraVeh->appendChild($nodePartesTransporteVeh);
+        }
+
+        if (count($oMongoDocument->lTrailers) > 0) {
+            foreach ($oMongoDocument->lTrailers as $oTrailer) {
+                // Remolque
+                if (! $oTrailer["oTrailer"]["is_own"]) {
+                    // TiposFigura (Vehículo)
+                    $nodeTiposFiguraTra = $dom->createElement('cartaporte20:TiposFigura');
+                    $nodeTiposFiguraTra->setAttribute('TipoFigura', $oTrailer["oTrailer"]["oFigTranCfg"]["key_figure_type"]);
+                    $nodeTiposFiguraTra->setAttribute('RFCFigura', $oTrailer["oTrailer"]["oFigTranCfg"]["fiscal_id"]);
+                    $nodeTiposFiguraTra->setAttribute('NombreFigura', $oTrailer["oTrailer"]["oFigTranCfg"]["fullname"]);
+                    $nodeFiguraTransporte->appendChild($nodeTiposFiguraTra);
+
+                    // PartesTransporte (Vehículo)
+                    $nodePartesTransporteTra = $dom->createElement('cartaporte20:PartesTransporte');
+                    $nodePartesTransporteTra->setAttribute('ParteTransporte', $oTrailer["oTrailer"]["oFigTranCfg"]["key_trans_part"]);
+                    $nodeTiposFiguraTra->appendChild($nodePartesTransporteTra);
+                }
+            }
+        }
 
 		$dom->appendChild($root);
-        // $xml_file_name = base_path("temp\\temp.xml");
-	    // $dom->save($xml_file_name);
 
         $sXml = $dom->saveXML();
 

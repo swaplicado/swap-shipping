@@ -2,25 +2,19 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Http\File;
-use Illuminate\Http\Request;
-use App\Utils\Configuration;
-use App\Utils\CfdUtils;
-use App\Utils\Encryption;
-use App\Core\FinkokCore;
-use Validator;
-use App\Models\Sat\ProdServ;
 use App\Models\Sat\Currencies;
-use App\Models\Sat\Units;
-use App\Models\Sat\Tax_regimes;
-use App\Models\Sat\UsoCFDI;
-use App\Models\Sat\Taxes;
 use App\Models\Sat\Payment_forms;
 use App\Models\Sat\Payment_methods;
-use App\Models\Certificate;
-use App\Models\Carrier;
+use App\Models\Sat\ProdServ;
+use App\Models\Sat\Taxes;
+use App\Models\Sat\Tax_regimes;
+use App\Models\Sat\Units;
+use App\Models\Sat\UsoCFDI;
+use App\Utils\Configuration;
 use App\Utils\SFormats;
+use Illuminate\Http\File;
+use Illuminate\Http\Request;
+use Validator;
 
 class ConfigController extends Controller
 {
@@ -42,7 +36,7 @@ class ConfigController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\View\View
      */
     public function index()
     {
@@ -51,46 +45,15 @@ class ConfigController extends Controller
         $data->tarifaBase = SFormats::formatMoney($data->tarifaBase);
         $data->tarifaBaseEscala = SFormats::formatMoney($data->tarifaBaseEscala);
         $data->distanciaMinima = SFormats::formatNumber($data->distanciaMinima);
+
         return view('sys/config/index', ['data' => $data]);
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
     }
 
     /**
      * Show the form for editing the specified resource.
      *
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\View\View
      */
     public function edit()
     {
@@ -116,7 +79,7 @@ class ConfigController extends Controller
         $payMethod = Payment_methods::selectRaw('CONCAT(key_code, " - ", description) AS kd, id')->pluck('id', 'kd');
 
         return view('sys/config/edit', ['data' => $data, 'currencies' => $currencies,
-            'prod_serv' => $prod_serv, 'currencies' => $currencies, 'units' => $units,
+            'prod_serv' => $prod_serv, 'units' => $units,
             'usoCFDI' => $usoCFDI, 'tax_regimes' => $tax_regimes,
             'taxes' => $taxes, 'payForm' => $payForm, 'payMethod' => $payMethod]);
     }
@@ -201,16 +164,5 @@ class ConfigController extends Controller
         }
 
         return redirect('config')->with(['message' => $msg, 'icon' => $icon]);
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
-        //
     }
 }

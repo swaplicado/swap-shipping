@@ -2,15 +2,18 @@
 
 namespace App\SXml;
 
-use Carbon\Carbon;
 use App\Models\Carrier;
 use App\Models\Document;
+use App\Models\M\MDocument;
 use App\Models\Sat\Currencies;
 use App\Models\Sat\FiscalAddress;
 use App\Models\Sat\Items;
 use App\Models\Sat\PostalCodes;
 use App\Models\Sat\States;
 use App\Models\Sat\Units;
+use Carbon\Carbon;
+use ErrorException;
+use Exception;
 
 class verifyDocument
 {

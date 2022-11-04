@@ -87,12 +87,12 @@ class RequestCore {
     /**
      * Transforma un objeto Request a un objeto stdClass MongoDB para su edición
      *
-     * @param Document $oDocument
-     * @param StdClass $oRequest
-     * @param array $lCurrencies
-     * @param Vehicle $oVehicle puede ser null
+     * @param \App\Models\Document $oDocument
+     * @param \StdClass $oRequest
+     * @param \Illuminate\Support\Collection $lCurrencies
+     * @param \App\Models\Vehicle $oVehicle puede ser null
      * 
-     * @return stdClass
+     * @return \stdClass
      */
     public static function requestToCfdiObject($oDocument, $oRequest, $lCurrencies, $oVehicle)
     {
@@ -143,7 +143,7 @@ class RequestCore {
         $oEmisor->rfcEmisor = $oCarrier->fiscal_id;
         $oEmisor->nombreEmisor = $oCarrier->fullname;
         $oEmisor->regimenFiscal = $oCarrier->tax_regime->key_code;
-        if(isset($oRequest->proveedor)){
+        if (isset($oRequest->proveedor)) {
             $oEmisor->oCustomAttributes = new \stdClass();
             $oEmisor->oCustomAttributes->provider = isset($oRequest->proveedor) ? $oRequest->proveedor : "";
         }
@@ -313,12 +313,12 @@ class RequestCore {
                 $oConcept->isDestino = false;
             }
             $rates = GralUtils::getRates(
-                $oCarrier->id_carrier,
-                $oLocDest->domicilio->estado,
-                $oLocDest->domicilio->municipio,
-                $oLocDest->domicilio->codigoPostal,
-                $oVehicle->veh_key_id,
-            );
+                        $oCarrier->id_carrier,
+                        $oLocDest->domicilio->estado,
+                        $oLocDest->domicilio->municipio,
+                        $oLocDest->domicilio->codigoPostal,
+                        $oVehicle->veh_key_id
+                    );
             $oConcept->rates = $rates;
             $oConcept->isOfficialRate = false;
 
@@ -415,9 +415,10 @@ class RequestCore {
              */
             if ($oLocSource->tipoUbicacion == "Origen") {
                 $oLocSource->distanciaRecorrida = SFormats::formatNumber(0, 3);
-                if(!is_null($oMun)){
+                if (!is_null($oMun)) {
                     $oLocDest->distanciaRecorrida = SFormats::formatNumber($oMun->distance, 3);
-                }else{
+                }
+                else {
                     $oLocDest->distanciaRecorrida = 0;
                 }
             }
@@ -434,9 +435,10 @@ class RequestCore {
             $iSource++;
             $iDestination++;
         }
-        if(!is_null($oMun)){
+        if (! is_null($oMun)) {
             $oObjData->shipType = GralUtils::getShipType($oState->id, $oMun->id, $oLocDest->domicilio->codigoPostal);
-        }else{
+        }
+        else {
             $oObjData->shipType = 'L';
         }
 

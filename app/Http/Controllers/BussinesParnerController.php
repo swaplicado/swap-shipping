@@ -2,20 +2,17 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Database\QueryException;
 use App\Models\Carrier;
-use App\Models\BussinesParner;
-use App\User;
 use App\Role;
 use App\RoleUser;
+use App\User;
 use App\UserVsTypes;
 use App\Utils\messagesErros;
-use App\Models\Sat\Tax_regimes;
+use Illuminate\Database\QueryException;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Validator;
-use Auth;
 
 class BussinesParnerController extends Controller
 {
@@ -29,7 +26,7 @@ class BussinesParnerController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\View\View
      */
     public function index()
     {
@@ -47,7 +44,7 @@ class BussinesParnerController extends Controller
     /**
      * Show the form for creating a new resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\View\View
      */
     public function create()
     {
@@ -119,21 +116,10 @@ class BussinesParnerController extends Controller
     }
 
     /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
-    }
-
-    /**
      * Show the form for editing the specified resource.
      *
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\View\View
      */
     public function edit($id)
     {
@@ -182,10 +168,10 @@ class BussinesParnerController extends Controller
                 $User->username = mb_strtoupper($request->fullname, 'UTF-8');
                 $User->full_name = mb_strtoupper($request->fullname, 'UTF-8');
                 if(!is_null($request->editEmail)){
-                    if($user->email != $request->email){
-                        $user->email = $request->email;
-                        $user->email_verified_at = null;
-                        $user->sendEmailVerificationNotification();
+                    if($User->email != $request->email){
+                        $User->email = $request->email;
+                        $User->email_verified_at = null;
+                        $User->sendEmailVerificationNotification();
                     }
                 }
                 

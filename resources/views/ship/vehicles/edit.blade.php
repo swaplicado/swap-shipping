@@ -8,9 +8,14 @@
 @include('layouts.nav-up')
 @endsection
 
+@section('headJs')
+    <script src="{{ asset('js/vue2/vue.js') }}"></script>
+    <script src="{{ asset('js/axios/axios.js') }}"></script>
+@endsection
+
 @section('content')
 <div class="container">
-    <div class="row justify-content-md-center">
+    <div class="row justify-content-md-center" id="vehiclesApp">
         <div class="col-lg-8">
             <div class="card">
                 <div class="card-header">
@@ -27,4 +32,7 @@
         </div>
     </div>
 </div>
+@endsection
+@section('scripts')
+@include('ship.vehicles.js')
 @endsection
